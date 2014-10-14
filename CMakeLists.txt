@@ -79,7 +79,7 @@ add_custom_target(RELEASE_INFO DEPENDS ${RELEASE_FILE})
 add_subdirectory(src)
 
 option(CRACKLET_TESTS "Activate tests" OFF)
-option(CRACKLET_SIMULATIONS "Activate simulations" ON)
+option(CRACKLET_SIMULATIONS "Activate simulations" OFF)
 
 if(CRACKLET_TESTS)
   enable_testing()

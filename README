@@ -31,11 +31,11 @@ If not, see <http://www.gnu.org/licenses/>.
 ==================================================================================================
 * SCOPE
 
-cRacklet is a boundary integral library based on a spectral formulation of the elastodynamics wave 
-equations in continuum solid bodies. This spectral method allows for the modeling of dynamic crack
-propagation along a planar interface bonding two semi-infinite solids. The main feature of this
-method is a numerical discretization limited to the fracture interface, thereby providing fine 
-level of refinement unattainable with finite-element or finite-difference schemes. 
+cRacklet is a C++ boundary element library based on a spectral formulation of the elastodynamic wave
+equations in continuum solids. Its implementation is specially tailored for the modeling of dynamic crack
+propagation along a planar interface bonding two semi-infinite solids. The main benefit of this
+spectral method is a numerical discretization limited to the fracture plane, thereby providing a very fine
+description of the dynamic fracture processes unattainable with finite-element or finite-difference schemes.
 For more details about the method and its applications, refer to "related publications" section.
 
 ==================================================================================================
@@ -56,7 +56,7 @@ You can compile cRacklet using cMake:
 An exemple of the simulation presented in [3] is avaiable in the folder "sim".
 Basically, five types of object shall be created during a simulation:
 
-*SpectralMethod:   
+*SpectralModel:   
 This class is the core of cRacklet librairy and contains the methods processing the different steps of
 the spectral scheme described in [2].
 
@@ -74,6 +74,8 @@ This class shall be used after model initialization to set initial interface pro
 *DataDumper: 
 This class is used to generate various types of output file during simulation.
 
+*SimulationDriver:
+High level class providing a UI to drive SpectralModel during standard simulations. 
 
 IMPORTANT NOTE: The convolution kernels describing the elastodynamic behavior of the surrounding
 solids shall be precomputed using Fortran routine "inverse_serial.f" associated to the input 
@@ -83,6 +85,7 @@ file "inverse_serial.in"
 * AUTHORS
 
 - Fabian Barras <fabian.barras@epfl.ch>
+- Damien Spielmann
 - David Kammer
 - Guillaume Anciaux
 - Nicolas Richart

@@ -39,115 +39,115 @@
 #include <iomanip>
 /* -------------------------------------------------------------------------- */
 
- int main(){
+int main(){
 
-   // Note : Construct the pre-integrated material kernels before running this simulation
-   // Use "invert_serial.f" to construct kernel files
+  // Note : Construct the pre-integrated material kernels before running this simulation
+  // Use "invert_serial.f" to construct kernel files
 
-   // Geometry description
-   int nb_time_steps = 3500;
-   int nb_elements = 2048;
-   double dom_size = 1.0;
-   double crack_size = 0.05;
-   double nu_mtl =  0.33;
-   double nu_poly = 0.35;
-   double E_mtl = 71e9;
-   double E_poly = 5.3e9;
-   double cs_mtl = 3100;
-   double cs_poly = 1263; 
+  // Geometry description
+  UInt nb_time_steps = 3500;
+  UInt nb_elements = 2048;
+  Real dom_size = 1.0;
+  Real crack_size = 0.05;
+  Real nu_mtl =  0.33;
+  Real nu_poly = 0.35;
+  Real E_mtl = 71e9;
+  Real E_poly = 5.3e9;
+  Real cs_mtl = 3100;
+  Real cs_poly = 1263; 
 
-   // Cut of the loaded material kernels
-   int tcut_mtl = 100;
-   int tcut_poly = 100;
+  // Cut of the loaded material kernels
+  UInt tcut_mtl = 100;
+  UInt tcut_poly = 100;
   
-   // Loading case
-   double load = 3e6;
-   double psi = 75;
-   double phi = 0;
-   unsigned int l_index = 1;
+  // Loading case
+  Real load = 3e6;
+  Real psi = 75;
+  Real phi = 0;
+  UInt l_index = 1;
    
-   // Cohesive paramters
-   double crit_n_open = 0.02e-3;
-   double crit_s_open = 0.02e-3;
-   double max_s_str = 5e6;
-   double max_n_str = 5e6;
-   FractureLaw * fracturelaw = new CohesiveLaw(crit_n_open, crit_s_open, max_n_str, max_s_str);
+  // Cohesive paramters
+  Real crit_n_open = 0.02e-3;
+  Real crit_s_open = 0.02e-3;
+  Real max_s_str = 5e6;
+  Real max_n_str = 5e6;
 
-   // Friction paramters
-   bool overlap = 0;
-   double regularized_time_scale = 0.1;
-   double coef_frict = 0.25;
-   ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
+  FractureLaw * fracturelaw ;
 
-/* -------------------------------------------------------------------------- */
+  // Friction paramters
+  bool overlap = 0;
+  Real regularized_time_scale = 0.1;
+  Real coef_frict = 0.25;
+  ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
 
-   SpectralModel model(nb_elements, nb_time_steps, dom_size, crack_size, nu_mtl, nu_poly, 
-		       E_mtl, E_poly, cs_mtl, cs_poly, 
-		       tcut_mtl, tcut_poly, overlap, l_index, fracturelaw, contactlaw);
+  /* -------------------------------------------------------------------------- */
+
+  SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, 
+		      nu_mtl, nu_poly,E_mtl, E_poly, cs_mtl, cs_poly, 
+		      tcut_mtl, tcut_poly, overlap, l_index, fracturelaw,
+		      contactlaw,"test_bima_fract");
  
-   model.initModel();
-   model.setLoadingCase(load, load, psi, phi);
+  model.initModel(0.4);
+  model.setLoadingCase(load, psi, phi);
 
-   Interfacer interfacer(model);
-   interfacer.createCenteredCrack(max_n_str, max_s_str);
+  Interfacer<_linear_coupled_cohesive> interfacer(model);
+  interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
+  interfacer.applyInterfaceCreation();
 
-   model.updateLoads();
-   model.computeInitialVelocities();
-   model.computeKernels();
+  model.updateLoads();
+  model.computeInitialVelocities();
 
-   const std::vector<CrackProfile> & displacements = model.getDisplacements();
-   const std::vector<double> & nor_strength = model.getNormalStrength();
-   const std::vector<double> & shr_strength = model.getShearStrength();
-   const std::vector<Energetics> & E_n = model.getNormalDissipatedEnergy();
-   const std::vector<Energetics> & E_s = model.getShearDissipatedEnergy();
-   const std::vector<Energetics> & E_fr = model.getFrictionalEnergy();
+  const CrackProfile * t_displacements = model.readData(_top_displacements);
+  const CrackProfile * b_displacements = model.readData(_bottom_displacements);
+  const std::vector<Real> * nor_strength = model.readData(_normal_strength);
+  const std::vector<Real> * shr_strength = model.readData(_shear_strength);
+  const std::vector<Energetics> & E_n = model.getNormalDissipatedEnergy();
+  const std::vector<Energetics> & E_s = model.getShearDissipatedEnergy();
+  const std::vector<Energetics> & E_fr = model.getFrictionalEnergy();
 
-   int chkpt = 0.75*nb_elements;
-   int print = 0.01*nb_time_steps;
-   int wdth = 15;
-   std::cout  << std::setw(wdth) << "delta_s" 
-	      << std::setw(wdth) << "delta_n" 
-	      << std::setw(wdth) << "tau_str^s" 
-	      << std::setw(wdth) << "tau_str^n" 
-	      << std::setw(wdth) << "E_s" 
-	      << std::setw(wdth) << "E_n" 
-	      << std::setw(wdth) << "E_fr" 
-	      << std::endl;
+  UInt chkpt = 0.75*nb_elements;
+  UInt print = 0.01*nb_time_steps;
+  UInt wdth = 15;
+  std::cout  << std::setw(wdth) << "delta_s" 
+	     << std::setw(wdth) << "delta_n" 
+	     << std::setw(wdth) << "tau_str^s" 
+	     << std::setw(wdth) << "tau_str^n" 
+	     << std::setw(wdth) << "E_s" 
+	     << std::setw(wdth) << "E_n" 
+	     << std::setw(wdth) << "E_fr" 
+	     << std::endl;
 
-   std::cout.precision(6);
+  std::cout.precision(6);
 
-   for (int t = 0; t < nb_time_steps ; ++t) {
+  for (UInt t = 0; t < nb_time_steps ; ++t) {
 
-     model.updateDisplacements();
-     model.updateMaterialProp();
-     model.preintegratedKernels();
-     model.fftOnDisplacements();
-     model.computeTimeConvolution();
-     model.computeStresses();
-     model.computeVelocities();
-     model.computeEnergy();
-     model.increaseTimeStep();
+    model.updateDisplacements();
+    model.updateMaterialProp();
+    model.fftOnDisplacements();
+    model.computeStress();
+    model.computeVelocities();
+    model.computeEnergy();
+    model.increaseTimeStep();
 
-     if (print == (int)(0.01*nb_time_steps)) {
+    if (print == (UInt)(0.01*nb_time_steps)) {
     
-       std::cout << std::setw(wdth) << displacements[0][chkpt*3]-displacements[1][chkpt*3]  
-		 << std::setw(wdth) << displacements[0][chkpt*3+1]-displacements[1][chkpt*3+1] 
-		 << std::setw(wdth) << shr_strength[chkpt] 
-		 << std::setw(wdth) << nor_strength[chkpt] 
-		 << std::setw(wdth) << E_s[0].E 
-		 << std::setw(wdth) << E_n[0].E 
-		 << std::setw(wdth) << E_fr[0].E 
-		 << std::endl;
+      std::cout << std::setw(wdth) << (*t_displacements)[chkpt*3]-(*b_displacements)[chkpt*3]  
+		<< std::setw(wdth) << (*t_displacements)[chkpt*3+1]-(*b_displacements)[chkpt*3+1] 
+		<< std::setw(wdth) << (*shr_strength)[chkpt] 
+		<< std::setw(wdth) << (*nor_strength)[chkpt] 
+		<< std::setw(wdth) << E_s[0].E 
+		<< std::setw(wdth) << E_n[0].E 
+		<< std::setw(wdth) << E_fr[0].E 
+		<< std::endl;
 
-       print=0;
-     }
+      print=0;
+    }
 
-     ++print;
-   }
+    ++print;
+  }
 
-   delete fracturelaw;
-   delete contactlaw;
+  delete contactlaw;
    
-   return 0;
- }
+  return 0;
+}
 

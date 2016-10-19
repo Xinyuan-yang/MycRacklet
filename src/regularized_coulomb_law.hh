@@ -41,7 +41,7 @@ class RegularizedCoulombLaw : public ContactLaw {
   /* ------------------------------------------------------------------------ */
 public:
   
-  RegularizedCoulombLaw(double coef, double ratio, int n_ele);
+  RegularizedCoulombLaw(Real coef, Real ratio, UInt n_ele);
   virtual ~RegularizedCoulombLaw();
   
   /* ------------------------------------------------------------------------ */
@@ -49,7 +49,7 @@ public:
   /* ------------------------------------------------------------------------ */
 public:
   // Compute the frictionnal strength with the normal compressive stress
-  void computeFricStrength(double & norm_comp_stress, double & strength, int i, int it); 
+  void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it); 
   // dump current contact law in a given ofstream
   void printSelf(std::ofstream & parameters_file, std::ofstream & summary);
   /* ------------------------------------------------------------------------ */
@@ -63,13 +63,13 @@ public:
 private:
 
   // Coulomb coefficient of friction
-  double cf;
+  Real cf;
   // Regularization ratio (dt/t*)
-  double dt_tstar;
+  Real dt_tstar;
   // Regularized contact pressure history
-  std::vector<double> sigma_np1;
+  std::vector<Real> sigma_np1;
   // Save the # of time step when element i are under contact
-  std::vector<int> contact_history;
+  std::vector<UInt> contact_history;
   
 };
 
@@ -77,7 +77,7 @@ private:
 /* -------------------------------------------------------------------------- */
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
-inline RegularizedCoulombLaw::RegularizedCoulombLaw(double coef, double ratio, int n_ele) : ContactLaw(){							
+inline RegularizedCoulombLaw::RegularizedCoulombLaw(Real coef, Real ratio, UInt n_ele) : ContactLaw(){							
 
   cf = coef;
   dt_tstar = ratio;

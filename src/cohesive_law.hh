@@ -31,6 +31,7 @@
 #ifndef __COHESIVE_LAW__
 #define __COHESIVE_LAW__
 /* -------------------------------------------------------------------------- */
+#include "cRacklet_common.hh"
 #include "fracture_law.hh"
 #include <vector>
 #include <math.h>
@@ -43,8 +44,10 @@ class CohesiveLaw : public FractureLaw {
   /* ------------------------------------------------------------------------ */
 public:
   
-  CohesiveLaw(double crit_n_open, double crit_shr_open, double max_nor_strght, 
-	      double max_shr_strght);
+  CohesiveLaw(std::vector<Real> crit_n_open, std::vector<Real> crit_shr_open, 
+	      std::vector<Real> max_n_str, std::vector<Real> max_s_str) 
+    :FractureLaw(), crit_nor_opening(crit_n_open), crit_shr_opening(crit_shr_open),
+     max_nor_strength(max_n_str), max_shr_strength(max_s_str){};
 
   virtual ~CohesiveLaw();
   
@@ -54,7 +57,7 @@ public:
 public:
 
   // update the strength of the material in function of the opening profile 
-  void updateFractureLaw(std::vector<double> & nor_strength, std::vector<double> & shr_strength,
+  void updateFractureLaw(std::vector<Real> & nor_strength, std::vector<Real> & shr_strength,
 			 std::vector<unsigned int> & ind_crack, CrackProfile & nor_opening, 
 			 CrackProfile & shr_opening);
   // dump current cohesive law in a given ofstream
@@ -72,29 +75,21 @@ public:
   /* ------------------------------------------------------------------------ */
 private:
    // Critical normal opening
-  double crit_nor_opening;
+  std::vector<Real> crit_nor_opening;
   // Critical shear opening
-  double crit_shr_opening;
+  std::vector<Real> crit_shr_opening;
   // Maximum normal strength
-  double max_nor_strength;
+  std::vector<Real> max_nor_strength;
   // Maximum shear strength
-  double max_shr_strength;
+  std::vector<Real> max_shr_strength;
+
 };
 
 
 /* -------------------------------------------------------------------------- */
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
-inline CohesiveLaw::CohesiveLaw(double crit_n_open, double crit_shr_open, double max_nor_strght,
-				double max_shr_strght) : FractureLaw() {
 
-  crit_nor_opening = crit_n_open;
-  crit_shr_opening = crit_shr_open;
-  max_nor_strength = max_nor_strght;
-  max_shr_strength = max_shr_strght;
-										
-}										
-/* -------------------------------------------------------------------------- */
 inline CohesiveLaw::~CohesiveLaw(){							  
 										 
 }					

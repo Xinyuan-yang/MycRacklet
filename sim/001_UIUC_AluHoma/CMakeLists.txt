@@ -33,22 +33,8 @@
 
 include_directories (${cRacklet_SOURCE_DIR}/src)
 
-set_source_files_properties(${RELEASE_FILE} PROPERTIES GENERATED 1)
-
-add_executable(alu_homa alu_homa.cc ${RELEASE_FILE})
-add_dependencies(alu_homa RELEASE_INFO)
-
+add_executable(alu_homa alu_homa.cc)
 target_link_libraries (alu_homa cRacklet)
 
-set(KERNELS
- nu_.33_h11.dat
- nu_.33_h22.dat
- nu_.33_k12.dat
- nu_.35_h11b.dat
- nu_.35_h22b.dat
- nu_.35_k12b.dat
- )
-
-file(COPY ${KERNELS}
-  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-  )
+copy_kernel_files(33 FALSE)
+copy_kernel_files(35 TRUE)

@@ -45,8 +45,8 @@ public:
   /* ------------------------------------------------------------------------ */
 public:
   // update the strength of the material in function of the opening profile
-  virtual void updateFractureLaw(std::vector<double> & nor_strength, std::vector<double> & shr_strength,
-				 std::vector<unsigned int> & ind_crack, CrackProfile & nor_opening, 
+  virtual void updateFractureLaw(std::vector<Real> & nor_strength, std::vector<Real> & shr_strength,
+				 std::vector<UInt> & ind_crack, CrackProfile & nor_opening, 
 				 CrackProfile & shr_opening) = 0; 
   // dump fracture law paramters in a given ofstream
   virtual void printSelf(std::ofstream & parameters_file, std::ofstream & summary) = 0;

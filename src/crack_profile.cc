@@ -1,19 +1,19 @@
 /* -------------------------------------------------------------------------- */
 #include "crack_profile.hh"
 #include <vector>
+#include <complex>
 #include <fftw3.h>
 #include <math.h>
-#include <complex>
 /* -------------------------------------------------------------------------- */
-CrackProfile CrackProfile::getStridedPart(int stride, int start) const {
+CrackProfile CrackProfile::getStridedPart(UInt stride, UInt start) const {
 
-  int size = n/stride;
+  UInt total_lgth = heights.size()/stride;
 
-  CrackProfile results(size);
+  CrackProfile results(n,total_lgth);
 
-for (int i = 0; i < size; ++i) {
-  results.heights[i] = heights[i*stride + start];
- }
+  for (UInt i = 0; i < total_lgth; ++i) {
+    results.heights[i] = heights[i*stride + start];
+  }
 
  return results;
 
@@ -22,42 +22,39 @@ for (int i = 0; i < size; ++i) {
 /* -------------------------------------------------------------------------- */
 void CrackProfile::squareRoot() {
 
-  for (int i = 0; i < n; ++i) {
+  for (UInt i = 0; i < heights.size(); ++i) {
     heights[i] = sqrt(heights[i]);
   }
 }
 
 /* -------------------------------------------------------------------------- */
-void CrackProfile::stridedFFT(std::vector<double> & output, int dim){
+void CrackProfile::stridedFFT(Real * output, UInt dim){
  
-  int nele_fft = n/2; 
   int * N;
   fftw_complex * temp;
-  int n_per_dim = n/dim;
-  int n_fft_per_dim = n_per_dim/2+1;
+  UInt n_fft_per_dim = n[1]*(n[0]/2+1);
 
-  temp = new fftw_complex[nele_fft+3];
+  temp = new fftw_complex[n_fft_per_dim*3]; 
+  N = new int[2];
 
-  N = new int[dim];
+  N[0]=n[1];
+  N[1]=n[0];
 
-  for (int i = 0; i < dim; ++i) {
-    N[i]=n_per_dim;
-  }
- 
   fftw_plan p;
 
-  p = fftw_plan_many_dft_r2c(1, N, dim, &heights[0], NULL, dim, 1, temp, NULL, 1, n_fft_per_dim, FFTW_ESTIMATE);
+  p = fftw_plan_many_dft_r2c(2, N, dim, &heights[0], NULL, dim, 1, temp, NULL, 1, n_fft_per_dim, FFTW_ESTIMATE);
   
   fftw_execute(p);
   fftw_destroy_plan(p);
   fftw_cleanup();
   
-  for (int d = 0; d < dim; ++d) { 
-    for (int i = 0; i < n_fft_per_dim-1; ++i) {
-      for (int img = 0; img < 2; ++img) {
+  Real *it(output);
 
-	output[2*d*(n_fft_per_dim-1)+2*i+img] = temp[d*n_fft_per_dim+i+1][img];
-    
+  for (UInt d = 0; d < dim; ++d) { 
+    for (UInt i = 0; i < n_fft_per_dim-1; ++i) {
+      for (UInt img = 0; img < 2; ++img) {
+	*it = temp[d*n_fft_per_dim+i+1][img];
+	++it;
       }
     }
   }
@@ -66,29 +63,22 @@ void CrackProfile::stridedFFT(std::vector<double> & output, int dim){
 }
 
 /* -------------------------------------------------------------------------- */
-void CrackProfile::backwardFFT(std::complex<double> * input, int dim) {
+void CrackProfile::backwardFFT(Real * input, UInt dim) {
 
-  int nele_fft = n/2;
   int * N;
   fftw_complex * temp;
-  int n_per_dim = n/dim;
-  int n_fft_per_dim = n_per_dim/2+1;
+  UInt n_fft_per_dim = n[1]*(n[0]/2+1);
 
-  N = new int[dim];
+  N = new int[2];
 
-  for (int i = 0; i < dim; ++i) {
-    N[i]=n_per_dim;
-  }
-
-  for (int i = 0; i < nele_fft; ++i) {
+  N[0]=n[1];
+  N[1]=n[0];
   
-    temp = reinterpret_cast<fftw_complex*>(input);
-
-  }
+  temp = reinterpret_cast<fftw_complex*>(input);
 
   fftw_plan p;
 
-  p = fftw_plan_many_dft_c2r(1, N, dim, temp, NULL, 1, n_fft_per_dim, &heights[0], NULL, dim, 1, FFTW_ESTIMATE);
+  p = fftw_plan_many_dft_c2r(2, N, dim, temp, NULL, 1, n_fft_per_dim, &heights[0], NULL, dim, 1, FFTW_ESTIMATE);
   
   fftw_execute(p);
   fftw_destroy_plan(p);
@@ -96,4 +86,3 @@ void CrackProfile::backwardFFT(std::complex<double> * input, int dim) {
   
   delete[] N;
 }
-

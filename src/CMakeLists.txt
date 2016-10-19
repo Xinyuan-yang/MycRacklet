@@ -32,22 +32,27 @@
 #===============================================================================
 
 set(cRacklet_SRC
+  data_register.cc
   spectral_model.cc
   crack_profile.cc
   interfacer.cc
+  convolution_manager.cc
+  spectral_convolution_manager.cc
   cohesive_law.cc
   coulomb_law.cc
   regularized_coulomb_law.cc
   data_dumper.cc
+  simulation_driver.cc
   )
 
-find_package(GSL REQUIRED)
-find_package(FFTW REQUIRED)
+set_source_files_properties(${RELEASE_FILE} PROPERTIES GENERATED 1)
 
-include_directories(${GSL_INCLUDE_PATH})
-include_directories(${FFTW_INCLUDE_PATH})
+add_library(cRacklet ${cRacklet_SRC} ${RELEASE_FILE})
+add_dependencies(cRacklet RELEASE_INFO)
 
-add_library(cRacklet ${cRacklet_SRC})
 target_link_libraries(cRacklet ${FFTW_LIBRARIES} ${GSL_LIBRARIES})
 
-add_executable(invert_serial invert_serial.f)
+if(CRACKLET_USE_LIBSURFER)
+  target_link_libraries(cRacklet ${LIBSURFER_LIBRARIES})
+endif()
+

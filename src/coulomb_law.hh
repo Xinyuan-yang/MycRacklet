@@ -38,7 +38,7 @@ class CoulombLaw : public ContactLaw {
   /* ------------------------------------------------------------------------ */
 public:
   
-  CoulombLaw(double coef);
+  CoulombLaw(Real coef);
   virtual ~CoulombLaw();
   
   /* ------------------------------------------------------------------------ */
@@ -46,7 +46,7 @@ public:
   /* ------------------------------------------------------------------------ */
 public:
   // Compute the frictionnal strength with the normal compressive stress
-  void computeFricStrength(double & norm_comp_stress, double & strength, int i, int it);
+  void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it);
   // dump current contact law in a given ofstream
   void printSelf(std::ofstream & parameters_file, std::ofstream & summary);
   /* ------------------------------------------------------------------------ */
@@ -59,7 +59,7 @@ public:
 private:
  
   // Coulomb coefficient of friction
-  double cf;
+  Real cf;
 
 };
 
@@ -67,7 +67,7 @@ private:
 /* -------------------------------------------------------------------------- */
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
-inline CoulombLaw::CoulombLaw(double coef) : ContactLaw(){							
+inline CoulombLaw::CoulombLaw(Real coef) : ContactLaw(){							
 
   cf = coef;
 										

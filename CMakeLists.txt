@@ -52,34 +52,66 @@ set_property(SOURCE ${RELEASE_FILE} PROPERTY GENERATED 1)
 find_program(uuencode_exec "uuencode")
 mark_as_advanced(uuencode_exec)
 
-#if(uuencode_exec)
-add_custom_command(
-  OUTPUT ${RELEASE_FILE}
-  COMMAND ${GET_RELEASE_INFO} ${PROJECT_BINARY_DIR} > ${RELEASE_FILE}
-  DEPENDS ${cRacklet_SRC} ${GET_RELEASE_INFO}
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  COMMENT "Generating the Release file"
-  )
+#===============================================================================
+# External Library
+#===============================================================================
+option(CRACKLET_USE_LIBSURFER "Use LibSurfer tools to generate fractal surfaces" OFF)
 
-#else()
-#  message("install uuencode on the building machine to have access to release information.")
-#  file(WRITE "${RELEASE_FILE}" 
-#    "
-#   #include <string>
-#  std::string lm_release_info =  \" install uuencode on the building machine to have access to release information.\";
-#")
-#endif()
+set(LIBSURFER_FOLDER /home/fabarras/Softwares/LibSurfer)
+set(LIBSURFER_BINARIES /home/fabarras/Softwares/LibSurfer/build)
 
-add_custom_target(RELEASE_INFO DEPENDS ${RELEASE_FILE})
+find_package(GSL REQUIRED)
+find_package(FFTW REQUIRED)
 
+include_directories(${GSL_INCLUDE_PATH})
+include_directories(${FFTW_INCLUDE_PATH})
 
+if(CRACKLET_USE_LIBSURFER)
+  add_definitions(-DCRACKLET_USE_LIBSURFER)
+  find_package(LIBSURFER REQUIRED)
+  include_directories(${LIBSURFER_INCLUDE_DIRS})
+endif()
+
+#===============================================================================
+# Kernels pre-computation
+#===============================================================================
+set(KERNELS_DIR ${PROJECT_SOURCE_DIR}/pre-computed-kernels)
+
+add_subdirectory(${KERNELS_DIR})
+
+set(KERNELS_EXT
+  h11
+  h22
+  k12
+ )
+
+function(copy_kernel_files poisson_ratio is_bottom)
+  foreach(_ext ${KERNELS_EXT})
+    file(COPY ${KERNELS_DIR}/nu_.${poisson_ratio}_${_ext}.dat DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    if(is_bottom)
+      file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/nu_.${poisson_ratio}_${_ext}.dat ${CMAKE_CURRENT_BINARY_DIR}/nu_.${poisson_ratio}_${_ext}b.dat)
+    endif()
+  endforeach()
+endfunction()
+  
 #===============================================================================
 # Library
 #===============================================================================
+
 add_subdirectory(src)
 
+add_custom_command(
+  OUTPUT ${RELEASE_FILE}
+  COMMAND ${GET_RELEASE_INFO} ${PROJECT_BINARY_DIR} > ${RELEASE_FILE}
+  DEPENDS ${GET_RELEASE_INFO}
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  COMMENT "Generating the Release files"
+   )
+
+add_custom_target(RELEASE_INFO DEPENDS ${RELEASE_FILE})
+
 option(CRACKLET_TESTS "Activate tests" OFF)
-option(CRACKLET_SIMULATIONS "Activate simulations" OFF)
+option(CRACKLET_SIMULATIONS "Activate simulations" ON)
 
 if(CRACKLET_TESTS)
   enable_testing()
@@ -92,4 +124,3 @@ endif()
 if(CRACKLET_SIMULATIONS)
   add_subdirectory(sim)
 endif()
-

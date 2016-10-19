@@ -27,71 +27,150 @@
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
 
- /* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
 #ifndef __INTERFACER__
-#define __INTERFACER____
+#define __INTERFACER__
 /* -------------------------------------------------------------------------- */
+#include "data_register.hh"
 #include "spectral_model.hh"
+#include "fracture_law.hh"
+#ifdef CRACKLET_USE_LIBSURFER
+#include "surface_generator_filter_fft.hh"
+#include "surface_statistics.hh"
+#endif
 /* -------------------------------------------------------------------------- */
-enum InterfaceType {
-  _centered_crack,
-  _left_sided_crack,
-  _incoherent
+enum FractureLawType {
+  _linear_coupled_cohesive
 };
 
-class Interfacer {
+template<FractureLawType>
+class Interfacer : public DataRegister {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
   
-  Interfacer(SpectralModel & model):
-  shr_strength(model.getShearStrength()), 
-  nor_strength(model.getNormalStrength()), 
-  ind_crack(model.getCrackingIndex()) {
-    n_ele = shr_strength.size();
-    const std::vector<double> param = model.getSimulationsParameters();
-    crack_size = param[4];
-    dx = param[0]/param[1];
+  Interfacer(SpectralModel & model) : fracture_law(model.getFractureLaw()) {
+
+    shr_strength = datas[_shear_strength];
+    nor_strength = datas[_normal_strength];
+    ind_crack = datas[_id_crack];
+    
+    dx.resize(2);
+    dx[0] = model.getElementSize()[0];
+    dx[1] = model.getElementSize()[1];
+    n_ele.resize(2);
+    n_ele[0] = model.getNbElements()[0];
+    n_ele[1] = model.getNbElements()[1];
+    total_n_ele = n_ele[0]*n_ele[1];
   }
 
-  virtual ~Interfacer(){};
+  virtual ~Interfacer(){delete fracture_law;};
   
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
 
-  // create material for a centered crack
-  void createCenteredCrack(double max_nor_strength, double max_shr_strength);
-  // create material for a left-sided crack
-  void createLeftSidedCrack(double max_nor_strength, double max_shr_strength);
-  // create conditions of dynamic sliding after right impacting
-  void createIncohIntfc();
+  //Some lexical conventions:
+  //THROUGH: designate an z-invariant area
+  //POLAR ASPERITY: designate an asperity made of weaker then stronger interface properties
+  // polarity = 0: strong-weak / polarity = 1: weak-strong
 
-  /* ------------------------------------------------------------------------ */
-  /* Accessors                                                                */
-  /* ------------------------------------------------------------------------ */
-public:
+  void applyInterfaceCreation();
+  // create a uniform layer on the entire interface
+  void createUniformInterface(Real crit_nor_opening, Real crit_shr_opening, 
+			      Real max_nor_strength, Real max_shr_strength);
+  // create an heterogeneous interface following normal distribution of strength
+  void createNormalDistributedInterface(Real crit_nor_opening, 
+					Real crit_shr_opening, 
+					Real max_nor_strength, 
+					Real max_shr_strength,
+					Real stddev, Real seed);
+  // create an heterogeneous interface with a brownian distribution of strength
+  // rms=root mean square, hurst=hurst exponent, q0=low cut_off, q1=roll_off, q2=high cut_off
+  // !!! Required LibSurfer as an external library
+  void createBrownianHeterogInterface(Real crit_nor_opening, 
+				      Real crit_shr_opening, 
+				      Real max_nor_strength, 
+				      Real max_shr_strength,
+				      Real rms, long int seed,
+				      Real hurst=0.8, UInt q0=4,
+				      UInt q1=4, UInt q2=32);
+
+  // create a z-invariant(="through") area between x=start and x=end of given cracking_index and
+  // with properties given by
+  // new_prop = ratio*current_prop, if variation_rather_than_ratio=0
+  // new_prop = ratio+current_prop, if variation_rather_than_ratio=1
+  void createThroughArea(Real area_start, Real area_end,
+			 UInt cracking_index,
+			 Real ratio_max_nor_strength=1., 
+			 Real ratio_max_shr_strength=1.,
+			 Real ratio_crit_nor_opening=1., 
+			 Real ratio_crit_shr_opening=1.,
+			 bool variation_rather_than_ratio=0);
+  // create a crack between x=crack_start and x=crack_end) 
+  void createThroughCrack(Real crack_start, Real crack_end);
+  // create a wall between x=wall_start and x=wall_end
+  void createThroughWall(Real wall_start, Real wall_end);
+  // create an asperity made of weaker(-delta) then stronger(+delta) areas at given position and given width
+  void createThroughPolarAsperity(Real position, Real width,
+				  Real delta_max_nor_strength, 
+				  Real delta_max_shr_strength,
+				  Real delta_crit_nor_opening, 
+				  Real delta_crit_shr_opening, 
+				  bool polarity);
+  // create an interface made of multiple weaker(-delta) and stronger(+delta) areas
+  // A given number of asperities is inserted between x=start and x=end
+  void createThroughMultiPolAsperity(Real start, Real end,
+				     Real number,
+				     Real delta_max_nor_strength, 
+				     Real delta_max_shr_strength,
+				     Real delta_crit_nor_opening, 
+				     Real delta_crit_shr_opening, 
+				     bool polarity);
+
+  // create an interface with a centered crack.
+  void createThroughCenteredCrack(Real initial_crack_size, Real crit_nor_opening, Real crit_shr_opening, 
+				  Real max_nor_strength, Real max_shr_strength);
+  // create an interface with a left-sided crack.
+  void createThroughLeftSidedCrack(Real initial_crack_size, Real crit_nor_opening, Real crit_shr_opening, 
+				  Real max_nor_strength, Real max_shr_strength);
+ 
+  // create right propagating through crack meeting a circular asperity whose strength = ratio*interface_strength
+  void createRightPropagatingCrackRoundAsp(Real initial_crack_size, Real crit_nor_opening,
+					   Real crit_shr_opening, Real max_nor_strength,
+					   Real max_shr_strength, Real radius,
+					   std::vector<Real> asp_ctr, Real ratio);
   
+  // create an interface without initial cohesion between top and bottom solids
+  void createIncohIntfc();
+ 
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */
   /* ------------------------------------------------------------------------ */
 private:
 
+  // Fracture law object to build
+  FractureLaw * & fracture_law;
   // Shear and normal strength arrays of the interface
-  std::vector<double> & shr_strength;
-  std::vector<double> & nor_strength;
+  std::vector<Real> * shr_strength;
+  std::vector<Real> * nor_strength;
+  std::vector<Real> crit_n_open;
+  std::vector<Real> crit_s_open;
   // Cracking index
-  std::vector<unsigned int> & ind_crack;
+  std::vector<UInt> * ind_crack;
   // Number of elements at the interface
-  int n_ele;
+  std::vector<UInt> n_ele;
+  // Total number of elements
+  UInt total_n_ele;
   // Space step
-  double dx;
-  // Initial crack size over the domain size
-  double crack_size;
-  
+  std::vector<Real> dx; 
+  // Interface dimension 1 if 2D space and 2 if 3D space
+  UInt interface_dim;
+
 };
 
+#include "interfacer_inline_impl.cc"
 
-#endif /* __INTERFACER______ */
+#endif  /* __INTERFACER__ */

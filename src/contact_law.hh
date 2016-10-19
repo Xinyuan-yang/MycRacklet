@@ -28,6 +28,7 @@
 #define __CONTACT_LAW__
 /* -------------------------------------------------------------------------- */
 #include <iostream>
+#include "cRacklet_common.hh"
 /* -------------------------------------------------------------------------- */
 
 class ContactLaw {
@@ -44,7 +45,7 @@ public:
   /* ------------------------------------------------------------------------ */
 public:
   // Compute the frictionnal strength with the normal compressive stress
-  virtual void computeFricStrength(double & norm_comp_stress, double & strength, int i, int it) = 0;
+  virtual void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it) = 0;
   // dump contact law paramters in a given ofstream
   virtual void printSelf(std::ofstream & parameters_file, std::ofstream & summary) = 0;
   /* ------------------------------------------------------------------------ */

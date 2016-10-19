@@ -35,15 +35,5 @@ include_directories (${cRacklet_SOURCE_DIR}/src)
 
 register_cRacklet_test(test_bima_fract "2D bimaterial fracture")
 
-set(KERNELS
- nu_.33_h11.dat
- nu_.33_h22.dat
- nu_.33_k12.dat
- nu_.35_h11b.dat
- nu_.35_h22b.dat
- nu_.35_k12b.dat
- )
-
-file(COPY ${KERNELS}
-  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-  )
+copy_kernel_files(33 FALSE)
+copy_kernel_files(35 TRUE)

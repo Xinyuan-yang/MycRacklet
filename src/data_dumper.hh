@@ -3,7 +3,8 @@
  * @author Fabian Barras <fabian.barras@epfl.ch>
  * @date   Wed Sep  3 17:04:05 2014
  *
- * @brief  Class dealing with the outputs generation
+ * @brief  Classes dealing with outputs production from SpectralModel fields
+ * @brief  Dumper are object used to produce the desired output while DataDumper manage them     
  *
  * @section LICENSE
  *
@@ -31,70 +32,154 @@
 #ifndef __DATA_DUMPER__
 #define __DATA_DUMPER__
 /* -------------------------------------------------------------------------- */
+#include "cRacklet_common.hh"
+#include "data_register.hh"
 #include "spectral_model.hh"
 #include "crack_profile.hh"
 #include <iostream>
+#include <iomanip>
+#include <typeinfo>
+#include <vector>
 #include <map>
-/* -------------------------------------------------------------------------- */
-enum DumperType {
-  _st_diagram,
-  _snapshot,
-  _points_history,
-};
-
-enum STDiagramType {
-  _cracking_index,
-  _shear_traction,
-  _normal_traction
-};
-
-enum SnapshotType {
-  _top_displacement,
-  _bot_displacement,
-  _tractions
-};
 
 /* -------------------------------------------------------------------------- */
-class STDiagramBuilder {
+// Format of generated output files: text or binary files
+enum OutputFormat {
+  _text,
+  _binary
+};
+
+// A list of fields preset by default when using PointDumper
+static std::vector<DataFields> standard_fields_history =
+  {_normal_strength,_shear_strength,_interface_tractions,_normal_displacement_jumps,
+   _shear_displacement_jumps, _normal_velocity_jumps, _shear_velocity_jumps,
+   _top_velocities};
+
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+// Dumper class managing simulation data output to file
+class Dumper {
+  /* ------------------------------------------------------------------------ */
+  /* Constructors/Destructors                                                 */
+  /* ------------------------------------------------------------------------ */
 public:
-  STDiagramBuilder(const std::string & filename, int sze) {
-    file.open(filename.c_str());
-    size = sze;
+  Dumper(){};
+  // Dumper is created providing field to dump, which amout (ratio),
+  // the stride to appy while dumping and the first position to dump. 
+  Dumper(DataFields field, Real data_ratio,
+	 UInt data_stride, UInt data_start) {
+    field_name=field;
+    ratio = data_ratio;
+    stride=data_stride;
+    start=data_start;
   }
-
-  virtual void dump(int stride, int start) = 0;
-
-  std::ofstream file;
+  ~Dumper() {if (file.is_open()) file.close();}
+  /* ------------------------------------------------------------------------ */
+  /* Methods                                                                  */
+  /* ------------------------------------------------------------------------ */  
+  // Initialize Dumper with the name of output file and its format
+  void init(const std::string & filename, OutputFormat out_for=_text) {
+    output_format = out_for;
+    switch (out_for) {
+    case _text:
+      file.open(filename.c_str());
+      break;
+    case _binary:
+      file.open(filename.c_str(),std::ios::out|std::ios::binary);
+      break;
+    default:
+      cRacklet::error("DataDumper don't know how to open file using this OutputFormat");
+      break;
+    }
+  }
+  // Print a backspace in the output file
+  void endl(){if(output_format==_text){file << std::endl;}}
+  // Accessor to Dumper's ofstream
+  std::ofstream & getFile(){return file;}
+  // Output current state of registered data
+  virtual void dump();
 
 protected:
-  int size;
-};
-
-/* -------------------------------------------------------------------------- */
-template<class Bed>
-class STDiagramDumper : public STDiagramBuilder {
-public:
-  STDiagramDumper(const std::string & filename, int nb_elem, const Bed & bed) :
-    STDiagramBuilder(filename,nb_elem), data(bed) {}
-  ~STDiagramDumper() {if (file.is_open()) file.close();}
-  void dump(int stride, int start);
+  // Download the data of type Bed from DataRegister before dumping them
+  template<class Bed>
+  inline const Bed & getData();
+  // Output current state of registered data of type Bed
+  template<class Bed>
+  inline void dump();
 
 private:
-  const Bed & data;
+  // Dumping methods for OutputFormat _text
+  template<class Bed>
+  inline void dump_text(Bed & data, UInt size);
+  // Dumping methods for OutputFormat _binary
+  template<class Bed>
+  inline void dump_binary(Bed & data, UInt size);
+  
+  /* ------------------------------------------------------------------------ */
+  /* Class Members                                                            */
+  /* ------------------------------------------------------------------------ */
+protected:
+  //Format use to output data in a file
+  OutputFormat output_format;
+  //Name of the output file
+  std::ofstream file;
+  //Name of the field dumped by the Dumper (use to access data through DataRegister) 
+  DataFields field_name;
+  //Ratio of the total number of data that will be dumped
+  Real ratio;
+  //First position to be dumped to the output file
+  UInt start;
+  //Stride to move within data while dumping
+  UInt stride;
 };
 
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
-class DataDumper {
+// Daughter Dumper use to dump several fields at some specific interface positions
+class PointsDumper: public Dumper {
+  /* ------------------------------------------------------------------------ */
+  /* Constructors/Destructors                                                 */
+  /* ------------------------------------------------------------------------ */
+public:
+  //Construct an object by specifying the fields and the position (btw 0 and total_n_ele)
+  //where to output fields value 
+  PointsDumper(std::vector<DataFields> & data_fields,
+	       std::vector<UInt> & points_to_dump, UInt total_nb_elem) : 
+    fields(data_fields), points(points_to_dump) {
+    
+    this->ratio = 1.0/(Real)(total_nb_elem);
+    this->stride=1;
+  }
+  ~PointsDumper(){};
+  /* ------------------------------------------------------------------------ */
+  /* Methods                                                                  */
+  /* ------------------------------------------------------------------------ */
+  // Output current state of registered data
+  void dump();
+  // Only text output is currently available for PointsDumper
+  template<class Bed>
+  inline void dump_text(Bed & data, UInt size);
 
+  /* ------------------------------------------------------------------------ */
+  /* Class Members                                                            */
+  /* ------------------------------------------------------------------------ */
+private:
+  //Position of interest where to dump fields
+  std::vector<UInt> & points;
+  //Fields of interest to dump
+  std::vector<DataFields> & fields;
+};
+
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+// Dumpers manager interfacing with users
+class DataDumper {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
   
-  DataDumper(SpectralModel & mdl, const std::string sim_description, 
-	     std::string release_info);
-
+  DataDumper(SpectralModel & mdl);
   virtual ~DataDumper();
   
   /* ------------------------------------------------------------------------ */
@@ -104,35 +189,36 @@ public:
 
   // Initialize the energetic outputs
   void initEnergetics(const std::string filename);
-  // Initialize the space time diagram output of a given type
-  void initSpaceTimeDiagram(const std::string filename, STDiagramType type);
-  // Initialize interface snap shot outputs
-  void initSnapshot(const std::string filename, SnapshotType type);
-  // Initialize point history outputs at given positons along the interface
-  void initPointsHistory(const std::string filename, std::vector<double> positions);
-  // Dump energetic data at time step it
-  void printEnergetics(int it);
-  // Dump at time step it every space-time diagrams defined
-  void printSpaceTimeDiagram(int it);
-  // Dump at time step it every snap shot plots defined
-  void printSnapshot(int it);
-  // Dump history of interface parameters at different positions of the interface
-  void printPointsHistory(int it);
+  // Create a Dumper to output a field of given type into filename
+  // Eventually specify which amout (ratio) of the full data,
+  // the stride to appy while dumping and the first position to dump.
+  void initDumper(const std::string filename, DataFields type, Real ratio_of_nele=1.0,
+		  UInt stride=1, UInt start=0, OutputFormat format=_text);
+  // Create a Dumper to output vectorial field (of size n_ele*dim).
+  // Options are the same than initDumper + one entry to specify which direction to dump  
+  void initVectorDumper(const std::string filename, DataFields type, UInt dimension_to_dump,
+			Real ratio_of_nele=1.0, UInt stride=1, UInt start=0, OutputFormat format=_text);
+  //Create a PointsDumper to output a list of fields at precise interface position specified
+  //in points_to_dump
+  void initPointsDumper(const std::string filename, std::vector<DataFields> & fields,
+			std::vector<UInt> & points_to_dump);
+  //Create a PointDumper as above but using the standard output fields listed on top of this file
+  void initPointsDumper(const std::string filename, std::vector<UInt> & points_to_dump);
+  //Create a PointDumper of standard fields along nb_obs_points between elements start and end  
+  void initPointsDumper(const std::string filename, UInt start, UInt end, UInt nb_obs_points);
+  //Generate an output of current model state to given file 
+  void dump(std::string filename);
+  //Generate output from every created dumper at once
+  void dumpAll();
+  // Dump energetic data
+  void printEnergetics();
 
 private:
 
-  // Initialize displacements and velocities pointers
-  void initDisplacementFields();
-  // Initialize tractions and strengths pointers
-  void initTractionFields();
-  // Initialize the timer output related to the type of dump
-  void initTimer(DumperType type);
-  // Dump time step it
-  void printTime(int it, DumperType type);
-  // Construct summary files of simulation parameters
-  void printSimulationSummary(const std::string sim_description);
-  // Return the current time
-  std::string getCurrentTime();
+  //Initialize output timer related to a precise Dumper identified by its related filename
+  void initTimer(std::string filenname);
+  //Print current simulation time 
+  void printTime(std::string filename);
 
 public:
   
@@ -141,46 +227,21 @@ public:
   /* ------------------------------------------------------------------------ */
 private:
  
-  // Model generating the data dumped
+  //Model generating the data dumped
   SpectralModel * model;
-  // Info on the sources generated at compilation
-  std::string cR_release_info;
-  // Please refer to spectral_model.hh for info about these model members
-  double beta;
-  double dx;
-  double X;
-  int n_ele;
-  int dim;
+  //Map containing all the created Dumpers identified by the filename they are writing
+  std::map<std::string,Dumper*> dumper;
+  // Map between the timer of a given output file and the ofstream use to dump time information
+  std::map<std::string,std::ofstream*> timer;
+  // Pointer to energetic quantity
   const std::vector<Energetics> * E_nor;
   const std::vector<Energetics> * E_shr;
   const std::vector<Energetics> * E_fri;
-  const std::vector<CrackProfile> * displacements;
-  const std::vector<CrackProfile> * velocities;
-  const CrackProfile * intfc_trac;
-  const std::vector<double> * nor_strength;
-  const std::vector<double> * shr_strength;
-  const std::vector<unsigned int> * ind_crack;
-  InterfaceFields * displ_jump;
-  InterfaceFields * veloc_jump;
-  // Array containing the point where history should be dumped
-  std::vector<double> points;
-  // Ofstream for summary file
-  std::ofstream summary;
+  const Energetics * Eq;
   // Ofstream for energetic outputs
   std::ofstream E_file;
-  // Ofstream for point history outputs
-  std::ofstream phistory_file;
-  // Array containing the STDiagramDumper of the different ST diagrams
-  std::map<STDiagramType,STDiagramBuilder*> st_diagram_dumper;
-  // Array containing the STDiagramDumper of the different snap shot plots
-  std::map<SnapshotType,STDiagramBuilder*> snapshot_dumper;
-  // Map between a timer and its related dumper type
-  std::map<DumperType,std::ofstream*> timer;
-  // Map between ofstreams pointer and filename
-  std::map<std::ofstream*, std::string> output_names ;
-  
-};
 
+};
 
 /* -------------------------------------------------------------------------- */
 /* inline functions                                                           */

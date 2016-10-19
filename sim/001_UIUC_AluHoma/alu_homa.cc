@@ -38,6 +38,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <iomanip>
 /* -------------------------------------------------------------------------- */
 
  int main(){
@@ -46,104 +47,113 @@
    // Use "invert_serial.f" to construct kernel files
 
    // Geometry description
-   int nb_time_steps = 7000; 
-   int nb_elements = 4096;
-   double dom_size = 1.0;
-   double crack_size = 0.05;
-   double nu_mtl =  0.33;
-   double nu_poly = 0.35;
-   double E_mtl = 71e9;
-   double E_poly = 5.3e9;
-   double cs_mtl = 3100;
-   double cs_poly = 1263; 
+   UInt nb_time_steps = 7000; 
+   UInt nb_elements = 4096;
+   Real dom_size = 1.0;
+   Real crack_size = 0.05;
+   Real nu_mtl = 0.33;
+   Real nu_poly = 0.35;
+   Real E_mtl = 71e9;
+   Real E_poly = 5.3e9;
+   Real cs_mtl = 3100;
+   Real cs_poly = 1263;
 
    // Cut of the loaded material kernels
-   int tcut_mtl = 100;
-   int tcut_poly = 100;
+   UInt tcut_mtl = 100; 
+   UInt tcut_poly = 100;
   
    // Loading case
-   double load = 3e6;
-   double psi = 75;
-   double phi = 0;
-   unsigned int l_index = 1;
-   
+   Real load = 3e6;
+   Real psi = 75;
+   Real phi = 0;
+   UInt l_index = 1;
+
    // Cohesive paramters
-   double crit_n_open = 0.02e-3;
-   double crit_s_open = 0.02e-3;
-   double max_s_str = 5e6;
-   double max_n_str = 5e6;
-   FractureLaw * fracturelaw = new CohesiveLaw(crit_n_open, crit_s_open, max_n_str, max_s_str);
+   Real crit_n_open = 0.02e-3;
+   Real crit_s_open = 0.02e-3;
+
+   Real max_s_str = 5e6;
+   Real max_n_str = 5e6;
+
+   FractureLaw * fracturelaw;
 
    // Friction paramters
    bool overlap = 0;
-   double regularized_time_scale = 0.1;
-   double coef_frict = 0.25;
+   Real regularized_time_scale = 0.1;
+   Real coef_frict = 0.25;
    ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
 
    // Output point position
-   std::vector<double> point_his(8);
-   point_his = {dom_size*0.1, dom_size*0.2, dom_size*0.25, dom_size*0.3, dom_size*0.35, dom_size*0.4,
-		dom_size*0.45, dom_size*0.55, dom_size*0.6, dom_size*0.65, dom_size*0.7, dom_size*0.75, 
-		dom_size*0.8, dom_size*0.85, dom_size*0.9};
+   std::vector<UInt> points_int;
+   points_int = {(UInt)(nb_elements*0.1), (UInt)(nb_elements*0.2), (UInt)(nb_elements*0.25), (UInt)(nb_elements*0.3),
+		 (UInt)(nb_elements*0.35), (UInt)(nb_elements*0.4), (UInt)(nb_elements*0.45), (UInt)(nb_elements*0.55),
+		 (UInt)(nb_elements*0.6), (UInt)(nb_elements*0.65), (UInt)(nb_elements*0.7), (UInt)(nb_elements*0.75),
+		 (UInt)(nb_elements*0.8), (UInt)(nb_elements*0.85), (UInt)(nb_elements*0.9) };
 
-/* -------------------------------------------------------------------------- */
-
-   SpectralModel model(nb_elements, nb_time_steps, dom_size, crack_size, nu_mtl, 
+   /* -------------------------------------------------------------------------- */
+   SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, nu_mtl, 
 		       nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
-		       tcut_mtl, tcut_poly, overlap, l_index, fracturelaw, contactlaw);
-  
-   model.initModel();
-   model.setLoadingCase(load, load, psi, phi);
+		       tcut_mtl, tcut_poly, overlap, l_index, fracturelaw, contactlaw,
+		       "Mixed-mode debonding at Aluminium-Homalite interface");
 
-   Interfacer interfacer(model);
-   interfacer.createCenteredCrack(max_n_str, max_s_str);
+   Real beta=0.4; //Stable time step coefficient
+   
+   model.initModel(0.4);
+   model.setLoadingCase(load, psi, phi);
 
+   Interfacer<_linear_coupled_cohesive> interfacer(model);
+   interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
+   interfacer.applyInterfaceCreation();
    model.updateLoads();
    model.computeInitialVelocities();
-   model.computeKernels();
 
-   extern std::string lm_release_info;
+   DataDumper dumper(model);
+   dumper.initEnergetics("Energy.cra");
+   std::string st_diag_id = "ST_Diagram_id.cra";
+   std::string st_diag_nor_trac = "ST_Diagram_normal_tractions.cra";
+   std::string st_diag_shear_velo = "ST_Diagram_shear_velocity_jumps.cra";
+   std::string top_u = "top_displ_snapshot.cra";
+   std::string bot_u = "bot_displ_snapshot.cra";
+   std::string tractions = "trac_snapshots.cra"; 
+   std::string point_his = "Points_history.cra";
+   dumper.initDumper(st_diag_shear_velo, _shear_velocity_jumps);
+   dumper.initVectorDumper(st_diag_nor_trac, _interface_tractions,1);
+   dumper.initDumper(st_diag_id, _id_crack);   
+   dumper.initDumper(top_u, _top_displacements);
+   dumper.initDumper(bot_u, _bottom_displacements);
+   dumper.initDumper(tractions, _interface_tractions);
+   dumper.initPointsDumper(point_his, points_int); 
 
-   DataDumper dumper(model, "Mixed-mode debonding at Aluminium-Homalite interface", lm_release_info);
-   dumper.initEnergetics("Energy.dat");
-   dumper.initSpaceTimeDiagram("ST_Diagram_id.dat", _cracking_index);
-   dumper.initSpaceTimeDiagram("ST_Diagram_normal.dat", _normal_traction);
-   dumper.initSpaceTimeDiagram("ST_Diagram_shear.dat", _shear_traction);
-   dumper.initSnapshot("top_displ_snapshot.dat", _top_displacement);
-   dumper.initSnapshot("bot_displ_snapshot.dat", _bot_displacement);
-   dumper.initSnapshot("tract_snapshot.dat", _tractions);
-   dumper.initPointsHistory("Points_history.dat", point_his);
+   UInt print = 0.1*nb_time_steps;
 
-   int print = 0.1*nb_time_steps;
-
-   for (int t = 0; t < nb_time_steps ; ++t) {
+   for (UInt t = 0; t < nb_time_steps ; ++t) {
 
      model.updateDisplacements();
      model.updateMaterialProp();
-     model.preintegratedKernels();
      model.fftOnDisplacements();
-     model.computeTimeConvolution();
-     model.computeStresses();
+     model.computeStress();
      model.computeVelocities();
      model.computeEnergy();
      model.increaseTimeStep();
 
-     dumper.printEnergetics(t);
-     dumper.printSpaceTimeDiagram(t);
-     dumper.printPointsHistory(t);
-
-     if (print == (int)(0.1*nb_time_steps)) {
-       std::cout << "Process at " << (double)t/(double)nb_time_steps*100 << "% " << std::endl;
+     dumper.printEnergetics();
+     dumper.dump(st_diag_id);
+     dumper.dump(st_diag_nor_trac);
+     dumper.dump(st_diag_shear_velo);
+     dumper.dump(point_his);
+     
+     if (print == (UInt)(0.1*nb_time_steps)) {
+       std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " << std::endl;
        print=0;
 
-       dumper.printSnapshot(t);
+       dumper.dump(top_u);
+       dumper.dump(bot_u);
+       dumper.dump(tractions);
      }
 
      ++print;
    }
 
-
-   delete fracturelaw;
    delete contactlaw;
    
    return 0;

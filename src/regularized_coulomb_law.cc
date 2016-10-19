@@ -7,7 +7,7 @@
 #include <sstream>
 #include <math.h>
 /* -------------------------------------------------------------------------- */
-void RegularizedCoulombLaw::computeFricStrength(double & norm_comp_stress, double & strength, int i, int it) {
+void RegularizedCoulombLaw::computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it) {
 
 
   if (it == 1) {
@@ -18,20 +18,20 @@ void RegularizedCoulombLaw::computeFricStrength(double & norm_comp_stress, doubl
 
   else if ((contact_history[i]+1) == it) {
 
-    sigma_np1[i] = (sigma_np1[i] + dt_tstar*norm_comp_stress) / (1 + dt_tstar);
+   sigma_np1[i] = (sigma_np1[i] + dt_tstar*norm_comp_stress) / (1 + dt_tstar);
 
-    norm_comp_stress = sigma_np1[i];
+   //norm_comp_stress = sigma_np1[i];
 
   }
 
   else {
-    
+
     sigma_np1[i] = dt_tstar*norm_comp_stress/(1 + dt_tstar);
 
-    norm_comp_stress = sigma_np1[i];
+    //norm_comp_stress = sigma_np1[i];
   }
 
-  strength = cf*fabs(norm_comp_stress);
+  strength = cf*fabs(sigma_np1[i]);
   contact_history[i] = it;
 
 }

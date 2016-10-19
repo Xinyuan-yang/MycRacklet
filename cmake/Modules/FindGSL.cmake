@@ -1,4 +1,4 @@
-find_path(GSL_INCLUDE_PATH gsl_math.h
+find_path(GSL_INCLUDE_PATH gsl/gsl_math.h
   PATHS ${GSL_DIR} ENV C_INCLUDE_PATH
   PATH_SUFFIXES gsl
   )

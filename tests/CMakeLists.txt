@@ -2,8 +2,9 @@
 # @file   CMakeLists.txt
 #
 # @author Fabian Barras <fabian.barras@epfl.ch>
+# @author Damien Spielmann <damien.spielmann@epfl.ch>
 #
-# @date   Mon Sept 1 9:12:20 2014
+# @date   Mon Mar 2 9:12:20 2015
 #
 # @brief  configuration file of cRacklet tests
 #
@@ -36,3 +37,27 @@ option(BIMA_FRACT "Bimaterial Alu-Homalite fracture test" ON)
 if(BIMA_FRACT)
   add_subdirectory(bima_fract)
 endif()
+
+option(BIMA_FRACT_3D "Bimaterial Alu-Homalite fracture test in 3D" ON)
+
+if(BIMA_FRACT_3D)
+  add_subdirectory(bima_fract_3d)
+endif()
+
+option(ASPERITY_3D "Testing 3D fracture event with a circular asperity" ON)
+
+if(ASPERITY_3D)
+  add_subdirectory(asperity_3d)
+endif()
+
+option(CRACKLET_ENGINE "Testing core features of cRacklet library" ON)
+
+if(CRACKLET_ENGINE)
+  add_subdirectory(cRacklet_engine)
+endif()
+
+#option(CONSTANT_CRACK_SPEED "Testing constant crack speed algorithm" ON)
+
+#if(CONSTANT_CRACK_SPEED)
+#  add_subdirectory(constant_crack_speed)
+#endif()

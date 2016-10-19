@@ -31,6 +31,7 @@
 #include <vector>
 #include <fftw3.h>
 #include <complex>
+#include "cRacklet_common.hh"
 /* -------------------------------------------------------------------------- */
 
 
@@ -41,26 +42,29 @@ class CrackProfile {
 public:
   
   CrackProfile();
-  CrackProfile(int size);
+  CrackProfile(std::vector<UInt> size, UInt total_lgth);
   virtual ~CrackProfile();
   
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
+
   // resize the profile
-  void SetGridSize(unsigned int a);
+  void SetGridSize(std::vector<UInt> a, UInt dim);
+  // get the total number of data stored
+  UInt size() const {return heights.size();}
   // return a profile made of strided values
-  CrackProfile getStridedPart(int stride, int start) const;
+  CrackProfile getStridedPart(UInt stride, UInt start) const;
   // take the square root of each components
   void squareRoot();
   // compute a strided forward FFT and store only half spectrum without mean
-  void stridedFFT(std::vector<double> & output, int stride);
+  void stridedFFT(Real * output, UInt stride);
   // compute a backward FFT from half spectrum (mean set as {0,0}) to a real strided profile
-  void backwardFFT(std::complex<double> * input, int stride);
+  void backwardFFT(Real * input, UInt stride);
   // access to the i-th value in the array
-  inline double & operator[](int i);
-  inline const double & operator[](int i) const;
+  inline Real & operator[](UInt i);
+  inline const Real & operator[](UInt i) const;
   // sum components by components
   inline CrackProfile operator+(const CrackProfile& q) const;
   // substraction components by components
@@ -68,16 +72,16 @@ public:
   // multiplication components by components
   inline CrackProfile operator*(const CrackProfile& q) const;
   // multiplication each components with a real
-  inline CrackProfile operator*(const double q) const;
+  inline CrackProfile operator*(const Real q) const;
 
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */
   /* ------------------------------------------------------------------------ */
 private:
   // array of values for the profile itself
-  std::vector<double> heights;
-  // size of the array
-  int n;
+  std::vector<Real> heights;
+  // number of elements in each grid direction
+  std::vector<UInt> n; //{nex,nez}
 };
 
 
@@ -92,32 +96,46 @@ inline CrackProfile::~CrackProfile(){
 
 }
 /* -------------------------------------------------------------------------- */
-inline CrackProfile::CrackProfile(int a){
-  SetGridSize(a);
+inline CrackProfile::CrackProfile(std::vector<UInt> a, UInt total_lgth){
+  
+  n = a;
+
+  heights.resize(total_lgth);
 }
 
 /* -------------------------------------------------------------------------- */
-inline void CrackProfile::SetGridSize(unsigned int a){
-  heights.resize(a);
-  n=a;
+inline void CrackProfile::SetGridSize(std::vector<UInt> a, UInt dim){
+  
+  UInt total_n_ele=1;
+
+  for (UInt i = 0; i < a.size(); ++i) {
+    total_n_ele *= a[i]; 
+  }
+
+  n = a;
+
+  heights.resize(total_n_ele*dim);
+  
 }
 
 /* -------------------------------------------------------------------------- */
-inline double & CrackProfile::operator[](int i){
+inline Real & CrackProfile::operator[](UInt i){
   return heights[i];
 };
 
 /* -------------------------------------------------------------------------- */
-inline const double & CrackProfile::operator[](int i) const{
+inline const Real & CrackProfile::operator[](UInt i) const{
   return heights[i];
 };
 
 /* -------------------------------------------------------------------------- */
 inline CrackProfile CrackProfile::operator+(const CrackProfile& q) const{
   
-  CrackProfile results(n);
+  UInt total_lgth = heights.size();
 
-  for (int i = 0 ; i < n ; ++i){
+  CrackProfile results(n,total_lgth);
+  
+  for (UInt i = 0 ; i < total_lgth ; ++i){
     results.heights[i] = heights[i] + q.heights[i];
   }
   return results;
@@ -126,9 +144,11 @@ inline CrackProfile CrackProfile::operator+(const CrackProfile& q) const{
 /* -------------------------------------------------------------------------- */
 inline CrackProfile CrackProfile::operator-(const CrackProfile& q) const{
   
-  CrackProfile results(n);
+  UInt total_lgth = heights.size();
+
+  CrackProfile results(n,total_lgth);
   
-  for (int i = 0 ; i < n ; ++i){
+  for (UInt i = 0 ; i < total_lgth ; ++i){
     results.heights[i] = heights[i] - q.heights[i];
   }
   return results;
@@ -136,10 +156,12 @@ inline CrackProfile CrackProfile::operator-(const CrackProfile& q) const{
 
 /* -------------------------------------------------------------------------- */
 inline CrackProfile CrackProfile::operator*(const CrackProfile& q) const{
+   
+  UInt total_lgth = heights.size();
+
+  CrackProfile results(n,total_lgth);
   
-  CrackProfile results(n);
-  
-  for (int i = 0 ; i < n ; ++i){
+  for (UInt i = 0 ; i < total_lgth ; ++i){
     results.heights[i] = heights[i] * q.heights[i];
   }
 
@@ -147,11 +169,13 @@ inline CrackProfile CrackProfile::operator*(const CrackProfile& q) const{
 };
 
 /* -------------------------------------------------------------------------- */
-inline CrackProfile CrackProfile::operator*(const double q) const{
+inline CrackProfile CrackProfile::operator*(const Real q) const{
+
+  UInt total_lgth = heights.size();
+
+  CrackProfile results(n,total_lgth);
   
-  CrackProfile results(n);
- 
-  for (int i = 0 ; i < n ; ++i){
+  for (UInt i = 0 ; i < total_lgth ; ++i){
     results.heights[i] = heights[i] * q;
   }
  

@@ -11,15 +11,6 @@
 #include <math.h>
 #include <algorithm>
 /* -------------------------------------------------------------------------- */
-void Energetics::integrate(Real dt){
-
-  E += 0.5*dt*(E_dot_old + E_dot);
-  E_dot_old = E_dot;
-  E_dot = 0;
-
-}
-
-/* -------------------------------------------------------------------------- */
 InterfaceFields::InterfaceFields(const std::vector<CrackProfile> * in_fields, UInt dimension) {
 
   this->init(&((*in_fields)[0]), &((*in_fields)[1]), dimension);
@@ -101,11 +92,7 @@ void SpectralModel::initModel(Real reset_beta) {
   stresses.resize(2);
   loads.resize(2);
   eta.resize(2);
-
-  E_nor.resize(2);
-  E_shr.resize(2);
-  E_fri.resize(2);
-  
+ 
   for (UInt i = 0; i < 2; ++i) {
     
     displacements[i].SetGridSize(n_ele, dim);
@@ -113,6 +100,9 @@ void SpectralModel::initModel(Real reset_beta) {
     stresses[i].SetGridSize(n_ele, dim);
     loads[i].SetGridSize(n_ele, dim);
     eta[i] = sqrt(2*(1-nu[i])/(1-2*nu[i]));
+
+    displacements[i].initFFT(true,dim);
+    stresses[i].initFFT(false,dim);
   }
 
   displ_jump = new InterfaceFields(&displacements, dim);
@@ -124,6 +114,7 @@ void SpectralModel::initModel(Real reset_beta) {
 
   nor_strength.resize(total_n_ele);
   shr_strength.resize(total_n_ele);
+  fric_strength.resize(total_n_ele);
   ind_crack.resize(total_n_ele);
  
   /* -------------------------------------------------------------------------- */
@@ -167,6 +158,7 @@ void SpectralModel::registerModelFields() {
   this->registerData(_bottom_loading, &(loads[1]));
   this->registerData(_normal_strength, &nor_strength);
   this->registerData(_shear_strength, &shr_strength);
+  this->registerData(_frictional_strength, &fric_strength);
   this->registerData(_id_crack, &ind_crack);
 }
 
@@ -272,28 +264,6 @@ void SpectralModel::updateLoads() {
 }
 
 /* -------------------------------------------------------------------------- */
-UInt SpectralModel::getCrackTipPosition(UInt x_start) {
-
-  UInt x_tip=n_ele[0];
-
-  for (UInt x=x_start; x < n_ele[0]; ++x) {
-    if (ind_crack[x]==1||ind_crack[x]==0||ind_crack[x]==4||ind_crack[x]==5||ind_crack[x]==6) {
-      x_tip = x;
-      break;
-    }
-  }
-  return x_tip;
-}
-
-/* -------------------------------------------------------------------------- */
-UInt SpectralModel::getCrackTipPosition(Real start) {
-
-  UInt x_start = (UInt)(start/dx[0]);
-  return getCrackTipPosition(x_start);
-  
-}
-
-/* -------------------------------------------------------------------------- */
 void SpectralModel::sinusoidalLoading(Real min) {
   
   loading_ratio = new Real[total_n_ele];
@@ -348,7 +318,6 @@ void SpectralModel::computeInitialVelocities() {
   Real strength;
   Real shr_trac;
   Real shr_velo;
-  Real dv1, dv3, dvn, dvs;
   std::vector<Real> temp_f(2);
   
   UInt i=0;
@@ -364,7 +333,6 @@ void SpectralModel::computeInitialVelocities() {
 	  velocities[side][i*dim+1] = 0.0;
 	}
       }
-
       else{//velocities u2
 	strength = shr_strength[i];
 	velocities[0][i*dim+1] = std::max((loads[0][i*dim+1]-nor_strength[i])/(mu[0]*eta[0]),0.0);
@@ -387,7 +355,6 @@ void SpectralModel::computeInitialVelocities() {
 	  }
 	}
 	else {
-	
 	  if (side==0) shr_velo = std::max((shr_trac-strength)/mu[0],0.0);
 	  else shr_velo = std::min((zeta/ksi)*(strength - shr_trac)/mu[0],0.0);
 	  
@@ -396,44 +363,15 @@ void SpectralModel::computeInitialVelocities() {
 	  } 
 	}
       }
-
-      dv1 = velocities[0][i*dim] - velocities[1][i*dim];
-      dv3 = velocities[0][i*dim+2] - velocities[1][i*dim+2];
-      dvs = sqrt(dv1*dv1 + dv3*dv3);
-      dvn = velocities[0][i*dim+1] - velocities[1][i*dim+1];
-
-      if (h<n_ele[0]/2) { 
-	E_nor[0].E_dot +=  nor_strength[i]*fabs(dvn);
-	E_shr[0].E_dot += shr_strength[i]*fabs(dvs);
-      }
-      else {
-	E_nor[1].E_dot +=  nor_strength[i]*fabs(dvn);
-	E_shr[1].E_dot += shr_strength[i]*fabs(dvs);
-      }
-      
-      if((nor_strength[i]==0)&&(loads[0][i*dim+1] < 0)) {
-	
-	if (h<n_ele[0]/2) E_fri[0].E_dot += strength * fabs(dvs);
-	else E_fri[1].E_dot += strength * fabs(dvs);
-      }
     }
   }
-
-  for (UInt i = 0; i < 2; ++i) {
-    E_nor[i].E_dot *= dx[0]*dx[1];
-    E_shr[i].E_dot *= dx[0]*dx[1];
-    E_fri[i].E_dot *= dx[0]*dx[1];
-
-    E_nor[i].integrate(beta*dxmin);
-    E_shr[i].integrate(beta*dxmin);
-    E_fri[i].integrate(beta*dxmin);
-  }
+  veloc_jump->computeJumpFields();
 }
 /* -------------------------------------------------------------------------- */
 void SpectralModel::updateDisplacements() {
 
   for (UInt i = 0; i < 2; ++i) {
-    displacements[i] = displacements[i] + velocities[i]*dxmin*beta;
+    displacements[i] += velocities[i]*dxmin*beta;
   }
 
   displ_jump->computeJumpFields(); 
@@ -491,7 +429,9 @@ void SpectralModel::computeStress() {
     }
 
     stresses[side].backwardFFT(F_new, dim); 
-    stresses[side] = loads[side] + stresses[side] * normalize;
+    stresses[side] *= normalize;
+    stresses[side] += loads[side];
+    
   }  
 
   delete[] F_new;
@@ -529,6 +469,7 @@ void SpectralModel::computeStress() {
        }
      }
    }
+   veloc_jump->computeJumpFields();
  }
 
 /* -------------------------------------------------------------------------- */
@@ -569,7 +510,6 @@ void SpectralModel::computeContactVelocities(UInt ix, UInt iz){
   Real temp_trac;
   Real strength;
   std::vector<Real> cmpted_stress(2);
-  Real dvs_top, dvs_bot, dvs;
 
   UInt i = ix+iz*n_ele[0];
 
@@ -589,15 +529,13 @@ void SpectralModel::computeContactVelocities(UInt ix, UInt iz){
 
   computeShearVelocities(strength, i);
   
+  Real dvs_top, dvs_bot, dvs;
   dvs_top = sqrt(velocities[0][i*dim]*velocities[0][i*dim] + velocities[0][i*dim+2]*velocities[0][i*dim+2]);
   dvs_bot = sqrt(velocities[1][i*dim]*velocities[1][i*dim] + velocities[1][i*dim+2]*velocities[1][i*dim+2]);
   dvs = dvs_top - dvs_bot;
 
   ind_crack[i] = 3;
-
-  if (ix<n_ele[0]/2)  E_fri[0].E_dot += strength * fabs(dvs);
-  else            E_fri[1].E_dot += strength * fabs(dvs); 
-
+  fric_strength[i] = strength;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -659,48 +597,13 @@ void SpectralModel::computeIndepShearVelocities(Real strength, UInt i){
 }
 
 /* -------------------------------------------------------------------------- */
-void SpectralModel::computeEnergy() {
+void SpectralModel::increaseTimeStep() {
 
-  veloc_jump->computeJumpFields();
-
-  CrackProfile delta_vs = veloc_jump->delta_fields[0];
-  CrackProfile delta_vn = veloc_jump->delta_fields[1];
-
-  CrackProfile delta_trac = loads[0] - intfc_trac;
-  CrackProfile local_eq = delta_trac * veloc_jump->fields_jump;
-
-
-  for (UInt ix = 0; ix < n_ele[0]/2; ++ix) {
-    for (UInt iz = 0; iz < n_ele[1]; ++iz){
-      UInt left_cmpnt = ix+iz*n_ele[0];
-      E_nor[0].E_dot += nor_strength[left_cmpnt]*fabs(delta_vn[left_cmpnt]);
-      E_shr[0].E_dot += shr_strength[left_cmpnt]*fabs(delta_vs[left_cmpnt]);
-
-      UInt right_cmpnt = ix+n_ele[0]/2+iz*n_ele[0];
-      E_nor[1].E_dot += nor_strength[right_cmpnt]*fabs(delta_vn[right_cmpnt]);
-      E_shr[1].E_dot += shr_strength[right_cmpnt]*fabs(delta_vs[right_cmpnt]);
-    }
-  }
-
-  for (UInt i = 0; i < 2; ++i) {
-    E_nor[i].E_dot *= dx[0]*dx[1];
-    E_shr[i].E_dot *= dx[0]*dx[1];
-    E_fri[i].E_dot *= dx[0]*dx[1];
-
-    E_nor[i].integrate(beta*dxmin);
-    E_shr[i].integrate(beta*dxmin);
-    E_fri[i].integrate(beta*dxmin);
-  }
-
-  for (UInt i=0; i < total_n_ele; ++i) {    	
-    for (UInt j=0; j < dim; ++j) {
-
-      Eq.E_dot += local_eq[i*dim+j];
-    }
-  }
-  
-  Eq.E_dot *= dx[0]*dx[1];
-  Eq.integrate(beta*dxmin);
+ displ_jump->computeJumpFields();
+ veloc_jump->computeJumpFields();
+ computeAll(it*beta*dxmin/X[0]);
+ ++it;
+ 
 }
 
 /* -------------------------------------------------------------------------- */
@@ -745,6 +648,7 @@ void SpectralModel::printSelf() {
   out_parameters << "nb_ele_x " << n_ele[0] << std::endl
 		 << "nb_ele_z " << n_ele[1] << std::endl
 		 << "nb_t_step "<< ntim << std::endl
+		 << "beta " << beta << std::endl
 		 << "dom_size_x " << X[0] << std::endl
 		 << "dom_size_z " << X1 << std::endl
 		 << "E_top " << 2*mu[0]*(1+nu[0]) << std::endl

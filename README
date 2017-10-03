@@ -39,26 +39,33 @@ description of the dynamic fracture processes unattainable with finite-element o
 For more details about the method and its applications, refer to "related publications" section.
 
 ==================================================================================================
-* COMPILATION
+* COMPILATION AND EXTERNAL LIBRARIES
 
-You can compile cRacklet using cMake:
+cRacklet library can be conveniently compiled using cMake (https://cmake.org/):
 
  > mkdir build
  > cd build
  > ccmake ..
  > make
 
- cRacklet requires the installation of the external librairy FFTW3 (http://www.fftw.org)
+cRacklet requires the installation of the external library FFTW3 (http://www.fftw.org)
+and the GNU Scientific Library GSL (https://www.gnu.org/software/gsl/).
+
+cRacklet optionally supports the usage of OpenMP API (http://www.openmp.org/) for multi-threaded parallel computing
+and LibSurfer to generate fractal interfaces (available on request).
 
 ==================================================================================================
 * USAGE
 
-An exemple of the simulation presented in [3] is avaiable in the folder "sim".
+Exemples of the simulations reported in [3-4] are avaiables in the folder "sim".
 Basically, five types of object shall be created during a simulation:
 
 *SpectralModel:   
 This class is the core of cRacklet librairy and contains the methods processing the different steps of
 the spectral scheme described in [2].
+
+*SimulationDriver:
+High level class providing a UI to drive SpectralModel during standard simulations. 
 
 *FractureLaw:
 This virtual class contains the law describing interface decohesion.
@@ -74,8 +81,8 @@ This class shall be used after model initialization to set initial interface pro
 *DataDumper: 
 This class is used to generate various types of output file during simulation.
 
-*SimulationDriver:
-High level class providing a UI to drive SpectralModel during standard simulations. 
+*DataRegister:
+This class is the memory register of the library and can be used to access or register simulations data.
 
 IMPORTANT NOTE: The convolution kernels describing the elastodynamic behavior of the surrounding
 solids shall be precomputed using Fortran routine "inverse_serial.f" associated to the input 
@@ -101,8 +108,10 @@ file "inverse_serial.in"
     and 3D loading. Int J Fract 93(1–4):13–38
 
 [3] Barras F, Kammer DS, Geubelle PH, Molinari J-F (2014) A study of frictional contact in dynamic 
-    fracture along bimaterial interfaces. Int J Fract in Press
+    fracture along bimaterial interfaces. Int J Fract 189(2):149-162
 
+[4] Barras F, Geubelle PH, Molinari J-F (2017) Interplay between Process Zone and Material
+    Heterogeneities for Dynamic Cracks. Phys. Rev. Lett. 119(144101)
 
                                                                                                   
                     ´.-,,,...´´                                                                     

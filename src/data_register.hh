@@ -53,6 +53,7 @@ enum DataFields {
   _bottom_loading, //n_ele*dim
   _normal_strength, //n_ele
   _shear_strength, //n_ele
+  _frictional_strength, //n_ele
   _id_crack, //n_ele
 };
 
@@ -80,6 +81,39 @@ struct DataTypes {
   CrackProfile * crack_prof;
 };
 
+//Identifier to acces the different energy integrators implemented
+
+enum IntegratorTypes {
+  _shear_fracture_energy,
+  _normal_fracture_energy,
+  _frictional_energy,
+  _radiated_energy,
+};
+
+// Virtual mother class for object performing computations on the model fields
+class Computer {
+  /* ------------------------------------------------------------------------ */
+  /* Constructors/Destructors                                                 */
+  /* ------------------------------------------------------------------------ */
+public:
+
+  Computer(){};
+  virtual ~Computer(){};
+
+  /* ------------------------------------------------------------------------ */
+  /* Methods                                                                  */
+  /* ------------------------------------------------------------------------ */
+public:
+  // Virtual method launching computations at a given time step
+  virtual void compute(Real time)=0;
+  /* ------------------------------------------------------------------------ */
+  /* Class Members                                                            */
+  /* ------------------------------------------------------------------------ */
+protected:
+  // List of grid points involved in the computations
+  std::vector<UInt> index;
+};
+
 class DataRegister {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
@@ -93,8 +127,15 @@ public:
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
+
   //Access to a given field returned in the type DataTypes
-  static const DataTypes readData(DataFields my_field);
+  static inline const DataTypes readData(DataFields my_field);
+  //Register a computer object with a given name
+  static void registerComputer(std::string computer_name, Computer * computer);
+  //Access a registered computer object
+  static Computer * getComputer(std::string computer_name);
+  //Method returning current crack position searched between x_start and x_end (searching along z=0)
+  static UInt getCrackTipPosition(UInt x_start, UInt x_end);
   
 protected:
  
@@ -104,7 +145,9 @@ protected:
   void data_finalize();
   //Register pointer to data associated with a given field name
   template<typename T>
-  inline void registerData(DataFields my_field, T * in_data); 
+  inline void registerData(DataFields my_field, T * in_data);
+  //Launch all the registered computations for the given time
+  void computeAll(Real time);
   
 private:
 
@@ -124,9 +167,111 @@ public:
 
 protected:
   // Map of registered data
-  static std::map<DataFields,DataTypes> datas;  
+  static std::map<DataFields,DataTypes> datas;
+  // Map of registered computers
+  static std::map<std::string,Computer*> computers;
+
 };
 
+// Class computing integral over a defined sets of interface points (a.e. energy integration)
+class Integrator : public Computer {
+  /* ------------------------------------------------------------------------ */
+  /* Constructors/Destructors                                                 */
+  /* ------------------------------------------------------------------------ */
+public:
+
+  Integrator(){};
+  // Construct an object by presicing the points, integrator type, starting time and area around point 
+  Integrator(std::vector<UInt> integ_points, IntegratorTypes type, Real starting_time, Real dA)
+  {this->index=integ_points; init(type,starting_time,dA);}
+  virtual ~Integrator(){};
+
+  /* ------------------------------------------------------------------------ */
+  /* Methods                                                                  */
+  /* ------------------------------------------------------------------------ */
+protected:
+  void init(IntegratorTypes type, Real starting_time, Real dA)
+  {I=0; I_dot=0; I_dot_old=0; this->integ_type=type; t_old=starting_time; this->dA=dA;}
+  
+  // Integrate rate between last integration (t_old) and current time.
+  void integrate(Real time);
+  // Compute rate following the templated integrator types
+  template<IntegratorTypes IT>
+  inline void compute();
+
+public:
+  // Compute rate at a given time
+  virtual inline void compute(Real time);
+  /* ------------------------------------------------------------------------ */
+  /* Accessors                                                                */
+  /* ------------------------------------------------------------------------ */
+public:
+  // Get integrated quantities
+  Real getIntegration(){return I;}
+  // Get current rate
+  Real getRate(){return I_dot_old;}
+  
+  /* ------------------------------------------------------------------------ */
+  /* Class Members                                                            */
+  /* ------------------------------------------------------------------------ */
+protected:
+  // Type of integration performed
+  IntegratorTypes integ_type;
+  // Integral value
+  Real I;
+  // Rate of change (at t = t_old+1)
+  Real I_dot;
+  // Rate of change (at t = t_old)
+  Real I_dot_old;
+  // Time of the last integration
+  Real t_old;
+  // Unit area of integration
+  Real dA;
+};
+
+// Class computing integral over a given width following crack tip propagation.
+// Crack propagation is tracked along z=0 between crack_start and crack_end
+class SurfingIntegrator : public Integrator {
+  /* ------------------------------------------------------------------------ */
+  /* Constructors/Destructors                                                 */
+  /* ------------------------------------------------------------------------ */
+public:
+
+  SurfingIntegrator(UInt integration_width, IntegratorTypes type, Real starting_time, Real dA,
+		    UInt crack_start, UInt crack_end) {
+    init(type,starting_time,dA);
+    this->integ_width = integration_width;
+    this->crack_start = crack_start;
+    this->crack_end = crack_end;
+  }
+  virtual ~SurfingIntegrator(){};
+  /* ------------------------------------------------------------------------ */
+  /* Methods                                                                  */
+  /* ------------------------------------------------------------------------ */
+public:
+
+private:
+  // Update the list of integration points as function of current crack position
+  void updateIntegrationPoints();
+  /* ------------------------------------------------------------------------ */
+  /* Accessors                                                                */
+  /* ------------------------------------------------------------------------ */
+public:
+  // Compute rate at a given time
+  inline void compute(Real time);
+  
+  /* ------------------------------------------------------------------------ */
+  /* Class Members                                                            */
+  /* ------------------------------------------------------------------------ */
+private:
+
+  // Width of the integration domain surrounding crack tip positon
+  UInt integ_width;
+  // Crack tip position is tracked between crack_start and crack_end along z=0
+  UInt crack_start;
+  UInt crack_end;
+  
+};
 
 /* -------------------------------------------------------------------------- */
 /* inline functions                                                           */

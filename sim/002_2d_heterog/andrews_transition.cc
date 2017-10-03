@@ -1,9 +1,9 @@
 /**
- * @file   single_mat_heterog.cc
+ * @file   andrews_transition.cc
  * @author Fabian Barras <fabian.barras@epfl.ch>
- * @date   Mon Sep 18 14:19:07 2014
+ * @date   Mon Aug 11 10:19:07 2016
  *
- * @brief  Heterogeneous striped interface between Homlalite bulks 
+ * @brief  Study super-shear transition following Andrews(1976) formalism.
  *
  * @section LICENSE
  *
@@ -47,16 +47,26 @@ int main(int argc, char *argv[]){
   // Note : Construct the pre-integrated material kernels before running this simulation
   // Use "invert_serial.f" to construct kernel files
 
-  std::cout << "./striped_interface [ <output_folder_name>='./' <is_heterogeneous>=true ]" 
+  std::cout << "./andrews_transition [ <output_folder_name>='./' <is_heterogeneous>=true <loading(x1e5)>=20.0 <nb_heterog=300> <toughness_ratio=5.0> ]" 
 	    << std::endl;
-
   
-  std::string sim_name = "Stripes of heterogeneities meeting spontaneaous Mode-II crack";
+  std::string sim_name = "Super-shear transition study";
 
-  // Geometry description
-  UInt nb_time_steps = 8000; 
-  UInt nb_elements = 4096;
-  Real crack_size = 0.1;
+  std::string output_folder = "./";
+  bool heterog = true;
+  Real load = 20.0;
+
+  if(argc > 1)
+    output_folder = argv[1];
+  if(argc > 2) 
+    if(std::atoi(argv[2])==0)
+      heterog = false;
+  if(argc > 3)
+    load = std::atof(argv[3]);
+
+  load*=1e5;
+
+  // Geometry description 
   Real nu =  0.35;
   Real E = 5.3e9;
   Real cs = 1263;
@@ -65,7 +75,6 @@ int main(int argc, char *argv[]){
   UInt tcut = 100;
   
   // Loading case
-  Real load = 2e6;
   Real psi = 90;
   Real phi = 0;
   UInt l_index = 1;
@@ -82,24 +91,35 @@ int main(int argc, char *argv[]){
   Real mean_max_n_str=0.5*(sg_max_n_str+wk_max_n_str);
   Real mean_max_s_str=0.5*(sg_max_s_str+wk_max_s_str);
 
-  // Critical stable crack size according to LEFM (=Griffith crack length)
   Real G_length = wk_crit_s_open*mean_max_s_str/(load*load*M_PI)*E/(1-nu*nu);
-  Real dom_size = 51*G_length; //in parallel with andrews_transition study (98+2)*G_length
+  Real S_ratio = (mean_max_s_str-load)/load;
+  Real dom_size = 100*G_length;
+  std::cout << "Summary of the current simulation: " << std::endl
+	    << "Seismic ratio: " << S_ratio << std::endl 
+	    << "Griffith length: " << G_length << std::endl; 
+
+  //int nb_time_steps = 160000/4*dom_size;
+  UInt nb_time_steps = 0;
+  UInt nb_elements = 16384;
+  Real dx = dom_size/nb_elements;
   Real propagation_domain = 0.9*dom_size;
-  
+  Real crack_size = 0.6*G_length;
+ 
   // Number of heterogeneous bands
-  UInt nb_heterog = 50;
-  
+  UInt nb_heterog = 300;
+  Real toughness_ratio = 5.0;
+
+  if(argc > 4)
+    nb_heterog = std::atoi(argv[4]);
+  if(argc > 5)
+    toughness_ratio = std::atof(argv[5]);
+
+  sg_max_s_str = 2*mean_max_s_str*toughness_ratio/(1+toughness_ratio);
+  sg_max_n_str = 2*mean_max_n_str*toughness_ratio/(1+toughness_ratio);
+
+  Real crk_srt = crack_size;
+ 
   FractureLaw * fracturelaw; 
-
-  std::string output_folder = "./";
-  bool heterog = true;
-
-  if(argc > 1)
-    output_folder = argv[1];
-  if(argc > 2) 
-    if(std::atoi(argv[2])==0)
-      heterog = false;
 
   // Friction paramters
   bool overlap = 1;
@@ -107,56 +127,77 @@ int main(int argc, char *argv[]){
   Real coef_frict = 0.25;
   ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
 
+  // Output point position
+  UInt nb_obs_points = 25;
+  UInt start = (UInt)(crk_srt/dom_size*nb_elements);
+  UInt end = (UInt)(propagation_domain/dom_size*nb_elements);
+
+  std::cout << "Input parameters summary : "<< std::endl
+	    << "Output directory : " << output_folder << std::endl
+	    << "Is heterogeneous : " << heterog << std::endl
+	    << "Loading : " << load << std::endl
+	    << "Number of heterogeneities : " << nb_heterog << std::endl
+	    << "Toughness ratio : " << toughness_ratio << std::endl;
+
   /* -------------------------------------------------------------------------- */
 
-  SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, 
-		      nu, nu, E, E, cs, cs, tcut, tcut, overlap, l_index, 
+  SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, nu, nu, 
+		      E, E, cs, cs, tcut, tcut, overlap, l_index, 
 		      fracturelaw, contactlaw, sim_name, output_folder);
   
   SimulationDriver sim_driver(model);
-  
+
   Interfacer<_linear_coupled_cohesive> interfacer(model);
   interfacer.createUniformInterface(wk_crit_n_open, wk_crit_s_open, 
 				    mean_max_n_str, mean_max_s_str);
-  interfacer.createThroughCrack(0., 0.02*G_length);
-  
-  if(heterog)
-    interfacer.createThroughMultiPolAsperity(2*G_length, propagation_domain, nb_heterog,
-					     (sg_max_s_str-mean_max_s_str)/mean_max_n_str, 
-					     (sg_max_s_str-mean_max_n_str)/mean_max_s_str,
-					     0.,0.,true);
 
-  interfacer.createThroughWall(propagation_domain,dom_size);  
+  interfacer.createThroughCrack(0., 5*dx);
+  UInt x_end;
+
+  if(heterog) {
+  x_end = interfacer.createThroughMultiPolAsperity(2*G_length, propagation_domain, nb_heterog,
+							(sg_max_s_str-mean_max_s_str)/mean_max_n_str, 
+							(sg_max_s_str-mean_max_n_str)/mean_max_s_str,
+							0.,0.,true);
+  interfacer.createThroughWall(x_end*dx,dom_size);  
+  }
+  else 
+    interfacer.createThroughWall(propagation_domain,dom_size);  
+
   interfacer.applyInterfaceCreation();
+
+  sim_driver.initConstantLoading(load,psi,phi);
   
   DataDumper dumper(model);
 
-  dumper.initEnergetics("Energy.cra");
-  std::string crack_id = "ST_Diagram_id.cra";
-  std::string shr_v_jp = "ST_Diagram_shear_velo_jump.cra";
-  std::string nor_d_jp = "ST_Diagram_normal_displ_jump.cra";
-  dumper.initDumper(crack_id, _id_crack, 0.75, 1, 0);
-  dumper.initDumper(shr_v_jp, _shear_velocity_jumps, 0.75, 1, 0, _binary);
-  dumper.initDumper(nor_d_jp, _shear_strength, 0.75, 1, 0, _binary);
+  dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _binary);
+  dumper.initDumper("ST_Diagram_shear_velo_jump.cra", _shear_velocity_jumps, 1.0, 1, 0, _binary);
+  dumper.initDumper("ST_Diagram_shear_strength.cra", _shear_strength, 1.0, 1, 0, _binary);
+  dumper.initPointsDumper("Point_history.dat", start, end, nb_obs_points); 
+
+  UInt propag_int = (UInt)(0.95*propagation_domain*nb_elements/dom_size);
+
+  UInt x_tip = 0;
+  UInt t = 0;
 
   sim_driver.launchCrack(0.,G_length,0.2);
   
-  for (UInt t = 0; t < nb_time_steps ; ++t) {
+  while (x_tip < propag_int) {
 
     sim_driver.solveStep();
-    
+  
     if(t%5==0){
-      dumper.printEnergetics();
       dumper.dumpAll();
     }
-
-    if (t%((UInt)(0.1*nb_time_steps))==0){
-      std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " << std::endl;      
+    
+    x_tip = model.getCrackTipPosition(0.,nb_elements);
+    if (x_tip%((UInt)(0.05*nb_elements))==0){
+      std::cout << "Crack position at " << x_tip*(Real)(dx) << " over " << propagation_domain<< std::endl;
     }
+    ++t;
   }
 
   delete contactlaw;
    
   return 0;
 }
-

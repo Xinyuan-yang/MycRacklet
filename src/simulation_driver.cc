@@ -23,10 +23,11 @@ void SimulationDriver::initConstantLoading(Real initial_loading, Real psi, Real 
 }
 /* -------------------------------------------------------------------------- */
 void SimulationDriver::initConstantSpeed(Real initial_loading, Real psi, Real phi,
-					 Real average_crit_stress,
+					 Real average_crit_stress, Real spont_crack_length,
 					 LoadControlType load_control) {
 
   this->lc_type=load_control;
+  this->spont_crack=spont_crack_length;
   std::vector<UInt> * id_crack = datas[_id_crack];
   model.setLoadingCase(initial_loading, psi, phi);
   const std::vector<Real> & uniform_loading = model.getUniformLoading();
@@ -39,12 +40,10 @@ void SimulationDriver::initConstantSpeed(Real initial_loading, Real psi, Real ph
 
   std::vector<UInt> n_ele = model.getNbElements();
   std::vector<Real> dx = model.getElementSize();
-  UInt x_tip = model.getCrackTipPosition(this->x_crack_start);
 
-  std::cout << "Crack position initially detected at position: " << x_tip*dx[0] << std::endl;
   //constant crack propagation speed loading init.
   at.resize(2);
-  at[0] = (x_tip+5)*dx[0];
+  at[0] = 0;
   this->c_s_initiation = true;
   countcfs=1;
   atc.resize(2);
@@ -60,12 +59,14 @@ void SimulationDriver::initConstantSpeed(Real initial_loading, Real psi, Real ph
   default:
     cRacklet::error("Please specify a valid crack speed control algorithm.");
   }
+  model.updateLoads();
   model.computeInitialVelocities();
 }
 
 /* -------------------------------------------------------------------------- */
 Real SimulationDriver::initLoadingFromFile(std::string loading_file,
-					   LoadControlType load_control) {
+					   LoadControlType load_control,
+					   Real initial_loading, Real psi, Real phi) {
 
   Real nb_steps_file;
   this->lc_type=load_control;
@@ -88,10 +89,17 @@ Real SimulationDriver::initLoadingFromFile(std::string loading_file,
   default:
     cRacklet::error("Please specify a valid .");
   }
-  
-  runReadingStep();
+ 
   this->target_crack_speed=-1;
 
+  if(initial_loading != 0.) {
+    model.setLoadingCase(initial_loading, psi, phi);
+    model.updateLoads();
+  }
+  else {
+    runReadingStep();
+  }
+  
   model.computeInitialVelocities();
     
   return nb_steps_file;
@@ -119,6 +127,7 @@ Real SimulationDriver::adjustStableTimeStep() {
   return new_beta;
 }
 
+/* -------------------------------------------------------------------------- */
 void SimulationDriver::priorUpdates() {
 
   model.updateDisplacements();
@@ -131,7 +140,6 @@ void SimulationDriver::solveTimeStep() {
   model.fftOnDisplacements();
   model.computeStress();
   model.computeVelocities();
-  model.computeEnergy();
   model.increaseTimeStep();
 }
 
@@ -157,16 +165,18 @@ UInt SimulationDriver::solveStep() {
 /* -------------------------------------------------------------------------- */
 UInt SimulationDriver::runReadingStep() {
 
-  UInt x_tip = model.getCrackTipPosition(x_crack_start);
+  UInt x_tip = model.getCrackTipPosition(x_crack_start,model.getNbElements()[0]);
   UInt dim = model.getDim();
   UInt it = model.getCurrentTimeStep();
   
   switch (lc_type) {
   case _time_control:
-    if (it > ctrl_loading.size()/3)
+    if(reading_time==-1)
+      reading_time=it-1;
+    if ((it-reading_time) > ctrl_loading.size()/3)
       model.updateLoads(&(ctrl_loading[dim*(ctrl_loading.size()/3-1)]));
     else
-      model.updateLoads(&(ctrl_loading[dim*(it-1)]));
+      model.updateLoads(&(ctrl_loading[dim*(it-reading_time-1)]));
     break;
   case _space_control:
     model.updateLoads(&(ctrl_loading[dim*(x_tip-x_crack_start)]));
@@ -187,15 +197,8 @@ UInt SimulationDriver::runWritingStep() {
   
   switch (lc_type) {
   case _time_control:
-    if(model.getNbTimeSteps()>0) {
-      for (UInt j = 0; j < model.getDim(); ++j) {
-	ctrl_loading[3*(it-1)+j]=new_loading[j];
-      }
-    }
-    else {
-      for (UInt j = 0; j < model.getDim(); ++j) {
-	ctrl_loading.push_back(new_loading[j]);
-      }
+    for (UInt j = 0; j < model.getDim(); ++j) {
+      ctrl_loading.push_back(new_loading[j]);
     }
     break;
   case _space_control:
@@ -218,9 +221,12 @@ bool SimulationDriver::cstCrackFrontSpeed(UInt & x_tip){
   bool has_progressed=false;
 
   std::vector<Real> dx = model.getElementSize();
-  x_tip = model.getCrackTipPosition(this->x_crack_start);
+  x_tip = model.getCrackTipPosition(this->x_crack_start,model.getNbElements()[0]);
   at[1] = (x_tip-0.5)*dx[0];
 
+  if(at[0]==0) //First algorithm step
+    at[0]=at[1];
+  
   std::vector<Real> strr;
   strr.resize(3);
   strr[0]=new_loading[0]/av_crit_stress;
@@ -229,33 +235,33 @@ bool SimulationDriver::cstCrackFrontSpeed(UInt & x_tip){
     
   //check if the cohesive zone has propagated 
   if (at[0]<at[1]) {
-      //check if crack has reached target speed during initiation
-      if((nb_t_by_elem>=countcfs)||(!c_s_initiation)) {
-	if(c_s_initiation) {
-	  std::cout << "Initiation phase just ends -> time: " << model.getTime() << std::endl;
-	  c_s_initiation = false;
-	}
-	atc[1]=countcfs/nb_t_by_elem;
-	Real rapp;
-	if (atc[0]==0||(atc[1]<1.01&&atc[1]>0.99)) {
-	  rapp=atc[1];
-	}
-	else {rapp=(atc[1]+atc[0])/2;atc[1]=rapp;}
-      
-	for (UInt j=0; j < model.getDim(); ++j) {
-	  if (strr[j]*rapp>=0.525) {
-	    new_loading[j]=0.525*av_crit_stress;
-	  }
-	  else{
-	    new_loading[j]=new_loading[j]*rapp;
-	  }
-	}
-	has_progressed=true;
+    //check if crack has reached target speed during initiation
+    if(((nb_t_by_elem>=countcfs)&&(at[1]>spont_crack))||(!c_s_initiation)) {
+      if(c_s_initiation) {
+	std::cout << "Initiation phase just ends -> time: " << model.getTime() << std::endl;
+	c_s_initiation = false;
       }
-      countcfs=1;
-      at[0]=at[1];
+      atc[1]=countcfs/nb_t_by_elem;
+      Real rapp;
+      if (atc[0]==0||(atc[1]<1.01&&atc[1]>0.99)) {
+	rapp=atc[1];
+      }
+      else {rapp=(atc[1]+atc[0])/2;atc[1]=rapp;}
+      
+      for (UInt j=0; j < model.getDim(); ++j) {
+	if (strr[j]*rapp>=0.525) {
+	  new_loading[j]=0.525*av_crit_stress;
+	}
+	else{
+	  new_loading[j]=new_loading[j]*rapp;
+	}
+      }
+      has_progressed=true;
     }
-    else{countcfs++;}
+    countcfs=1;
+    at[0]=at[1];
+  }
+  else{countcfs++;}
   
   atc[0]=atc[1];
   
@@ -269,7 +275,7 @@ void SimulationDriver::writeLoading(std::string load_file ) {
   UInt nb_something;
   switch (lc_type) {
   case _time_control:
-    nb_something = model.getNbTimeSteps();
+    nb_something = ctrl_loading.size()/3;
     break;
   case _space_control:
     nb_something = nb_ele[0];
@@ -292,12 +298,13 @@ void SimulationDriver::launchCrack(Real crack_start, Real launched_size,
 				   Real v_init) {
 
   std::vector<Real> dx = model.getElementSize();
-  
+  std::vector<UInt> nb_elements = model.getNbElements();
   UInt l_end = (UInt)(launched_size/dx[0]);
   UInt x_start = (UInt)(crack_start/dx[0]);
   UInt every_t = (UInt)(1/(model.getBeta()*v_init));
-  UInt x_tip = model.getCrackTipPosition(x_start);
-
+  UInt x_tip = model.getCrackTipPosition(x_start,model.getNbElements()[0]);
+  UInt x_tip_prev=0;
+  
   std::vector<Real> * nor_strength = datas[_normal_strength];
   std::vector<Real> * shr_strength = datas[_shear_strength];
   
@@ -305,14 +312,23 @@ void SimulationDriver::launchCrack(Real crack_start, Real launched_size,
 	    << "*c_s" << std::endl; 
   
   while ((x_tip-x_start)<l_end) {
-
+    
     priorUpdates();
     
-    x_tip = model.getCrackTipPosition(x_start);
+    x_tip = model.getCrackTipPosition(x_start,model.getNbElements()[0]);
 
     if (model.getCurrentTimeStep()%every_t==0) {
-      (*nor_strength)[x_tip]=0;
-      (*shr_strength)[x_tip]=0;
+
+      if (((x_tip-x_tip_prev)>2)&&(x_tip_prev!=0.))
+	break;
+      
+      for (UInt z = 0; z < nb_elements[1]; ++z) {
+	(*nor_strength)[x_tip+z*nb_elements[0]]=0;
+	(*shr_strength)[x_tip+z*nb_elements[0]]=0;
+      }
+      
+      std::cout << " Crack position is now at " << x_tip*dx[0] << std::endl;
+      x_tip_prev = model.getCrackTipPosition(x_start,model.getNbElements()[0]);
     }
     solveTimeStep();
   }

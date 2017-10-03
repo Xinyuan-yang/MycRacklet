@@ -55,6 +55,12 @@ static std::vector<DataFields> standard_fields_history =
    _shear_displacement_jumps, _normal_velocity_jumps, _shear_velocity_jumps,
    _top_velocities};
 
+static std::vector<IntegratorTypes> standard_energy_integrators =
+  {_normal_fracture_energy, _shear_fracture_energy, _frictional_energy, _radiated_energy};
+
+static std::vector<std::string> standard_energy_names =
+  {"Normal fracture energy", "Shear fracture energy", "Frictional energy", "Radiated energy"};
+
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 // Dumper class managing simulation data output to file
@@ -97,12 +103,9 @@ public:
   // Accessor to Dumper's ofstream
   std::ofstream & getFile(){return file;}
   // Output current state of registered data
-  virtual void dump();
+  virtual inline void dump();
 
 protected:
-  // Download the data of type Bed from DataRegister before dumping them
-  template<class Bed>
-  inline const Bed & getData();
   // Output current state of registered data of type Bed
   template<class Bed>
   inline void dump();
@@ -143,8 +146,8 @@ class PointsDumper: public Dumper {
 public:
   //Construct an object by specifying the fields and the position (btw 0 and total_n_ele)
   //where to output fields value 
-  PointsDumper(std::vector<DataFields> & data_fields,
-	       std::vector<UInt> & points_to_dump, UInt total_nb_elem) : 
+  PointsDumper(std::vector<DataFields> data_fields,
+	       std::vector<UInt> points_to_dump, UInt total_nb_elem) : 
     fields(data_fields), points(points_to_dump) {
     
     this->ratio = 1.0/(Real)(total_nb_elem);
@@ -156,19 +159,77 @@ public:
   /* ------------------------------------------------------------------------ */
   // Output current state of registered data
   void dump();
-  // Only text output is currently available for PointsDumper
+
   template<class Bed>
   inline void dump_text(Bed & data, UInt size);
-
+  template<class Bed>
+  inline void dump_binary(Bed & data, UInt size);
+  
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */
   /* ------------------------------------------------------------------------ */
 private:
   //Position of interest where to dump fields
-  std::vector<UInt> & points;
+  std::vector<UInt> points;
   //Fields of interest to dump
-  std::vector<DataFields> & fields;
+  std::vector<DataFields> fields;
 };
+
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+// Daughter Dumper use to compute and dump quantities integrated along the interface
+class IntegratorsDumper: public Dumper {
+  /* ------------------------------------------------------------------------ */
+  /* Constructors/Destructors                                                 */
+  /* ------------------------------------------------------------------------ */
+public:
+  //Construct an object by specifying the different types of integrator wanted, the integration domain
+  // and the initial time
+  IntegratorsDumper(std::vector<IntegratorTypes> types,
+		    std::vector<std::string> integrator_names,
+		    std::vector<UInt> integration_domain,
+		    Real time, Real dA) {
+
+    for (UInt i = 0; i < types.size(); ++i) {
+      Integrator * new_integ = new Integrator(integration_domain,types[i],time,dA);
+      integrators.push_back(new_integ);
+      DataRegister::registerComputer(integrator_names[i],new_integ);
+    }    
+  }
+  
+  IntegratorsDumper(std::vector<IntegratorTypes> types,
+		    std::vector<std::string> integrator_names,
+		    UInt integration_width,
+		    Real time, Real dA,
+		    UInt crack_start, UInt crack_end) {
+    for (UInt i = 0; i < types.size(); ++i) {
+      Integrator * new_integ = new SurfingIntegrator(integration_width,types[i],time,dA,
+						     crack_start,crack_end);
+      integrators.push_back(new_integ);
+      DataRegister::registerComputer(integrator_names[i],new_integ);
+    }    
+  }
+  virtual ~IntegratorsDumper(){
+    std::vector<Integrator*>::iterator it;
+    for (it = integrators.begin(); it != integrators.end(); ++it){
+      delete *it;
+    }
+  }
+  
+  /* ------------------------------------------------------------------------ */
+  /* Methods                                                                  */
+  /* ------------------------------------------------------------------------ */
+  // Output current state of registered integrators
+  void dump();
+ 
+  /* ------------------------------------------------------------------------ */
+  /* Class Members                                                            */
+  /* ------------------------------------------------------------------------ */
+private:
+  //Map of integrators to compute and dump
+  std::vector<Integrator*> integrators;
+};
+
 
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
@@ -187,8 +248,6 @@ public:
   /* ------------------------------------------------------------------------ */
 public:
 
-  // Initialize the energetic outputs
-  void initEnergetics(const std::string filename);
   // Create a Dumper to output a field of given type into filename
   // Eventually specify which amout (ratio) of the full data,
   // the stride to appy while dumping and the first position to dump.
@@ -198,20 +257,35 @@ public:
   // Options are the same than initDumper + one entry to specify which direction to dump  
   void initVectorDumper(const std::string filename, DataFields type, UInt dimension_to_dump,
 			Real ratio_of_nele=1.0, UInt stride=1, UInt start=0, OutputFormat format=_text);
-  //Create a PointsDumper to output a list of fields at precise interface position specified
-  //in points_to_dump
-  void initPointsDumper(const std::string filename, std::vector<DataFields> & fields,
-			std::vector<UInt> & points_to_dump);
-  //Create a PointDumper as above but using the standard output fields listed on top of this file
-  void initPointsDumper(const std::string filename, std::vector<UInt> & points_to_dump);
-  //Create a PointDumper of standard fields along nb_obs_points between elements start and end  
-  void initPointsDumper(const std::string filename, UInt start, UInt end, UInt nb_obs_points);
+  // Create a PointsDumper to output a list of fields at precise interface position specified
+  // in points_to_dump. IMPORTANT: With binary mode, every data is written in the format of Real data type ! 
+  void initPointsDumper(const std::string filename, std::vector<DataFields> fields,
+			std::vector<UInt> points_to_dump, OutputFormat format=_text);
+  //Create a PointsDumper as above but using the standard output fields listed on top of this file
+  void initPointsDumper(const std::string filename, std::vector<UInt> points_to_dump, OutputFormat format=_text);
+  //Create a PointsDumper of standard fields along nb_obs_points between elements start and end  
+  void initPointsDumper(const std::string filename, UInt start, UInt end, UInt nb_obs_points, OutputFormat format=_text);
+  // Create a IntegratorsDumper to compute/output a list of integration types along a given integration domain
+  // Each integration type gets an associated name used for registration in the DataRegister
+  void initIntegratorsDumper(const std::string filename, std::vector<UInt> integration_domain,
+			     std::vector<IntegratorTypes> inte_types=standard_energy_integrators,
+			     std::vector<std::string> integrator_names=standard_energy_names,
+			     OutputFormat format=_text);
+  // Create a IntegratorsDumper with standard energies within a rectangular subset of the plane between start and en corner 
+  void initIntegratorsDumper(const std::string filename, std::vector<Real> start_corner,
+			     std::vector<Real> end_corner, OutputFormat format=_text);
+  // Create a IntegratorsDumper with standard energies integrated over the entire plane
+  void initIntegratorsDumper(const std::string filename, OutputFormat format=_text);
+  // Create a IntegratorsDumper which follows the propagating tip with an integration domain of a given width
+  // Crack position is tracked between crack_start and crack_end
+  void initSurfingIntegratorsDumper(const std::string filename,  UInt integration_width,
+				    UInt crack_start, UInt crack_end,
+				    std::vector<IntegratorTypes> inte_types,
+				    std::vector<std::string> integrator_names, OutputFormat format=_text); 
   //Generate an output of current model state to given file 
   void dump(std::string filename);
   //Generate output from every created dumper at once
   void dumpAll();
-  // Dump energetic data
-  void printEnergetics();
 
 private:
 
@@ -233,14 +307,6 @@ private:
   std::map<std::string,Dumper*> dumper;
   // Map between the timer of a given output file and the ofstream use to dump time information
   std::map<std::string,std::ofstream*> timer;
-  // Pointer to energetic quantity
-  const std::vector<Energetics> * E_nor;
-  const std::vector<Energetics> * E_shr;
-  const std::vector<Energetics> * E_fri;
-  const Energetics * Eq;
-  // Ofstream for energetic outputs
-  std::ofstream E_file;
-
 };
 
 /* -------------------------------------------------------------------------- */

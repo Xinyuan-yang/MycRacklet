@@ -108,7 +108,6 @@
    model.computeInitialVelocities();
 
    DataDumper dumper(model);
-   dumper.initEnergetics("Energy.cra");
    std::string st_diag_id = "ST_Diagram_id.cra";
    std::string st_diag_nor_trac = "ST_Diagram_normal_tractions.cra";
    std::string st_diag_shear_velo = "ST_Diagram_shear_velocity_jumps.cra";
@@ -116,6 +115,7 @@
    std::string bot_u = "bot_displ_snapshot.cra";
    std::string tractions = "trac_snapshots.cra"; 
    std::string point_his = "Points_history.cra";
+   std::string energy = "Energy.cra";
    dumper.initDumper(st_diag_shear_velo, _shear_velocity_jumps);
    dumper.initVectorDumper(st_diag_nor_trac, _interface_tractions,1);
    dumper.initDumper(st_diag_id, _id_crack);   
@@ -123,7 +123,7 @@
    dumper.initDumper(bot_u, _bottom_displacements);
    dumper.initDumper(tractions, _interface_tractions);
    dumper.initPointsDumper(point_his, points_int); 
-
+   dumper.initIntegratorsDumper(energy);
    UInt print = 0.1*nb_time_steps;
 
    for (UInt t = 0; t < nb_time_steps ; ++t) {
@@ -133,14 +133,13 @@
      model.fftOnDisplacements();
      model.computeStress();
      model.computeVelocities();
-     model.computeEnergy();
      model.increaseTimeStep();
 
-     dumper.printEnergetics();
      dumper.dump(st_diag_id);
      dumper.dump(st_diag_nor_trac);
      dumper.dump(st_diag_shear_velo);
      dumper.dump(point_his);
+     dumper.dump(energy);
      
      if (print == (UInt)(0.1*nb_time_steps)) {
        std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " << std::endl;

@@ -1,5 +1,8 @@
 /* -------------------------------------------------------------------------- */
 #include "spectral_convolution_manager.hh"
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
 /* -------------------------------------------------------------------------- */
 SpectralConvolutionManager::SpectralConvolutionManager(Real dx, std::vector<Real> & modal_number,
 						       UInt nb_fields, UInt nb_kernels)
@@ -105,13 +108,23 @@ void SpectralConvolutionManager::storeFields(Real * new_vals) {
 void SpectralConvolutionManager::computeConvolution(Real * res, UInt field_id,
 						    UInt kernel_id) {
 
-  Real * it = res;
+  UInt i,j,chunk,nb_threads;
+#if defined (_OPENMP) 
+#pragma omp parallel default(shared) private(i,j,chunk,nb_threads)
+  {
+    nb_threads=omp_get_num_threads();
+    chunk=std::max((UInt)1,nb_modes/(50*nb_threads));
 
-  for (UInt i=0; i < nb_modes; ++i) {
-    for (UInt j=0; j<2; ++j){
-      *it = ConvolutionManager::convolute(*(field+2*i+j+2*nb_modes*field_id), 
-					  mod_cut[i], k_start[i]+kernel_id*size_per_field);
-      ++it;
+#pragma omp for schedule(dynamic,chunk) collapse(2)
+#endif
+    for (i=0; i < nb_modes; ++i) {
+      for (j=0; j<2; ++j){
+	*(res+2*i+j) = ConvolutionManager::convolute(*(field+2*i+j+2*nb_modes*field_id), 
+					    mod_cut[i], k_start[i]+kernel_id*size_per_field);
+      }
     }
+#if defined (_OPENMP)
   }
+#endif
 }
+

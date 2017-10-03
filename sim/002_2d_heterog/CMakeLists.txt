@@ -33,11 +33,12 @@
 
 include_directories (${cRacklet_SOURCE_DIR}/src)
 
-add_executable(cst_speed_homog cst_speed_homog.cc)
-target_link_libraries (cst_speed_homog cRacklet)
+add_executable(cst_speed_fracture cst_speed_fracture.cc)
+target_link_libraries (cst_speed_fracture cRacklet)
 
-add_executable(striped_interfaces striped_interfaces.cc)
-target_link_libraries (striped_interfaces cRacklet)
+add_executable(andrews_transition andrews_transition.cc)
+target_link_libraries (andrews_transition cRacklet)
+
 
 copy_kernel_files(33 FALSE)
 copy_kernel_files(35 TRUE)

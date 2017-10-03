@@ -70,21 +70,6 @@ struct InterfaceFields{
 
 };
 
-// Structure used to integrate energy values in time
-struct Energetics{
-  
-  Energetics() {E=0; E_dot=0; E_dot_old=0;}
-  // Compute E from E_dot and E_dot_old;
-  void integrate(Real dt);
-
-  // Energy dissipation
-  Real E;
-  // Energy dissipation rate (at t = it)
-  Real E_dot;
-  // Energy dissipation rate (at t = it-1)
-  Real E_dot_old;
-};
-
 class SpectralModel : public DataRegister {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
@@ -149,8 +134,8 @@ public:
   UInt readUpdateLoads(Real start=0.0);
   // compute velocities at t=0
   void computeInitialVelocities();
-  // Increases time step number
-  void increaseTimeStep(){++it; displ_jump->computeJumpFields(); veloc_jump->computeJumpFields();};
+  // Launch the registered computers for current time step and increases time step number
+  void increaseTimeStep();
   // Update displacements with velocities 
   void updateDisplacements();
   // Update material properties according to the related material laws
@@ -161,8 +146,6 @@ public:
   void computeStress();
   // Compute velocities
   void computeVelocities();
-  // Compute and energy release and energy release-rate at the current time step
-  void computeEnergy();
   // dump the model paramters to simulation summary file
   void printSelfLoad(Real load, Real psi, Real phi);
   void printSelf();  
@@ -170,6 +153,7 @@ public:
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */
+  
   // Return the current simulation time
   Real getTime() {return it*beta*dxmin/X[0];}
   // Return the current simulation time step
@@ -186,18 +170,9 @@ public:
   UInt getDim() {return dim;}
   // Return uniform loading vector used to set average interface loading conditions
   std::vector<Real> & getUniformLoading() {return uniform_loading;}
-  // Return current crack tip position rightward from a starting position start
-  UInt getCrackTipPosition(Real start);
-  // Same but start expressed in terms of a discrete element number x_start
-  UInt getCrackTipPosition(UInt x_start);
   // Return pointer to the FractureLaw
   FractureLaw * & getFractureLaw() {return fracture_law;}
-  // Access to Energetic values
-  const std::vector<Energetics> & getNormalDissipatedEnergy() {return E_nor;} 
-  const std::vector<Energetics> & getShearDissipatedEnergy() {return E_shr;} 
-  const std::vector<Energetics> & getFrictionalEnergy() {return E_fri;}
-  const Energetics & getRadiatedEnergy() {return Eq;} 
-  
+
 public:
  
   /* ------------------------------------------------------------------------ */
@@ -277,6 +252,8 @@ private:
   std::vector<Real> nor_strength;
   // Shear Strength
   std::vector<Real> shr_strength;
+  // Frictional strengh (when overlapping is prevented
+  std::vector<Real> fric_strength;
   // Cracking index just needed to better visualization of fracture process
   // Standard value: 0 = outside the crack, 1 = in the cohesive zone,
   // 2 = inside the crack, 3 = inside the contact zone
@@ -303,14 +280,6 @@ private:
   Real zeta;
   // Dilatation over shear wave speed of top and bottom material
   std::vector<Real> eta;
-  // Energy dissipated by normal opening
-  std::vector<Energetics> E_nor;
-  // Energy dissipated by shear opening
-  std::vector<Energetics> E_shr;
-  // Energy dissipated by friction 
-  std::vector<Energetics> E_fri;
-  // Radiated energy (Fukuyama 2005, Eq. 10)
-  Energetics Eq;
   // Plan for the Fastest Fourier Transform in the West
   fftw_plan * plan;  
 };

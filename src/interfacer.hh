@@ -81,6 +81,8 @@ public:
   // create a uniform layer on the entire interface
   void createUniformInterface(Real crit_nor_opening, Real crit_shr_opening, 
 			      Real max_nor_strength, Real max_shr_strength);
+  // Tune interface properties from a text file starting at a given position
+  void insertPatternfromFile(std::string filename, UInt origin=0);
   // create an heterogeneous interface following normal distribution of strength
   void createNormalDistributedInterface(Real crit_nor_opening, 
 					Real crit_shr_opening, 
@@ -122,7 +124,8 @@ public:
 				  bool polarity);
   // create an interface made of multiple weaker(-delta) and stronger(+delta) areas
   // A given number of asperities is inserted between x=start and x=end
-  void createThroughMultiPolAsperity(Real start, Real end,
+  // Return effective x_end position (accounting that Real end is rounded to match discretization)
+  UInt createThroughMultiPolAsperity(Real start, Real end,
 				     Real number,
 				     Real delta_max_nor_strength, 
 				     Real delta_max_shr_strength,
@@ -137,11 +140,12 @@ public:
   void createThroughLeftSidedCrack(Real initial_crack_size, Real crit_nor_opening, Real crit_shr_opening, 
 				  Real max_nor_strength, Real max_shr_strength);
  
-  // create right propagating through crack meeting a circular asperity whose strength = ratio*interface_strength
+  // create right propagating through crack meeting a circular asperity whose
+  // strength = ratio_strength*interface_strength and crit_opening = ratio_crit_open*interface_crit_opening
   void createRightPropagatingCrackRoundAsp(Real initial_crack_size, Real crit_nor_opening,
 					   Real crit_shr_opening, Real max_nor_strength,
 					   Real max_shr_strength, Real radius,
-					   std::vector<Real> asp_ctr, Real ratio);
+					   std::vector<Real> asp_ctr, Real ratio_strength, Real ratio_crit_open=1.);
   
   // create an interface without initial cohesion between top and bottom solids
   void createIncohIntfc();

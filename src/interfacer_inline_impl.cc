@@ -31,6 +31,32 @@ inline void Interfacer<_linear_coupled_cohesive>::createUniformInterface(Real cr
 }
 
 /* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_linear_coupled_cohesive>::insertPatternfromFile(std::string filename, UInt origin) {
+
+  std::ifstream file;
+  std::string line;
+  file.open(filename);
+  Real ratio;
+  
+  for (UInt x = origin; x < n_ele[0]; ++x) {
+    if(file.eof())
+      break;
+    std::getline(file,line);
+    std::stringstream sstr(line);
+    for (UInt z = 0; z < n_ele[1]; ++z ) {
+      sstr >> ratio;
+      (*shr_strength)[x+z*n_ele[0]]*= ratio;
+      (*nor_strength)[x+z*n_ele[0]]*= ratio;
+      if(ratio>1)
+	(*ind_crack)[x+z*n_ele[0]] = 0;
+      else if(ratio<1)
+	(*ind_crack)[x+z*n_ele[0]] = 0;
+    }
+  } 
+}
+
+/* -------------------------------------------------------------------------- */
 #ifdef CRACKLET_USE_LIBSURFER
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::createBrownianHeterogInterface(Real crit_nor_opening, 
@@ -183,7 +209,7 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughPolarAsperity(Rea
 
 /* -------------------------------------------------------------------------- */
 template<>
-inline void Interfacer<_linear_coupled_cohesive>::createThroughMultiPolAsperity(Real start, Real end,
+inline UInt Interfacer<_linear_coupled_cohesive>::createThroughMultiPolAsperity(Real start, Real end,
 										Real number,
 										Real delta_max_nor_strength, 
 										Real delta_max_shr_strength,
@@ -194,15 +220,23 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughMultiPolAsperity(
   UInt i_start = (UInt)(start/dx[0]);
   UInt i_end = (UInt)(end/dx[0]);
 
-  UInt nb_dx = (UInt)((i_end-i_start)/(2*number));
-  if(nb_dx == 0) {
+  UInt nb_dx = (UInt)((i_end-i_start)/(2*number));  
+  UInt new_number = std::ceil((i_end-i_start)/(2*nb_dx));
+
+  i_end = i_start+2*new_number*nb_dx;
+
+  if(nb_dx < 2) {
     nb_dx = 1;
     std::cout << "! Asperity width was to small and is currently set to grid size !" << std::endl;
   }
-  std::cout << "Asperity width (strong+weak) = " << 2*nb_dx*dx[0] << std::endl;
+
   Real tough_ratio = (1.+delta_max_shr_strength)/(1.-delta_max_shr_strength);
+  Real asperity_size = 2*nb_dx*dx[0];
+
+  std::cout << "Asperity width (strong+weak) = " << asperity_size << std::endl;
   std::cout << "Asperity toughness ratio = " << tough_ratio << std::endl;
-  
+  std::cout << "Heterogeneous area extended up to " << i_end*dx[0] << std::endl;
+
   for (UInt ix = i_start; ix < i_end; ++ix) {
     for (UInt iz = 0; iz < n_ele[1]; ++iz) {
 
@@ -237,10 +271,13 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughMultiPolAsperity(
 	      << "* Delta maximal shear strength: " << delta_max_shr_strength << std::endl
 	      << std::endl;	
 
-  out_parameters << "delta_delta_c_nor " << delta_crit_nor_opening << std::endl
+  out_parameters << "toughness_ratio " << tough_ratio << std::endl
+		 << "asperity_paired_size " << asperity_size << std::endl
+		 << "delta_delta_c_nor " << delta_crit_nor_opening << std::endl
 		 << "delta_delta_c_shr " << delta_crit_shr_opening << std::endl
 		 << "delta_tau_max_nor " << delta_max_nor_strength << std::endl
 		 << "delta_tau_max_shr " << delta_max_shr_strength << std::endl;
+  return i_end;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -353,7 +390,8 @@ inline void Interfacer<_linear_coupled_cohesive>::createRightPropagatingCrackRou
 										      Real max_shr_strength, 
 										      Real radius, 
 										      std::vector<Real> asp_ctr,
-										      Real ratio) {
+										      Real ratio_strength,
+										      Real ratio_crit_open) {
 
   std::vector<Real> pos = {0.5*dx[0], 0.5*dx[1]}; 
 
@@ -375,9 +413,12 @@ inline void Interfacer<_linear_coupled_cohesive>::createRightPropagatingCrackRou
       //round Asperity
       else if ((pos[0]-asp_ctr[0])*(pos[0]-asp_ctr[0])+(pos[1]-asp_ctr[1])*(pos[1]-asp_ctr[1])<radius*radius){
 
-	(*nor_strength)[cmpnt]=ratio*max_nor_strength;
-	(*shr_strength)[cmpnt]=ratio*max_shr_strength;
+	(*nor_strength)[cmpnt]=ratio_strength*max_nor_strength;
+	(*shr_strength)[cmpnt]=ratio_strength*max_shr_strength;
 	
+	crit_n_open[cmpnt] = ratio_crit_open*crit_nor_opening;
+	crit_s_open[cmpnt] = ratio_crit_open*crit_shr_opening;
+
 	(*ind_crack)[cmpnt]=5;
 	}
       
@@ -392,6 +433,29 @@ inline void Interfacer<_linear_coupled_cohesive>::createRightPropagatingCrackRou
     }
     pos[0] += dx[0];
   }
+
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " CIRCULAR ASPERITY " << std::endl
+	      << "* Initial crack size: " << initial_crack_size << std::endl
+	      << "* Critical normal opening: " << crit_nor_opening << std::endl
+	      << "* Critical shear opening: " << crit_shr_opening << std::endl
+	      << "* Maximal normal strength: " << max_nor_strength << std::endl
+	      << "* Maximal shear strength: " << max_shr_strength << std::endl
+	      << "* Asperity center (x,z): (" << asp_ctr[0] << "," << asp_ctr[1] << ")" << std::endl
+	      << "* Asperity radius: " << radius << std::endl
+	      << "* Strength ratio: " << ratio_strength << std::endl
+    	      << "* Critical opening ratio: " << ratio_crit_open << std::endl
+	      << std::endl;	
+
+  out_parameters << "a0 " << initial_crack_size << std::endl
+		 << "delta_c_nor " << crit_nor_opening << std::endl
+		 << "delta_c_shr " << crit_shr_opening << std::endl
+		 << "tau_max_nor " << max_nor_strength << std::endl
+		 << "tau_max_shr " << max_shr_strength << std::endl
+    		 << "ratio_str " << ratio_strength << std::endl
+    		 << "ratio_delta_c " << ratio_crit_open << std::endl
+    ;
 }
 
 /* -------------------------------------------------------------------------- */

@@ -118,3 +118,18 @@ Real ConvolutionManager::loadKernel(std::string filename) {
   initK();
   return func->loadKernelFromFile(filename);
 }
+
+/* -------------------------------------------------------------------------- */
+void ConvolutionManager::dumpKernel(std::string filename, Real from, Real to, UInt nb_points) {
+
+  std::ofstream outfile; 
+  outfile.open(filename.c_str());
+  Real dtau = (to-from)/(Real)(nb_points);
+  Real tau = from;
+
+  while (tau<to) {
+
+    outfile << tau << " " << (*func)(tau) << std::endl;
+    tau += dtau;    
+  }
+}

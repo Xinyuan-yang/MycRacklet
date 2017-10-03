@@ -3,9 +3,9 @@
 #
 # @author Fabian Barras <fabian.barras@epfl.ch>
 #
-# @date   Mon Sept 1 9:12:20 2014
+# @date   Wed Aug 19 9:12:20 2015
 #
-# @brief  configuration file of cRacklet sources
+# @brief  configuration file for profiling folder
 #
 # @section LICENSE
 #
@@ -31,32 +31,18 @@
 
 #===============================================================================
 
-set(cRacklet_SRC
-  data_register.cc
-  spectral_model.cc
-  crack_profile.cc
-  interfacer.cc
-  convolution_manager.cc
-  spectral_convolution_manager.cc
-  cohesive_law.cc
-  coulomb_law.cc
-  regularized_coulomb_law.cc
-  data_dumper.cc
-  simulation_driver.cc
-  )
+include_directories (${cRacklet_SOURCE_DIR}/src)
 
-set_source_files_properties(${RELEASE_FILE} PROPERTIES GENERATED 1)
+add_executable(printKernels printKernels.cc)
+target_link_libraries (printKernels cRacklet)
 
-add_library(cRacklet ${cRacklet_SRC} ${RELEASE_FILE})
-add_dependencies(cRacklet RELEASE_INFO)
-
-target_link_libraries(cRacklet ${FFTW_LIBRARIES} ${GSL_LIBRARIES})
-
-if(CRACKLET_USE_LIBSURFER)
-  target_link_libraries(cRacklet ${LIBSURFER_LIBRARIES})
-endif()
 
 if(CRACKLET_MULTI_THREADED)
   add_definitions(${OpenMP_CXX_FLAGS})
-  target_link_libraries(cRacklet ${FFTW_OPENMP_LIBRARY} ${OpenMP_CXX_FLAGS})
+  target_link_libraries(profiling_2d ${OpenMP_CXX_FLAGS})
+  target_link_libraries(profiling_3d ${OpenMP_CXX_FLAGS})
 endif()
+
+copy_kernel_files(33 FALSE)
+copy_kernel_files(35 TRUE)
+copy_kernel_files(35 FALSE)

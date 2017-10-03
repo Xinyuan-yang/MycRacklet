@@ -126,10 +126,28 @@
    const CrackProfile * b_displacements = model.readData(_bottom_displacements);
    const std::vector<Real> * nor_strength = model.readData(_normal_strength);
    const std::vector<Real> * shr_strength = model.readData(_shear_strength);
-   const std::vector<Energetics> & E_n = model.getNormalDissipatedEnergy();
-   const std::vector<Energetics> & E_s = model.getShearDissipatedEnergy();
-   const std::vector<Energetics> & E_fr = model.getFrictionalEnergy();
 
+   std::vector<UInt> integ_points_left(nez*nex/2);
+  
+   UInt local_index = 0;
+   for (UInt ix = 0; ix < nex/2; ++ix) {
+     for (UInt iz = 0; iz < nez; ++iz) {
+       UInt l_index = ix+iz*nex;
+       integ_points_left[local_index] = l_index;
+       ++local_index;
+     }
+   }
+
+   std::vector<Real> dx = model.getElementSize();
+  
+   Integrator E_s(integ_points_left, _shear_fracture_energy, 0., dx[0]*dx[1]);
+   model.registerComputer("efrac_shear_left",&E_s);
+   Integrator E_n(integ_points_left, _normal_fracture_energy, 0., dx[0]*dx[1]);
+   model.registerComputer("efrac_normal_left",&E_n);
+   Integrator E_fr(integ_points_left, _frictional_energy, 0., dx[0]*dx[1]);
+   model.registerComputer("efric_left",&E_fr);
+
+   
    UInt chkptx = 0.5*nex;
    UInt chkptz = 0.5*nez;
    UInt print = 0.1*nb_time_steps;
@@ -155,7 +173,6 @@
      model.fftOnDisplacements();
      model.computeStress();
      model.computeVelocities();
-     model.computeEnergy();
      model.increaseTimeStep();
  
      if (print == (UInt)(0.1*nb_time_steps)) {
@@ -165,9 +182,9 @@
 ))*3+1] 
 		 << std::setw(wdth) << (*shr_strength)[(chkptx-1+nex*(chkptz-1))] 
 		 << std::setw(wdth) << (*nor_strength)[(chkptx-1+nex*(chkptz-1))] 
-		 << std::setw(wdth) << E_s[0].E 
-		 << std::setw(wdth) << E_n[0].E 
-		 << std::setw(wdth) << E_fr[0].E 
+		 << std::setw(wdth) << E_s.getIntegration()  
+		 << std::setw(wdth) << E_n.getIntegration() 
+		 << std::setw(wdth) << E_fr.getIntegration() 
 		 << std::endl;
        print=0;
 	 }

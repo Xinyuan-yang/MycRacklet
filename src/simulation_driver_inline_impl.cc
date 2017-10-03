@@ -19,7 +19,7 @@ inline void SimulationDriver::setLoadingCase<_time_control>() {
   Real ntim = model.getNbTimeSteps();
   
   if(ntim>0)
-    ctrl_loading.resize(3*ntim);
+    ctrl_loading.reserve(3*ntim);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -30,14 +30,6 @@ inline Real SimulationDriver::readSetLoadingCase<_time_control>(std::ifstream & 
   Real ntim = model.getNbTimeSteps();
   
   file >> nb_time_steps;
-
-  if (nb_time_steps<ntim) {
-    std::stringstream err;
-    err << "Unable to apply loading conditions !" << std::endl;
-    err << "Your loading file was generated for only " << nb_time_steps <<" time steps." << std::endl; 
-    err << "Build your profile with at least " << ntim << " time steps." << std::endl;
-    cRacklet::error(err);
-  } 
   
   ctrl_loading.resize(3*nb_time_steps);
   
@@ -55,6 +47,7 @@ inline Real SimulationDriver::readSetLoadingCase<_time_control>(std::ifstream & 
       cRacklet::error("!!! A problem occured with your loading file");
   }
   file.close();
+  reading_time=-1;
   return nb_time_steps;
 
 }

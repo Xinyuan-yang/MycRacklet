@@ -83,9 +83,11 @@ public:
   // Init a simulation with constant loading conditions
   void initConstantLoading(Real cst_loading, Real psi, Real phi);
   // Init a simulation with evolving loading conditions following loading_file
-  Real initLoadingFromFile(std::string loading_file, LoadControlType load_control=_time_control);  
+  Real initLoadingFromFile(std::string loading_file, LoadControlType load_control=_time_control,
+			   Real initial_loading=0., Real psi=0., Real phi=0.);  
   // Initialization before tailoring loading conditions to fix crack speed 
-  void initConstantSpeed(Real initial_loading, Real psi, Real phi, Real average_crit_stress, LoadControlType load_control=_time_control);
+  void initConstantSpeed(Real initial_loading, Real psi, Real phi, Real average_crit_stress, 
+			 Real spont_crack_length=0.0, LoadControlType load_control=_time_control);
   // Solve one time step of the simulation designed
   UInt solveStep();
   // Print tailored loading conditions to file
@@ -112,6 +114,8 @@ private:
   Real target_crack_speed;
   //Center of the initial crack
   UInt x_crack_start;
+  //Spontaneous crack length
+  Real spont_crack;
   //Average critical stress used to normalized loading conditions
   Real av_crit_stress;
   //Loading imposed at the current time step
@@ -126,6 +130,8 @@ private:
   std::vector<Real> atc;
   // Boolean to check when initialization phase is over
   bool c_s_initiation;
+  // Time step at which the reading algorithm started (needed after the artifical growth of seed crack using launchCrack)
+  int reading_time;
 };
 
 

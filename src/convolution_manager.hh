@@ -37,6 +37,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <math.h> 
 #include <gsl/gsl_sf_bessel.h>
@@ -103,6 +104,8 @@ public:
   inline void storeFields(Real new_val);
   // Compute convolution between field and pre-integrated convolution kernel
   inline Real computeConvolution();
+  // Print nb_points of kernel function between from and to
+  void dumpKernel(std::string filename, Real from, Real to, UInt nb_points);
 
 protected:
   // Allocate the array memory used to store field history

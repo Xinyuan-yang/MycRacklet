@@ -33,6 +33,7 @@
 #include "coulomb_law.hh"
 #include "regularized_coulomb_law.hh"
 #include "interfacer.hh"
+#include "data_dumper.hh"
 #include <vector>
 #include <iostream>
 #include <stdio.h>
@@ -93,7 +94,7 @@ int main(){
   Interfacer<_linear_coupled_cohesive> interfacer(model);
   interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
   interfacer.applyInterfaceCreation();
-
+   
   model.updateLoads();
   model.computeInitialVelocities();
 
@@ -101,9 +102,27 @@ int main(){
   const CrackProfile * b_displacements = model.readData(_bottom_displacements);
   const std::vector<Real> * nor_strength = model.readData(_normal_strength);
   const std::vector<Real> * shr_strength = model.readData(_shear_strength);
-  const std::vector<Energetics> & E_n = model.getNormalDissipatedEnergy();
-  const std::vector<Energetics> & E_s = model.getShearDissipatedEnergy();
-  const std::vector<Energetics> & E_fr = model.getFrictionalEnergy();
+
+  std::vector<UInt> integ_points_left(nb_elements/2);
+  std::vector<UInt> integ_points(nb_elements);
+  
+  for (UInt i = 0; i < nb_elements/2; ++i) {
+    integ_points_left[i] = i;
+    integ_points[2*i] = 2*i;
+    integ_points[2*i+1] = 2*i+1;
+  }
+
+  std::vector<Real> dx = model.getElementSize();
+  
+  Integrator E_s(integ_points_left, _shear_fracture_energy, 0., dx[0]*dx[1]);
+  model.registerComputer("efrac_shear_left",&E_s);
+  Integrator E_n(integ_points_left, _normal_fracture_energy, 0., dx[0]*dx[1]);
+  model.registerComputer("efrac_normal_left",&E_n);
+  Integrator E_fr(integ_points_left, _frictional_energy, 0., dx[0]*dx[1]);
+  model.registerComputer("efric_left",&E_fr);
+
+  Integrator E_q(integ_points, _radiated_energy, 0., dx[0]*dx[1]);
+  model.registerComputer("radiated_energy",&E_q);
 
   UInt chkpt = 0.75*nb_elements;
   UInt print = 0.01*nb_time_steps;
@@ -114,10 +133,17 @@ int main(){
 	     << std::setw(wdth) << "tau_str^n" 
 	     << std::setw(wdth) << "E_s" 
 	     << std::setw(wdth) << "E_n" 
-	     << std::setw(wdth) << "E_fr" 
+	     << std::setw(wdth) << "E_fr"
+    	     << std::setw(wdth) << "E_q" 
 	     << std::endl;
 
   std::cout.precision(6);
+
+  DataDumper dumper(model);
+ 
+  dumper.initIntegratorsDumper("energetics.cra",integ_points_left,
+			       {_shear_fracture_energy,_normal_fracture_energy,_frictional_energy},
+			       {"Efrac shear left","Efrac normal left","Efric left"});
 
   for (UInt t = 0; t < nb_time_steps ; ++t) {
 
@@ -126,18 +152,19 @@ int main(){
     model.fftOnDisplacements();
     model.computeStress();
     model.computeVelocities();
-    model.computeEnergy();
     model.increaseTimeStep();
 
     if (print == (UInt)(0.01*nb_time_steps)) {
-    
+
+      dumper.dumpAll();
       std::cout << std::setw(wdth) << (*t_displacements)[chkpt*3]-(*b_displacements)[chkpt*3]  
 		<< std::setw(wdth) << (*t_displacements)[chkpt*3+1]-(*b_displacements)[chkpt*3+1] 
 		<< std::setw(wdth) << (*shr_strength)[chkpt] 
 		<< std::setw(wdth) << (*nor_strength)[chkpt] 
-		<< std::setw(wdth) << E_s[0].E 
-		<< std::setw(wdth) << E_n[0].E 
-		<< std::setw(wdth) << E_fr[0].E 
+		<< std::setw(wdth) << E_s.getIntegration() 
+		<< std::setw(wdth) << E_n.getIntegration() 
+		<< std::setw(wdth) << E_fr.getIntegration()
+		<< std::setw(wdth) << E_q.getIntegration()  
 		<< std::endl;
 
       print=0;

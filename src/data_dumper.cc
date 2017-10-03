@@ -2,53 +2,43 @@
 #include "data_dumper.hh"
 #include <time.h>
 /* -------------------------------------------------------------------------- */
-void Dumper::dump() {
-  
-  switch (field_name) {
-
-  case _top_displacements:
-  case _bottom_displacements:
-  case _normal_displacement_jumps:
-  case _shear_displacement_jumps:
-  case _top_velocities:
-  case _bottom_velocities:
-  case _normal_velocity_jumps:
-  case _shear_velocity_jumps:
-  case _interface_tractions:
-  case _top_loading:
-  case _bottom_loading:
-    dump<CrackProfile>();
-    break;
-
-  case _normal_strength:
-  case _shear_strength:
-    dump<std::vector<Real> >();
-    break;
-    
-  case _id_crack:
-    dump<std::vector<UInt> >();
-    break;
-  default:
-    std::stringstream err;
-    err << "*** The DataTypes to dump (" << field_name 
-	<< ") is not defined in data_dumper.cc" << std::endl;
-    cRacklet::error(err);
-    break;
-  }
-}
-
-/* -------------------------------------------------------------------------- */
 void PointsDumper::dump() {
 
   for (UInt i = 0; i < points.size(); ++i) {
     this->start = points[i];
-    file << points[i] <<  " ";    
+    Real index;
+    switch (output_format) {
+    case _text:
+      file << points[i] <<  " ";
+      break;
+    case _binary:
+      index = (Real)(points[i]);
+      file.write((char*)(&index),sizeof(Real));
+      break;
+    default:
+      cRacklet::error("DataDumper do not know how to dump using this OutputFormat");
+      break;
+    }
     for (UInt f = 0; f < fields.size(); ++f) {
       this->field_name = fields[f];
       Dumper::dump();
     }
   }
-  file << std::endl;
+  if(output_format==_text)
+    file << std::endl;
+}
+
+/* -------------------------------------------------------------------------- */
+void IntegratorsDumper::dump() {
+
+  std::vector<Integrator*>::iterator it;
+  for (it = integrators.begin(); it != integrators.end(); ++it){      
+    file << std::scientific << std::setprecision(9)
+	 << (*it)->getIntegration()
+	 << " "
+	 << (*it)->getRate()
+	 << " ";
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -68,22 +58,6 @@ void DataDumper::dumpAll() {
     (it->second)->endl();
     printTime(it->first);
   }
-}
-
-/* -------------------------------------------------------------------------- */
-void DataDumper::initEnergetics(const std::string filename) {
-
-  E_nor = & model->getNormalDissipatedEnergy();
-  E_shr = & model->getShearDissipatedEnergy();
-  E_fri = & model->getFrictionalEnergy();
-  Eq = & model->getRadiatedEnergy();
-
-  E_file.open((DataRegister::output_dir+filename).c_str());
-  DataRegister::out_summary << "/* -------------------------------------------------------------------------- */"; 
-  DataRegister::out_summary << std::endl;
-  DataRegister::out_summary << "ENERGY OUTPUT FILE: " << std::endl << filename
- 			    << std::endl;
-  
 }
 
 /* -------------------------------------------------------------------------- */
@@ -110,11 +84,11 @@ void DataDumper::initVectorDumper(const std::string filename, DataFields type, U
 }
 
 /* -------------------------------------------------------------------------- */
-void DataDumper::initPointsDumper(const std::string filename, std::vector<DataFields> & fields,
-				  std::vector<UInt> & points_to_dump) {
+void DataDumper::initPointsDumper(const std::string filename, std::vector<DataFields> fields,
+				  std::vector<UInt> points_to_dump, OutputFormat format) {
   UInt total_n_ele = model->getNbElements()[0]*model->getNbElements()[1];
   dumper[filename] = new PointsDumper(fields, points_to_dump, total_n_ele);
-  dumper[filename]->init(DataRegister::output_dir+filename);
+  dumper[filename]->init(DataRegister::output_dir+filename, format);
   initTimer(filename);
   DataRegister::out_summary << "/* -------------------------------------------------------------------------- */"; 
   DataRegister::out_summary << std::endl;
@@ -123,12 +97,14 @@ void DataDumper::initPointsDumper(const std::string filename, std::vector<DataFi
 }
 
 /* -------------------------------------------------------------------------- */
-void DataDumper::initPointsDumper(const std::string filename, std::vector<UInt> & points_to_dump) {
+void DataDumper::initPointsDumper(const std::string filename, std::vector<UInt> points_to_dump,
+				  OutputFormat format) {
   this->initPointsDumper(filename, standard_fields_history, points_to_dump);
 }
 
 /* -------------------------------------------------------------------------- */
-void DataDumper::initPointsDumper(const std::string filename, UInt start, UInt end, UInt nb_obs_points) {
+void DataDumper::initPointsDumper(const std::string filename, UInt start, UInt end, UInt nb_obs_points,
+				  OutputFormat format) {
   UInt point_spacing = (end-start)/nb_obs_points;
   UInt pos = start+(UInt)(0.5*point_spacing);
   
@@ -137,8 +113,96 @@ void DataDumper::initPointsDumper(const std::string filename, UInt start, UInt e
   for (UInt p = 0; p < nb_obs_points; ++p) {
     point_his[p] = pos;
     pos += point_spacing; 
-  }  
+  }
+  this->initPointsDumper(filename, point_his);
 }
+
+/* -------------------------------------------------------------------------- */
+void DataDumper::initIntegratorsDumper(const std::string filename,
+				       std::vector<UInt> integration_domain,
+				       std::vector<IntegratorTypes> inte_types,
+				       std::vector<std::string> integrator_names,
+				       OutputFormat format) {
+ 
+  Real time = model->getTime();
+  std::vector<Real> dx = model->getElementSize();
+  IntegratorsDumper * ptr = new IntegratorsDumper(inte_types, integrator_names, integration_domain,
+						  time, dx[0]*dx[1]);
+  dumper[filename] = ptr;
+  dumper[filename]->init(DataRegister::output_dir+filename, format);
+  initTimer(filename);
+  DataRegister::out_summary << "/* -------------------------------------------------------------------------- */"; 
+  DataRegister::out_summary << std::endl;
+  DataRegister::out_summary << "INTEGRATORS OUTPUT FILE: " << std::endl << filename << std::endl;
+  for (UInt i = 0; i < integrator_names.size(); ++i) {
+    DataRegister::out_summary << "* " << i << ": " << integrator_names[i] << std::endl;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+void DataDumper::initIntegratorsDumper(const std::string filename,
+				       std::vector<Real> start_corner, std::vector<Real> end_corner,
+				       OutputFormat format) {
+  
+  std::vector<UInt> n_ele = model->getNbElements();
+  std::vector<Real> dx = model->getElementSize();
+  
+  std::vector<UInt> start(2);
+  std::vector<UInt> end(2);
+
+  for (UInt i = 0; i < 2; ++i) {
+    start[i] = (UInt)(start_corner[i]/dx[i]);
+    end[i] = (UInt)(end_corner[i]/dx[i]);
+  }
+
+  if(n_ele[1]==1){
+    start[1]=0;
+    end[1]=1;
+  }
+  
+  std::vector<UInt> int_points;
+  
+  for (UInt ix = start[0]; ix < std::min(n_ele[0],end[0]); ++ix) {
+    for (UInt iz = start[1]; iz < std::min(n_ele[1],end[1]); ++iz) {
+      int_points.push_back(ix+iz*n_ele[0]);
+    }
+  }
+
+  this->initIntegratorsDumper(filename,int_points,
+			      standard_energy_integrators,standard_energy_names,format);
+}
+
+/* -------------------------------------------------------------------------- */
+void DataDumper::initIntegratorsDumper(const std::string filename, OutputFormat format) {
+
+  std::vector<UInt> n_ele = model->getNbElements();
+  std::vector<Real> dx = model->getElementSize();
+
+  this->initIntegratorsDumper(filename,{0.,0.},{n_ele[0]*dx[0],n_ele[1]*dx[1]},format);  
+}
+
+/* -------------------------------------------------------------------------- */
+void DataDumper::initSurfingIntegratorsDumper(const std::string filename,  UInt integration_width,
+					      UInt crack_start, UInt crack_end,
+					      std::vector<IntegratorTypes> inte_types,
+					      std::vector<std::string> integrator_names, OutputFormat format){
+  
+  Real time = model->getTime();
+  std::vector<Real> dx = model->getElementSize();
+  IntegratorsDumper * ptr = new IntegratorsDumper(inte_types, integrator_names, integration_width,
+						  time, dx[0]*dx[1],crack_start,crack_end);
+  dumper[filename] = ptr;
+  dumper[filename]->init(DataRegister::output_dir+filename, format);
+  initTimer(filename);
+  DataRegister::out_summary << "/* -------------------------------------------------------------------------- */"; 
+  DataRegister::out_summary << std::endl;
+  DataRegister::out_summary << "SURFING INTEGRATORS OUTPUT FILE: " << std::endl << filename << std::endl;
+  DataRegister::out_summary << "Integration width: " << std::endl << integration_width << std::endl;
+  for (UInt i = 0; i < integrator_names.size(); ++i) {
+    DataRegister::out_summary << "* " << i << ": " << integrator_names[i] << std::endl;
+  }
+}
+
 /* -------------------------------------------------------------------------- */
 void DataDumper::initTimer(std::string filename) {
 
@@ -146,20 +210,6 @@ void DataDumper::initTimer(std::string filename) {
   
   timer[filename]=new std::ofstream;
   timer[filename]->open(DataRegister::output_dir+timer_filename);
-}
-
-/* -------------------------------------------------------------------------- */
-void DataDumper::printEnergetics() {
-  
-  E_file << std::scientific << std::setprecision(9)
-	 << model->getTime() <<" "<< (*E_shr)[0].E+(*E_nor)[0].E <<" " 
-	 <<(*E_shr)[0].E_dot_old+(*E_nor)[0].E_dot_old <<" "<< (*E_fri)[0].E <<" "
-	 << (*E_fri)[0].E_dot_old <<" "<< (*E_shr)[1].E+(*E_nor)[1].E <<" "
-	 << (*E_shr)[1].E_dot_old+(*E_nor)[1].E_dot_old <<" "<< (*E_fri)[1].E <<" "
-	 << (*E_fri)[1].E_dot_old <<" "<< (*E_nor)[0].E <<" "<< (*E_nor)[0].E_dot_old <<" "
-	 << (*E_shr)[0].E <<" "<< (*E_shr)[0].E_dot_old <<" "<<	(*E_nor)[1].E <<" "
-	 << (*E_nor)[1].E_dot_old <<" "<< (*E_shr)[1].E <<" "<< (*E_shr)[1].E_dot_old <<" "
-	 << Eq->E << " " << Eq->E_dot_old << " " << std::endl;
 }
 
 /* -------------------------------------------------------------------------- */

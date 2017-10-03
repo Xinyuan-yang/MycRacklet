@@ -1,11 +1,14 @@
 #include "data_register.hh"
+#if defined (_OPENMP)
+#include <omp.h>
+#endif
 /* -------------------------------------------------------------------------- */
 // Static members should be defined in a source file
 std::string DataRegister::output_dir;
 std::ofstream DataRegister::out_summary;
 std::ofstream DataRegister::out_parameters;
 std::map<DataFields,DataTypes> DataRegister::datas;
-
+std::map<std::string,Computer*> DataRegister::computers;
 /* -------------------------------------------------------------------------- */
 void DataRegister::data_initialize(const std::string output_folder,
 				   const std::string description) {
@@ -25,16 +28,15 @@ void DataRegister::data_initialize(const std::string output_folder,
   out_summary << std::endl;
   out_summary << " * Simulation Description: " << description << std::endl;
   out_summary << std::endl;
+#if defined (_OPENMP)
+  out_summary <<" * Multi-threaded run with " << omp_get_max_threads() << " threads" << std::endl;
+    out_summary << std::endl;
+#endif
   out_summary << " * Date and Time:  " << getCurrentDaytime() << std::endl;
   out_summary << " * Sources information: " << std::endl;
   out_summary << cR_release_info << std::endl;
   
   out_parameters.open(output_folder+"Parameters.cra");
-}
-
-/* -------------------------------------------------------------------------- */
-const DataTypes DataRegister::readData(DataFields my_field) {
-  return datas[my_field];
 }
 
 /* -------------------------------------------------------------------------- */
@@ -62,4 +64,82 @@ std::string DataRegister::getCurrentDaytime() {
 }
 
 /* -------------------------------------------------------------------------- */
+void DataRegister::registerComputer(std::string computer_name, Computer * computer) {
 
+  std::map<std::string,Computer*>::iterator it = computers.find(computer_name);
+  
+  if(it == computers.end())
+    computers[computer_name] = computer;
+  else {
+    std::stringstream err;
+    err << "Computer named " << computer_name << " already registered !";
+    cRacklet::error(err);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+Computer * DataRegister::getComputer(std::string computer_name) {
+
+  std::map<std::string,Computer*>::iterator it = computers.find(computer_name);
+
+  if(it != computers.end())
+    return computers[computer_name];
+  else {
+    std::stringstream err;
+    err << "No registered computer named " << computer_name << " !";
+    cRacklet::error(err);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+void DataRegister::computeAll(Real time) {
+
+  std::map<std::string,Computer*>::iterator it = computers.begin();
+
+  for (; it!=computers.end(); ++it) {
+    (it->second)->compute(time);
+  }  
+}
+
+/* -------------------------------------------------------------------------- */
+UInt DataRegister::getCrackTipPosition(UInt x_start, UInt x_end) {
+
+  UInt x_tip=x_end;
+
+  const std::vector<UInt> * ind_crack = readData(_id_crack);
+  
+  for (UInt x=x_start; x < x_end; ++x) {
+    if ((*ind_crack)[x]==1||(*ind_crack)[x]==0||(*ind_crack)[x]==4||(*ind_crack)[x]==5||(*ind_crack)[x]==6) {
+      x_tip = x;
+      break;
+    }
+  }
+  return x_tip;
+}
+
+/* -------------------------------------------------------------------------- */
+void Integrator::integrate(Real time){
+
+  Real dt = time - t_old;
+  
+  I += 0.5*dt*(I_dot_old + I_dot);
+  I_dot_old = I_dot;
+  I_dot = 0;
+  t_old = time;
+}
+
+/* -------------------------------------------------------------------------- */
+void SurfingIntegrator::updateIntegrationPoints() {
+  
+  UInt crack_tip = DataRegister::getCrackTipPosition(crack_start,crack_end);
+
+  UInt start = std::max(0,(int)(crack_tip-integ_width));
+  UInt end = std::max(0,(int)(crack_tip+integ_width));
+
+  std::vector<UInt> new_integ_points(end-start);
+
+  for (UInt i = 0; i < (end-start); ++i) {
+    new_integ_points[i] = start+i;
+  }
+  this->index = new_integ_points;  
+}

@@ -1,9 +1,9 @@
 /**
- * @file   single_mat_heterog.cc
+ * @file   cst_speed_fracture.cc
  * @author Fabian Barras <fabian.barras@epfl.ch>
  * @date   Wed Nov 11 09:19:07 2015
  *
- * @brief  Homogeneous fracture at a constant crack speed
+ * @brief  Dynamic fracture at a constant crack speed in presence of heterogeneities
  *
  * @section LICENSE
  *
@@ -46,17 +46,15 @@ int main(int argc, char *argv[]){
 
   // Note : Construct the pre-integrated material kernels before running this simulation
   // Use "invert_serial.f" to construct kernel files
-
   // Required command line arguments. [...] delimitates the optional ones
-  std::cout << " ./cst_speed_homog <crack_speed> <loading_file> <load_writing?> [ <output_folder_name>=./ <nb_t_steps>=10000 <nb_ele>=4096 ]" << std::endl;
+
+  std::cout << " ./cst_speed_fracture <crack_speed> <loading_file> <load_writing?> [ <output_folder_name>=./ <nb_t_steps>=10000 <nb_ele>=8192 <nb_heterog>=0 <loading_angle>=90 ]" << std::endl;
 
   std::string sim_name = "Single material homogeneous interface controled rupture speed";
 
   // Geometry description
   UInt nb_time_steps = 10000; 
-  UInt nb_elements = 4096;
-  Real dom_size = 1.0;
-  Real crack_size = 0.05;
+  UInt nb_elements = 8192;
   Real nu =  0.35;
   Real E = 5.3e9;
   Real cs = 1263;
@@ -89,22 +87,44 @@ int main(int argc, char *argv[]){
   if(argc > 6)
     nb_elements = std::atoi(argv[6]);
 
-  std::cout << "./cst_speed_homog " 
+  UInt nb_heterog = 0;
+
+  if(argc > 7)
+    nb_heterog = std::atoi(argv[7]);
+
+  if(argc > 8)
+    psi = std::atof(argv[8]);
+
+  std::cout << "./cst_speed_fracture " 
 	    << "v_imposed:" << cr_speed << " "
 	    << "load_file:" << load_file << " "
 	    << "output folder:" << output_folder << " " 
 	    << "nb_time steps:" << nb_time_steps << " " 
 	    << "nb_elements:" << nb_elements << " "
+	    << "nb_heterog:" << nb_heterog << " "
+	    << "loading angle:" << psi << " "
 	    << std::endl;
   
   // Cohesive paramters
   Real crit_n_open = 0.02e-3;
   Real crit_s_open = 0.02e-3;
-  Real max_s_str = 5e6;
-  Real max_n_str = 5e6;
+  Real max_s_str = 9e6;
+  Real max_n_str = 9e6;
+  Real wk_max_s_str = 4e6;
+  Real wk_max_n_str = 4e6;
+  Real sg_max_n_str = 14e6;
+  Real sg_max_s_str = 14e6;
 
+  Real G_length = crit_s_open*max_s_str/(load*load*M_PI)*E/(1-nu*nu);
   FractureLaw * fracturelaw; 
 
+  std::cout << "Griffith length: " << G_length << std::endl; 
+
+  Real dom_size = 50*G_length;
+  Real dx = dom_size/double(nb_elements);
+  Real wall_position = 0.3*dom_size;
+  UInt propagation_domain = 0.25*nb_elements;
+  
   // Friction paramters
   bool overlap = 0;
   Real regularized_time_scale = 0.1;
@@ -118,48 +138,78 @@ int main(int argc, char *argv[]){
 		      fracturelaw, contactlaw, sim_name, output_folder); 
 
   // SimulationDriver object helping to launch controlled-speed simulation
-  SimulationDriver sim_driver(model, cr_speed, dom_size/2);
+  SimulationDriver sim_driver(model, cr_speed, 0.0);
   
   Interfacer<_linear_coupled_cohesive> interfacer(model);
-  interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, 
-					max_n_str, max_s_str);
+
+  interfacer.createUniformInterface(crit_n_open, crit_s_open, 
+				    max_n_str, max_s_str);
+  interfacer.createThroughCrack(0.,5*dx);
+  
+  if(nb_heterog>0) {
+    UInt x_end;
+    x_end = interfacer.createThroughMultiPolAsperity(5*G_length, 11.25*G_length, nb_heterog,
+						     (sg_max_s_str-max_s_str)/max_n_str, 
+						     (sg_max_s_str-max_n_str)/max_s_str,
+						     0.,0.,true);
+  }
+  
+  interfacer.createThroughWall(wall_position,dom_size);
   interfacer.applyInterfaceCreation();
 
   if(write){
     // Init algorithm to tailor constant speed loading conditions
-    sim_driver.initConstantSpeed(load, psi, phi, max_s_str);
+    //sim_driver.initConstantSpeed(load, psi, phi, max_s_str);
+    sim_driver.initConstantSpeed(load, psi, phi, max_s_str, 0.0, _space_control);
   }
   else {
     // Read an existing file to set loading conditions
-    sim_driver.initLoadingFromFile(output_folder+load_file);
+    sim_driver.initLoadingFromFile(output_folder+load_file, _space_control, load, psi, phi);
   }
     
   DataDumper dumper(model);
 
-  dumper.initEnergetics("Energy.cra");
-  dumper.initDumper("ST_Diagram_id.cra", _id_crack, 0.5, 1, 0.5*nb_elements);
-  dumper.initDumper("ST_Diagram_shear_velo_jump.cra", _shear_velocity_jumps, 0.5, 1, 0.5*nb_elements);
+  UInt integ_width = G_length/dx;
+  
+  dumper.initIntegratorsDumper("Energies.cra", {5*G_length,1.},{10*G_length,1.});
+  dumper.initSurfingIntegratorsDumper("surfing_eq.cra", integ_width, 0, nb_elements,
+				      {_radiated_energy},{"surfing_Eq"});
+    
+  if (write){
+    dumper.initDumper("ST_Diagram_id.cra", _id_crack, 0.5, 1, 0, _binary);
+    dumper.initDumper("ST_Diagram_shear_velo_jump.cra", _shear_velocity_jumps, 0.125, 4, 0, _binary);
+  } else {
+    dumper.initDumper("ST_Diagram_id.cra", _id_crack, 0.125, 4, 0, _binary);
+    dumper.initDumper("ST_Diagram_shear_velo_jump.cra", _shear_velocity_jumps, 0.5, 1, 0, _binary);
+  }
 
-  UInt x_tip;
-   
-  for (UInt t = 0; t < nb_time_steps ; ++t) {
+  UInt x_tip=0;
+
+  sim_driver.launchCrack(0.,G_length,0.15);
+
+  UInt t = 0;
+
+  UInt max_t_step = 1.5*propagation_domain/(model.getBeta()*cr_speed);
+
+  UInt print_info = 0.05*max_t_step;
+
+  while ((x_tip<(propagation_domain))&&(t<max_t_step)) {
 
     // High level method embedding the resolution of one time step by the SpectralModel
     x_tip = sim_driver.solveStep();  
 
-    if(x_tip>0.95*nb_elements)
-      break;
+    dumper.dumpAll();
 
-    if(t%5==0){
-      dumper.dumpAll();
-      dumper.printEnergetics();
+    if(t%100==0){
+      //dumper.dump("ST_Diagram_id.cra");
     }
 
-    if (t%((UInt)(0.1*nb_time_steps))==0){
-      std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " 
-		<< " crack tip at " << (Real)(x_tip)/(Real)nb_elements*100 << "% "
+    if (t%((UInt)print_info)==0){
+      std::cout << "Crack tip at " << (Real)(x_tip)/(Real)nb_elements*100 << "% "
+		<< " or double max time " << (Real)t/(Real)max_t_step*100 << "% "
 		<< std::endl;
     }
+    ++t;
   }
 
   // Do not forget to create the resulting loading file

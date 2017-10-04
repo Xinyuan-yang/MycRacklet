@@ -80,7 +80,7 @@ public:
   SpectralModel(std::vector<UInt> nele, UInt nb_time_steps, std::vector<Real> dom_size, 
 		Real nu_top, Real nu_bot, Real E_top, Real E_bot, 
 		Real cs_top, Real cs_bot, UInt tcut_top, UInt tcut_bot, 
-		bool overlap, UInt l_index, FractureLaw * fracturelaw, 
+		bool overlap, FractureLaw * fracturelaw, 
 		ContactLaw * contactlaw, const std::string & simulation_summary,
 		const std::string output_dir="./");
 
@@ -210,8 +210,6 @@ private:
   std::vector<UInt> t_cut;
   // Overlapping tolerance (0 = no , 1 = yes)
   bool overlapping;
-  // Index determining inside loading case for ind_crack>=index
-  UInt load_index;
   // Associated fracture law
   FractureLaw * fracture_law;
   // Associated contact law

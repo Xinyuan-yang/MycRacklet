@@ -17,9 +17,10 @@ inline SpectralModel::SpectralModel(){
 inline SpectralModel::SpectralModel(std::vector<UInt> nele, UInt nb_time_steps, 
 				    std::vector<Real> dom_size,
 				    Real nu_top, Real nu_bot, 
-				    Real E_top, Real E_bot, Real cs_top, 
-				    Real cs_bot, UInt tcut_top, UInt tcut_bot, 
-				    bool overlap, UInt l_index, 
+				    Real E_top, Real E_bot,
+				    Real cs_top, Real cs_bot,
+				    UInt tcut_top, UInt tcut_bot, 
+				    bool overlap,
 				    FractureLaw * fracturelaw, ContactLaw * contactlaw,
 				    const std::string & simulation_summary,
 				    const std::string output_dir) {
@@ -45,7 +46,6 @@ inline SpectralModel::SpectralModel(std::vector<UInt> nele, UInt nb_time_steps,
   t_cut[0] = tcut_top;
   t_cut[1] = tcut_bot;
   overlapping = overlap;
-  load_index = l_index;
   fracture_law = fracturelaw;
   contact_law = contactlaw;
   loading_ratio = NULL;

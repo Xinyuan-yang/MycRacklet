@@ -98,7 +98,7 @@ int main(){
 
   SpectralModel model({nex,nez}, nb_time_steps, {dom_sizex,dom_sizez},
 		      nu_mtl,nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
-		      tcut_mtl, tcut_poly, overlap, l_index, fracturelaw,
+		      tcut_mtl, tcut_poly, overlap, fracturelaw,
 		      contactlaw, "test_alu_homa3d");
   
   model.initModel(0.37);

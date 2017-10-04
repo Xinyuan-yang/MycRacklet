@@ -66,7 +66,6 @@
    Real load = 3e6;
    Real psi = 75;
    Real phi = 0;
-   UInt l_index = 1;
 
    // Cohesive paramters
    Real crit_n_open = 0.02e-3;
@@ -93,7 +92,7 @@
    /* -------------------------------------------------------------------------- */
    SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, nu_mtl, 
 		       nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
-		       tcut_mtl, tcut_poly, overlap, l_index, fracturelaw, contactlaw,
+		       tcut_mtl, tcut_poly, overlap, fracturelaw, contactlaw,
 		       "Mixed-mode debonding at Aluminium-Homalite interface");
 
    Real beta=0.4; //Stable time step coefficient

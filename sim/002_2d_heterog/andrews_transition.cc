@@ -77,7 +77,6 @@ int main(int argc, char *argv[]){
   // Loading case
   Real psi = 90;
   Real phi = 0;
-  UInt l_index = 1;
    
   // Cohesive paramters
   Real wk_crit_n_open = 0.02e-3;
@@ -142,7 +141,7 @@ int main(int argc, char *argv[]){
   /* -------------------------------------------------------------------------- */
 
   SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, nu, nu, 
-		      E, E, cs, cs, tcut, tcut, overlap, l_index, 
+		      E, E, cs, cs, tcut, tcut, overlap,
 		      fracturelaw, contactlaw, sim_name, output_folder);
   
   SimulationDriver sim_driver(model);

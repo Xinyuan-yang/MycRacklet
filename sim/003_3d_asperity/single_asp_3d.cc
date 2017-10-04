@@ -71,7 +71,6 @@
    if(argc > 5)
      psi = std::atof(argv[5]);
    Real phi = 0.0;
-   UInt l_index = 1;
 
    // Cohesive parameters
    Real crit_n_open = 0.02e-3;//0.08e-3;
@@ -117,11 +116,11 @@
 
    if (ratio==1.)
      model = new SpectralModel({nex,1}, nb_time_steps, {dom_sizex,0.},
-			       nu, nu, E, E, cs, cs, tcut, tcut, overlap, l_index,
+			       nu, nu, E, E, cs, cs, tcut, tcut, overlap,
 			       fracturelaw, contactlaw, sim_name, output_folder);
    else
      model = new SpectralModel({nex,nez}, nb_time_steps, {dom_sizex,dom_sizez},
-			       nu, nu, E, E, cs, cs, tcut, tcut, overlap, l_index,
+			       nu, nu, E, E, cs, cs, tcut, tcut, overlap,
 			       fracturelaw, contactlaw, sim_name, output_folder);
 
    SimulationDriver sim_driver(*model);

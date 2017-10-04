@@ -72,7 +72,6 @@
    Real load = 3e6;
    Real psi = 0;
    Real phi = 0;
-   UInt l_index = 1;
    
    // Cohesive parameters
    Real crit_n_open = 0.02e-3;
@@ -105,7 +104,7 @@
 
    SpectralModel model({nex,nez}, nb_time_steps, {dom_sizex,dom_sizez}, 
 		       nu_mtl, nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
-		       tcut_mtl, tcut_poly, overlap, l_index, fracturelaw,
+		       tcut_mtl, tcut_poly, overlap, fracturelaw,
 		       contactlaw,"Test asperity");
   
    model.initModel(0.37);

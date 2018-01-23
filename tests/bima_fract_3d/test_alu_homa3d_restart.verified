@@ -1,0 +1,30 @@
+!! Stable time step reinitialized to beta = 0.37
+Convolution kernel correctly loaded from nu_.33_h11.dat
+Convolution kernel correctly loaded from nu_.33_h22.dat
+Convolution kernel correctly loaded from nu_.33_k12.dat
+Convolution kernel correctly loaded from nu_.35_h11b.dat
+Convolution kernel correctly loaded from nu_.35_h22b.dat
+Convolution kernel correctly loaded from nu_.35_k12b.dat
+        delta_s        delta_n      tau_str^s      tau_str^n            E_s            E_n           E_fr
+              0              0          5e+06          5e+06        5.01746       0.179647              0
+    0.000108247              0              0              0        21.9955       0.317237              0
+    0.000282803     3.7094e-05              0              0        39.0529       0.384013              0
+    0.000512232    6.95635e-05              0              0        39.0529       0.384013              0
+    0.000739777    0.000191582              0              0        39.0529       0.384013              0
+!! Stable time step reinitialized to beta = 0.37
+Convolution kernel correctly loaded from nu_.33_h11.dat
+Convolution kernel correctly loaded from nu_.33_h22.dat
+Convolution kernel correctly loaded from nu_.33_k12.dat
+Convolution kernel correctly loaded from nu_.35_h11b.dat
+Convolution kernel correctly loaded from nu_.35_h22b.dat
+Convolution kernel correctly loaded from nu_.35_k12b.dat
+        delta_s        delta_n      tau_str^s      tau_str^n            E_s            E_n           E_fr
+!! WARNING: Computers have been restarted from a 2d simulation !
+!! Be careful with the associated computing domain; 2d simulation considers a unit width (i.e. dom_sizez=1[m])
+Restarting convolution from step no 101
+Restarting convolution from step no 101
+    0.000979495    0.000226162              0              0        39.0529       0.384013              0
+     0.00119826     0.00024112              0              0        39.0529       0.384013              0
+     0.00145861     0.00025826              0              0        39.0529       0.384013              0
+     0.00168725    0.000295939              0              0        39.0529       0.384013              0
+      0.0018869    0.000359481              0              0        39.0529       0.384013              0

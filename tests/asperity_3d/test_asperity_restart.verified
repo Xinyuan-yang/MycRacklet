@@ -1,0 +1,28 @@
+!! Stable time step reinitialized to beta = 0.37
+Convolution kernel correctly loaded from nu_.33_h11.dat
+Convolution kernel correctly loaded from nu_.33_h22.dat
+Convolution kernel correctly loaded from nu_.33_k12.dat
+Convolution kernel correctly loaded from nu_.35_h11b.dat
+Convolution kernel correctly loaded from nu_.35_h22b.dat
+Convolution kernel correctly loaded from nu_.35_k12b.dat
+        delta_s        delta_n      tau_str^s      tau_str^n            E_s            E_n           E_fr
+              0              0          5e+06          5e+06              0              0              0
+              0              0          5e+06          5e+06              0       0.367889              0
+              0              0          5e+06          5e+06    0.000926576        1.02444              0
+              0              0          5e+06          5e+06     0.00495636        2.25223              0
+              0    3.74655e-06    4.06336e+06    4.06336e+06      0.0211692        3.67506              0
+   -2.54439e-08    3.82854e-05              0              0       0.031456        3.87369              0
+!! Stable time step reinitialized to beta = 0.37
+Convolution kernel correctly loaded from nu_.33_h11.dat
+Convolution kernel correctly loaded from nu_.33_h22.dat
+Convolution kernel correctly loaded from nu_.33_k12.dat
+Convolution kernel correctly loaded from nu_.35_h11b.dat
+Convolution kernel correctly loaded from nu_.35_h22b.dat
+Convolution kernel correctly loaded from nu_.35_k12b.dat
+        delta_s        delta_n      tau_str^s      tau_str^n            E_s            E_n           E_fr
+Restarting convolution from step no 301
+Restarting convolution from step no 301
+   -5.45422e-09    5.75405e-05              0              0       0.031456        3.87369              0
+   -3.07603e-09    7.22071e-05              0              0       0.031456        3.87369              0
+   -4.58602e-09    8.53926e-05              0              0       0.031456        3.87369              0
+    2.12182e-08    9.65681e-05              0              0       0.031456        3.87369              0

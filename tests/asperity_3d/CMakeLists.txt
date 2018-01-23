@@ -34,6 +34,7 @@
 include_directories (${cRacklet_SOURCE_DIR}/src)
 
 register_cRacklet_test(test_asperity "3D fracture with a circular asperity")
+register_cRacklet_test(test_asperity_restart "3D fracture with a circular asperity with restart from 2D")
 
 copy_kernel_files(33 FALSE)
 copy_kernel_files(35 TRUE)

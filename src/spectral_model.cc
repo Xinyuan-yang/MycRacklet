@@ -9,6 +9,7 @@
 #include <complex>
 #include <fftw3.h>
 #include <math.h>
+#include <sys/stat.h>
 #include <algorithm>
 /* -------------------------------------------------------------------------- */
 InterfaceFields::InterfaceFields(const std::vector<CrackProfile> * in_fields, UInt dimension) {
@@ -132,6 +133,7 @@ void SpectralModel::initModel(Real reset_beta) {
 
   U_top = new Real[2*(total_nele_fft-1)*dim];
   U_bot = new Real[2*(total_nele_fft-1)*dim];
+  F_k = new Real[2*total_nele_fft*dim];
   
   this->nb_kernels = 4;
 
@@ -225,6 +227,54 @@ void SpectralModel::initConvolutionManagers(){
 }
 
 /* -------------------------------------------------------------------------- */
+void SpectralModel::restartModel(bool from_2dto3d) {
+
+  std::vector<UInt> nfft;
+  UInt nx;
+  
+  if(from_2dto3d) {
+    nfft = nele_fft;
+    nx = n_ele[0];
+  } else {
+    nfft = {0,0};
+    nx = 0;
+  } 
+  
+  this->restart(false,nx);
+
+  if(contact_law)
+    contact_law->restart(false,nx);
+  if(fracture_law)
+    fracture_law->restart(false,nx);
+  
+  UInt step_top = convo_manager_top->restart(0,false,nfft);
+  UInt step_bot = convo_manager_bot->restart(1,false,nfft);
+
+  if(step_top==step_bot)
+    it = step_top+1;
+  else
+    cRacklet::error("Mismatching restarting time step between top and bottom material");
+}
+
+/* -------------------------------------------------------------------------- */
+void SpectralModel::pauseModel() {
+
+  std::stringstream dir;
+  dir << this->output_dir << restart_dir;
+  
+  mkdir((dir.str()).c_str(),0777);
+
+  this->restart(true);
+
+  if(contact_law)
+    contact_law->restart(true);
+  if(fracture_law)
+    fracture_law->restart(true);
+  
+  convo_manager_top->restart(0,true);
+  convo_manager_bot->restart(1,true);
+}
+/* -------------------------------------------------------------------------- */
 void SpectralModel::setLoadingCase(Real load, Real psi, Real phi) {
 
   printSelfLoad(load, psi, phi);
@@ -243,11 +293,9 @@ void SpectralModel::setLoadingCase(Real load, Real psi, Real phi) {
 
 /* -------------------------------------------------------------------------- */
 void SpectralModel::updateLoads(Real * loading_per_dim) {
-  Real ratio;  
+
   for (UInt x = 0; x < n_ele[0]; ++x) {
     for (UInt z = 0; z < n_ele[1]; ++z) {
-      if(loading_ratio)
-	ratio = loading_ratio[x+z*n_ele[0]];
       for (UInt side = 0; side < 2; ++side) {
 	for (UInt j = 0; j < dim; ++j) {
 	  loads[side][(x*dim+j)+z*n_ele[0]*dim] = *(loading_per_dim+j);     
@@ -411,11 +459,9 @@ void SpectralModel::computeStress() {
   
   Real normalize = 1/(Real)total_n_ele; //manuel FFTW
 
-  Real * F_new = new Real[2*dim*(total_nele_fft)];
-
   for (UInt side = 0; side < 2; ++side) {
    
-    Real * F_it(F_new);
+    Real * F_it(F_k);
 
     if (interface_dim==2)
       computeConvolutions<2>(F_it, side);
@@ -424,17 +470,15 @@ void SpectralModel::computeStress() {
 
     for (UInt d = 0; d < dim; ++d) {
       for (UInt img = 0; img < 2; ++img) {
-	*(F_new+d*(total_nele_fft*2)+img)=0.0;
+	*(F_k+d*(total_nele_fft*2)+img)=0.0;
       }
     }
 
-    stresses[side].backwardFFT(F_new, dim); 
+    stresses[side].backwardFFT(F_k, dim); 
     stresses[side] *= normalize;
     stresses[side] += loads[side];
     
   }  
-
-  delete[] F_new;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -529,11 +573,6 @@ void SpectralModel::computeContactVelocities(UInt ix, UInt iz){
 
   computeShearVelocities(strength, i);
   
-  Real dvs_top, dvs_bot, dvs;
-  dvs_top = sqrt(velocities[0][i*dim]*velocities[0][i*dim] + velocities[0][i*dim+2]*velocities[0][i*dim+2]);
-  dvs_bot = sqrt(velocities[1][i*dim]*velocities[1][i*dim] + velocities[1][i*dim+2]*velocities[1][i*dim+2]);
-  dvs = dvs_top - dvs_bot;
-
   ind_crack[i] = 3;
   fric_strength[i] = strength;
 }
@@ -603,7 +642,10 @@ void SpectralModel::increaseTimeStep() {
  veloc_jump->computeJumpFields();
  computeAll(it*beta*dxmin/X[0]);
  ++it;
- 
+
+ if((it>ntim+1)&&(ntim!=0))
+   std::cout << "!!! WARNING! The number of simulation time steps exceed user prediction !!!"
+	     << std::endl;
 }
 
 /* -------------------------------------------------------------------------- */

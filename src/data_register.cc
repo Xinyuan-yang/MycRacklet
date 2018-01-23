@@ -5,6 +5,7 @@
 /* -------------------------------------------------------------------------- */
 // Static members should be defined in a source file
 std::string DataRegister::output_dir;
+std::string DataRegister::restart_dir;
 std::ofstream DataRegister::out_summary;
 std::ofstream DataRegister::out_parameters;
 std::map<DataFields,DataTypes> DataRegister::datas;
@@ -14,7 +15,7 @@ void DataRegister::data_initialize(const std::string output_folder,
 				   const std::string description) {
 
   output_dir=output_folder;
-  
+  restart_dir= "restart_files/";
   extern std::string cR_release_info;
   
   out_summary.open(output_folder+"Simulation_Summary.cra");
@@ -37,6 +38,13 @@ void DataRegister::data_initialize(const std::string output_folder,
   out_summary << cR_release_info << std::endl;
   
   out_parameters.open(output_folder+"Parameters.cra");
+
+#if defined (_OPENMP)
+  int nthreads = omp_get_max_threads();
+  fftw_init_threads();
+  fftw_plan_with_nthreads(nthreads);
+#endif
+
 }
 
 /* -------------------------------------------------------------------------- */
@@ -49,7 +57,11 @@ void DataRegister::data_finalize() {
  
   out_summary.close();
   out_parameters.close();
+
+  datas.clear();
+  computers.clear();
 }
+
 /* -------------------------------------------------------------------------- */
 std::string DataRegister::getCurrentDaytime() {
   
@@ -88,6 +100,7 @@ Computer * DataRegister::getComputer(std::string computer_name) {
     std::stringstream err;
     err << "No registered computer named " << computer_name << " !";
     cRacklet::error(err);
+    return NULL;
   }
 }
 
@@ -100,6 +113,117 @@ void DataRegister::computeAll(Real time) {
     (it->second)->compute(time);
   }  
 }
+
+/* -------------------------------------------------------------------------- */
+void DataRegister::restartComputer(bool pausing,UInt nele_2d) {
+
+  std::ios::openmode mode;
+
+  if(pausing)
+    mode=std::ios::out|std::ios::binary;
+  else
+    mode=std::ios::in|std::ios::binary;
+   
+  std::fstream file((output_dir+restart_dir+"restart_computers.cra").c_str(),mode);
+
+  if (!file.is_open()&&!pausing)
+    cRacklet::error("Unable to open computers restart file");
+  
+  std::map<std::string,Computer*>::iterator it = computers.begin();
+
+  UInt nb_restarted_computers = 0;
+  
+  for (; it!=computers.end(); ++it) {
+    (it->second)->restart(file,pausing);
+    ++nb_restarted_computers;
+  }
+
+  if((nele_2d!=0)&&(nb_restarted_computers>0))
+    std::cout << "!! WARNING: Computers have been restarted from a 2d simulation !" << std::endl
+	      << "!! Be careful with the associated computing domain; "
+	      << "2d simulation considers a unit width (i.e. dom_sizez=1[m])"
+	      << std::endl; 
+  
+  file.close();
+}
+
+/* -------------------------------------------------------------------------- */
+void DataRegister::restart(bool pausing, UInt nele_2d) {
+
+  restartComputer(pausing,nele_2d);
+
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  DataRegister::restartData(*nor_strength,"restart_normal_strength.cra",pausing, nele_2d);
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  DataRegister::restartData(*shr_strength,"restart_shear_strength.cra",pausing, nele_2d);
+  
+  CrackProfile * top_displacements = datas[_top_displacements];
+  DataRegister::restartData(top_displacements->getValues(),"restart_top_displacements.cra",pausing, 3*nele_2d);
+  CrackProfile * bot_displacements = datas[_bottom_displacements];
+  DataRegister::restartData(bot_displacements->getValues(),"restart_bottom_displacements.cra",pausing, 3*nele_2d);
+
+  CrackProfile * top_velocities = datas[_top_velocities];
+  DataRegister::restartData(top_velocities->getValues(),"restart_top_velocities.cra",pausing, 3*nele_2d);
+  CrackProfile * bot_velocities = datas[_bottom_velocities];
+  DataRegister::restartData(bot_velocities->getValues(),"restart_bottom_velocities.cra",pausing, 3*nele_2d);
+
+}
+  
+/* -------------------------------------------------------------------------- */
+template<typename T>
+void DataRegister::restartData(std::vector<T> & my_data ,const std::string data_file, bool pausing, UInt nele_2d) {
+
+  std::ios::openmode mode;
+
+  if(pausing)
+    mode=std::ios::out|std::ios::binary;
+  else
+    mode=std::ios::in|std::ios::binary;
+
+  std::string filename = output_dir+restart_dir+data_file;
+  
+  std::fstream file(filename.c_str(),mode);  
+
+  if (!file.is_open()&&!pausing){
+    std::stringstream err;
+    err << "Unable to open restart file " << data_file << std::endl;
+    cRacklet::error(err);
+  }
+  
+  UInt nb_elements = my_data.size();
+  
+  if (pausing)
+    file.write((char*) &(my_data[0]), nb_elements*sizeof(T));
+  else if(nele_2d==0)
+    file.read((char*) &(my_data[0]), nb_elements*sizeof(T));
+  else
+    restartDataFrom2d(my_data,file,nele_2d);
+   
+  file.close();
+}
+
+template
+void DataRegister::restartData(std::vector<UInt> & my_data ,const std::string data_file, bool pausing, UInt nele_2d);
+template
+void DataRegister::restartData(std::vector<Real> & my_data ,const std::string data_file, bool pausing, UInt nele_2d);
+
+/* -------------------------------------------------------------------------- */
+template<typename T>
+void DataRegister::restartDataFrom2d(std::vector<T> & my_data , std::fstream & file, UInt nele_2d) {
+
+  T * temp_data = new T[nele_2d];
+  file.read((char*)(temp_data), nele_2d*sizeof(T));
+
+  for (UInt i = 0; i < my_data.size(); i+=nele_2d) {
+    memcpy(&(my_data[i]),temp_data,nele_2d*sizeof(T));
+  }
+  delete[] temp_data;
+}
+
+template
+void DataRegister::restartDataFrom2d(std::vector<UInt> & my_data , std::fstream & file, UInt nele_2d);
+template
+void DataRegister::restartDataFrom2d(std::vector<Real> & my_data , std::fstream & file, UInt nele_2d);
 
 /* -------------------------------------------------------------------------- */
 UInt DataRegister::getCrackTipPosition(UInt x_start, UInt x_end) {

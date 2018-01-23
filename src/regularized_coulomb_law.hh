@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __REGULARIZED_COULOMB_LAW__
 #define __REGULARIZED_COULOMB_LAW__
@@ -50,6 +50,10 @@ public:
 public:
   // Compute the frictionnal strength with the normal compressive stress
   void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it); 
+  // Method used in restart framework of contact history
+  // pausing=true->generate restart files | pausing=false->restart simulation from existing files
+  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  void restart(bool pausing=false, UInt nele_2d=0);
   // dump current contact law in a given ofstream
   void printSelf(std::ofstream & parameters_file, std::ofstream & summary);
   /* ------------------------------------------------------------------------ */

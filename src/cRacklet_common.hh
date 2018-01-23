@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __CRACKLET_COMMON__
 #define __CRACKLET_COMMON__
@@ -43,8 +43,7 @@ typedef unsigned int UInt;
 typedef size_t Idx;
 typedef double Real;
 //Default stable time step parameter beta such as c_s*dt = beta*dx
-static double CS_DT_OVER_DX=0.2;
-
+static const double CS_DT_OVER_DX=0.2;
 namespace cRacklet {
   
   // Error handling

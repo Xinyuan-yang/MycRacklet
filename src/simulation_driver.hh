@@ -47,8 +47,8 @@ class SimulationDriver : public DataRegister {
   /* ------------------------------------------------------------------------ */
 public:
 
-  SimulationDriver(SpectralModel & model_to_drive): model(model_to_drive) {
-    model.initModel();
+  SimulationDriver(SpectralModel & model_to_drive, Real beta=0.0): model(model_to_drive) {
+    model.initModel(beta);
   };
   SimulationDriver(SpectralModel & model_to_drive, Real target_speed,
 		   Real crack_start);
@@ -85,9 +85,12 @@ public:
   // Init a simulation with evolving loading conditions following loading_file
   Real initLoadingFromFile(std::string loading_file, LoadControlType load_control=_time_control,
 			   Real initial_loading=0., Real psi=0., Real phi=0.);  
-  // Initialization before tailoring loading conditions to fix crack speed 
-  void initConstantSpeed(Real initial_loading, Real psi, Real phi, Real average_crit_stress, 
-			 Real spont_crack_length=0.0, LoadControlType load_control=_time_control);
+  // Initialization before tailoring loading conditions to fix crack speed
+  // The upper bound of the applied far-field loading can be defined as a fraction of average_max_stress
+  // griffith_length is the largest static crack size used to define the minimum applied far-field loading
+  void initConstantSpeed(Real initial_loading, Real psi, Real phi, Real average_max_stress, 
+			 Real spont_crack_length=0.0, LoadControlType load_control=_time_control,
+			 Real load_upper_bound=0.9, Real griffith_length=0.);
   // Solve one time step of the simulation designed
   UInt solveStep();
   // Print tailored loading conditions to file
@@ -116,8 +119,11 @@ private:
   UInt x_crack_start;
   //Spontaneous crack length
   Real spont_crack;
-  //Average critical stress used to normalized loading conditions
-  Real av_crit_stress;
+  //Average maximal stress from the cohesive law used to normalized loading conditions
+  Real av_max_stress;
+  //Upper and lower bounds of the far-field loading (used in case of steady-state simulation
+  Real max_load;
+  Real min_load;
   //Loading imposed at the current time step
   std::vector<Real> new_loading;
   //Cohesive crack propagation  

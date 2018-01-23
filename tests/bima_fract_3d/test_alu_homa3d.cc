@@ -72,15 +72,14 @@ int main(){
   Real load = 3e6;//3e6
   Real psi = 75;
   Real phi = 45;
-  UInt l_index = 1;
    
   // Cohesive paramters
   Real crit_n_open = 0.02e-3;
   Real crit_s_open = 0.02e-3;
   Real max_s_str = 5e6;
   Real max_n_str = 5e6;
-  Real ratio = 1.0;
-  FractureLaw * fracturelaw;
+
+  FractureLaw * fracturelaw = NULL;
 
   // Friction paramters
   bool overlap = 0;
@@ -175,8 +174,6 @@ int main(){
 
     ++print;
   }
-
-  delete contactlaw;
    
   return 0;
 }

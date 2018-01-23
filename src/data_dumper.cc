@@ -6,26 +6,11 @@ void PointsDumper::dump() {
 
   for (UInt i = 0; i < points.size(); ++i) {
     this->start = points[i];
-    Real index;
-    switch (output_format) {
-    case _text:
-      file << points[i] <<  " ";
-      break;
-    case _binary:
-      index = (Real)(points[i]);
-      file.write((char*)(&index),sizeof(Real));
-      break;
-    default:
-      cRacklet::error("DataDumper do not know how to dump using this OutputFormat");
-      break;
-    }
     for (UInt f = 0; f < fields.size(); ++f) {
       this->field_name = fields[f];
       Dumper::dump();
     }
   }
-  if(output_format==_text)
-    file << std::endl;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -68,7 +53,8 @@ void DataDumper::initDumper(const std::string filename, DataFields type, Real nb
   initTimer(filename);
   DataRegister::out_summary << "/* -------------------------------------------------------------------------- */"; 
   DataRegister::out_summary << std::endl;
-  DataRegister::out_summary << "FIELD OUTPUT FILE: " << std::endl << filename
+  DataRegister::out_summary << "FIELD OUTPUT FILE OF " << datafields_name[type] << std::endl
+			    << filename
 			    << " (dumping ratio: " << nb_data_ratio
 			    << ", stride: " << stride
 			    << ", start: " << start << ")"
@@ -90,10 +76,29 @@ void DataDumper::initPointsDumper(const std::string filename, std::vector<DataFi
   dumper[filename] = new PointsDumper(fields, points_to_dump, total_n_ele);
   dumper[filename]->init(DataRegister::output_dir+filename, format);
   initTimer(filename);
+  
   DataRegister::out_summary << "/* -------------------------------------------------------------------------- */"; 
   DataRegister::out_summary << std::endl;
-  DataRegister::out_summary << "POINTWISE OUTPUT FILE: " << std::endl << filename << std::endl;
+  DataRegister::out_summary << "POINTWISE OUTPUT FILE OF: ";
 
+  std::vector<DataFields>::iterator it;
+  for(it=fields.begin(); it!=fields.end(); ++it)
+    DataRegister::out_summary << datafields_name[*it] << "; ";
+
+  DataRegister::out_summary << std::endl << filename << std::endl;
+
+  //Printing details of observation points positions
+  std::string info_file = DataRegister::output_dir+"Info_"+filename;
+  std::ofstream file(info_file);
+  std::vector<UInt>::iterator itp;
+  UInt nele_x = model->getNbElements()[0];
+  file << points_to_dump.size() << std::endl;
+  for(itp=points_to_dump.begin(); itp!=points_to_dump.end(); ++itp) {
+    UInt iz = *itp/nele_x;
+    UInt ix = *itp%nele_x;
+    file << ix << " " << iz << std::endl;
+  }
+  file.close();
 }
 
 /* -------------------------------------------------------------------------- */

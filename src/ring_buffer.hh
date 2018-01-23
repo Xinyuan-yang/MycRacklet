@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __RING_BUFFER__
 #define __RING_BUFFER__
@@ -60,6 +60,9 @@ public:
   inline void operator<<(T new_val);
   // Get the number of inserted element since buffer initialization
   inline UInt getStep(){return n;}
+  // Reset the number of insert element since buffer initialization.
+  // Mostly used when restarting a buffer
+  inline void resetStep(UInt step){this->n=step;}
   // Address of the last value inserted in the buffer
   inline T * current() const;
   // Address of the first element in memory

@@ -34,6 +34,7 @@
 include_directories (${cRacklet_SOURCE_DIR}/src)
 
 register_cRacklet_test(test_alu_homa3d "3D bimaterial fracture test")
+register_cRacklet_test(test_alu_homa3d_restart "Hybrid 2D-3D bimaterial fracture test")
 
 copy_kernel_files(33 FALSE)
 copy_kernel_files(35 TRUE)

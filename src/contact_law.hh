@@ -22,7 +22,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __CONTACT_LAW__
 #define __CONTACT_LAW__
@@ -46,6 +46,10 @@ public:
 public:
   // Compute the frictionnal strength with the normal compressive stress
   virtual void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it) = 0;
+  // Method used in restart framework in case of history dependant contact law
+  // pausing=true->generate restart files | pausing=false->restart simulation from existing files
+  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  virtual void restart(bool pausing=false, UInt nele_2d=0)=0;
   // dump contact law paramters in a given ofstream
   virtual void printSelf(std::ofstream & parameters_file, std::ofstream & summary) = 0;
   /* ------------------------------------------------------------------------ */

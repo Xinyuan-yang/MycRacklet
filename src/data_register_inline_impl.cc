@@ -46,6 +46,12 @@ inline DataTypes::operator const CrackProfile*() const {
 
 /* -------------------------------------------------------------------------- */
 template<>
+inline DataTypes::operator CrackProfile*() {
+  return crack_prof;  
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
 inline void DataTypes::writeData(CrackProfile * in_data)  {
   crack_prof=in_data;  
 }

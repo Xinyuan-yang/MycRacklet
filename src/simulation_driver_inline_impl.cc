@@ -27,7 +27,6 @@ template<>
 inline Real SimulationDriver::readSetLoadingCase<_time_control>(std::ifstream & file) {
 
   Real nb_time_steps;
-  Real ntim = model.getNbTimeSteps();
   
   file >> nb_time_steps;
   
@@ -71,14 +70,14 @@ inline Real SimulationDriver::readSetLoadingCase<_space_control>(std::ifstream &
   } else {
     file_jump = nb_ele_file/n_ele[0];
   }
-  ctrl_loading.resize(3*n_ele[0]/2);
+  ctrl_loading.resize(3*n_ele[0]);
   
   Real line=0.0;
 
   if(this->target_crack_speed)
     checkForTargetSpeed(file);
   
-  for (UInt i =0; i < 3*n_ele[0]/2; ++i) { 
+  for (UInt i =0; i < 3*n_ele[0]; ++i) { 
     if(file.good()) {
       for (UInt j = 0; j<file_jump; ++j){
 	file>>line;   
@@ -88,5 +87,6 @@ inline Real SimulationDriver::readSetLoadingCase<_space_control>(std::ifstream &
     else
       cRacklet::error("!!! A problem occured with your loading file");
   }
-  file.close(); 
+  file.close();
+  return 0.;
 }

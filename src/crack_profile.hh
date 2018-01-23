@@ -23,7 +23,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __CRACK_PROFILE_H__
 #define __CRACK_PROFILE_H__
@@ -69,6 +69,8 @@ public:
   void stridedFFT(Real * output, UInt stride);
   // compute a backward FFT from half spectrum (mean set as {0,0}) to a real strided profile
   void backwardFFT(Real * input, UInt stride);
+  // return the array of values
+  std::vector<Real> & getValues(){return heights;}
   // access to the i-th value in the array
   inline Real & operator[](UInt i);
   inline const Real & operator[](UInt i) const;
@@ -109,12 +111,8 @@ inline CrackProfile::CrackProfile(){
 /* -------------------------------------------------------------------------- */
 inline CrackProfile::~CrackProfile(){
 
-  if(data_fft){
+  if(data_fft) {
     fftw_destroy_plan(plan);
-#if defined (_OPENMP)
-    fftw_cleanup_threads();
-#endif
-    fftw_cleanup();
     delete[] data_fft;
   }
 }

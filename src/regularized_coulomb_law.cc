@@ -1,5 +1,6 @@
 /* -------------------------------------------------------------------------- */
 #include "regularized_coulomb_law.hh"
+#include "data_register.hh"
 #include <stdlib.h>
 #include <stdio.h>
 #include <fstream>
@@ -34,6 +35,13 @@ void RegularizedCoulombLaw::computeFricStrength(Real & norm_comp_stress, Real & 
   strength = cf*fabs(sigma_np1[i]);
   contact_history[i] = it;
 
+}
+
+/* -------------------------------------------------------------------------- */
+void RegularizedCoulombLaw::restart(bool pausing, UInt nele_2d) {
+
+  DataRegister::restartData(sigma_np1, "restart_sigma_np1.cra",pausing, nele_2d);
+  DataRegister::restartData(contact_history, "restart_contact_history.cra",pausing, nele_2d);
 }
 
 /* -------------------------------------------------------------------------- */

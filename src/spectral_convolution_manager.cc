@@ -45,7 +45,7 @@ void SpectralConvolutionManager::init(Real cut, UInt nb_time) {
 
   Idx total_size = 2*size_per_field*nb_fields;
 
-  ConvolutionManager::allocateMemory(2*size_per_field*nb_fields);
+  ConvolutionManager::allocateMemory(total_size);
 
   Real * it = field_values;
 
@@ -128,3 +128,80 @@ void SpectralConvolutionManager::computeConvolution(Real * res, UInt field_id,
 #endif
 }
 
+/* -------------------------------------------------------------------------- */
+UInt SpectralConvolutionManager::restart(UInt side, bool pausing, std::vector<UInt> n_ele_fft) {
+
+  std::ios::openmode mode;
+
+  if(pausing)
+    mode=std::ios::out|std::ios::binary;
+  else
+    mode=std::ios::in|std::ios::binary;
+  
+  std::stringstream filename_U;
+  filename_U << DataRegister::output_dir << DataRegister::restart_dir << "restart_U_" << side << ".cra";
+  std::fstream file_U(filename_U.str(), mode);
+
+  if ((!file_U.is_open())&&(!pausing))
+    cRacklet::error("Unable to open the restart files for convolutions");
+
+  UInt step;
+  
+  if(pausing) {
+    
+    step = field->getStep();
+    
+    file_U.write((char*)(field_values),sizeof(Real)*2*size_per_field*nb_fields);
+    file_U.write((char*)(&step),sizeof(UInt));
+  }
+  
+  else {
+
+    if (n_ele_fft[0]==0)
+      file_U.read((char*)(field_values),sizeof(Real)*2*size_per_field*nb_fields);
+    else {
+      UInt size_per_2d_field = k_start[n_ele_fft[0]-1];
+      Real * temp_values = new Real[2*size_per_2d_field*nb_fields];
+      file_U.read((char*)(temp_values),sizeof(Real)*2*size_per_2d_field*nb_fields);
+
+      for (UInt f = 0; f < nb_fields; ++f) {
+	Real * it = field_values+2*size_per_field*f;
+	for (UInt i = 0; i < 2*size_per_2d_field; ++i) {
+	  *it = temp_values[i+f*2*size_per_2d_field]*n_ele_fft[1];
+	  ++it;
+	}
+      }
+      delete[] temp_values;
+    }
+    
+    file_U.read((char*)(&step),sizeof(UInt));
+
+    RingBuffer<Real> * it_field = this->field;
+  
+    for (UInt i = 0; i < 2*nb_modes*nb_fields; ++i) {
+      it_field->resetStep(step);
+      ++it_field;
+    }
+
+    restartPreintegratedKernel(step);
+    
+    std::cout << "Restarting convolution from step no " << step << std::endl;  
+  }
+  
+  file_U.close();
+  return step;
+}
+
+/* -------------------------------------------------------------------------- */
+void SpectralConvolutionManager::restartPreintegratedKernel(UInt step) {
+
+  for (UInt n = 0; n < step; ++n) {
+    for (UInt i=0; i < nb_modes; ++i) {
+      if (n<mod_cut[i]) {
+	for (UInt k=0; k < nb_kernels; ++k) {
+	  preintegrateKernel(n,functors[k], k_start[i]+k*size_per_field,j_ksi[i]);
+	}
+      }
+    }
+  }
+}

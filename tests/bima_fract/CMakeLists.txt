@@ -34,6 +34,7 @@
 include_directories (${cRacklet_SOURCE_DIR}/src)
 
 register_cRacklet_test(test_bima_fract "2D bimaterial fracture")
+register_cRacklet_test(test_bima_fract_restart "2D bimaterial fracture with pause and restart")
 
 copy_kernel_files(33 FALSE)
 copy_kernel_files(35 TRUE)

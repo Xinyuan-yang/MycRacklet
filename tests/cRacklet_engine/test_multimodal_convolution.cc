@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #include "spectral_convolution_manager.hh"
 #include <vector>
@@ -63,8 +63,7 @@ int main() {
   Real cs = 1200;
   Real cut = 100.;
   Real beta = 0.4;
-  Real nt_cut = cut*(Real)nb_el*0.5/(M_PI*beta);
- 
+  
   UInt nb_modes = nb_el/2;
   std::vector<Real> j_ksi(nb_modes);
 

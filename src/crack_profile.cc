@@ -38,13 +38,7 @@ void CrackProfile::initFFT(bool forward_fft, UInt dim) {
   UInt n_fft_per_dim = n[1]*(n[0]/2+1);
   
   data_fft = new fftw_complex[n_fft_per_dim*3];
-
-#if defined (_OPENMP)
-  int nthreads = omp_get_max_threads();
-  fftw_init_threads();
-  fftw_plan_with_nthreads(nthreads);
-#endif
-  
+ 
   if (forward_fft)
     plan = fftw_plan_many_dft_r2c(2, N, dim, &heights[0], NULL, dim, 1, data_fft, NULL, 1, n_fft_per_dim, FFTW_ESTIMATE);
   else

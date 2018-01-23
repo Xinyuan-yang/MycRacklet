@@ -52,7 +52,6 @@ inline SpectralModel::SpectralModel(std::vector<UInt> nele, UInt nb_time_steps,
   dx.resize(2);
   q0.resize(2);
   nele_fft.resize(2);
-
   this->data_initialize(output_dir, simulation_summary);
 }
 
@@ -251,7 +250,17 @@ inline SpectralModel::~SpectralModel(){
   }
   delete[] U_top;
   delete[] U_bot;
-
+  delete[] F_k;
+  
   delete convo_manager_top;
   delete convo_manager_bot;
+
+  if(loading_ratio)
+    delete[] loading_ratio;
+  
+  if(fracture_law)
+    delete fracture_law;
+
+  if(contact_law)
+    delete contact_law;
 };

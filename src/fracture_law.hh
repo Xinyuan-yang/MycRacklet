@@ -22,7 +22,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __FRACTURE_LAW__
 #define __FRACTURE_LAW__
@@ -47,7 +47,11 @@ public:
   // update the strength of the material in function of the opening profile
   virtual void updateFractureLaw(std::vector<Real> & nor_strength, std::vector<Real> & shr_strength,
 				 std::vector<UInt> & ind_crack, CrackProfile & nor_opening, 
-				 CrackProfile & shr_opening) = 0; 
+				 CrackProfile & shr_opening) = 0;
+  // Method used in restart framework in case of history dependant fracture law
+  // pausing=true->generate restart files | pausing=false->restart simulation from existing files
+  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  virtual void restart(bool pausing=true, UInt nele_2d=0)=0;
   // dump fracture law paramters in a given ofstream
   virtual void printSelf(std::ofstream & parameters_file, std::ofstream & summary) = 0;
   /* ------------------------------------------------------------------------ */

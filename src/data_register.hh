@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __DATA_REGISTER_H__
 #define __DATA_REGISTER_H__
@@ -37,6 +37,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <string.h>
 /* -------------------------------------------------------------------------- */
 //Identifier to help access to data wanted. The size of each field is indicated below
 enum DataFields {
@@ -55,6 +56,25 @@ enum DataFields {
   _shear_strength, //n_ele
   _frictional_strength, //n_ele
   _id_crack, //n_ele
+};
+
+//Human readable names associated to each DataFields
+static std::map<DataFields, std::string> datafields_name = {
+  {_top_displacements, "Top displacements"},
+  {_bottom_displacements, "Bottom displacements"},
+  {_normal_displacement_jumps, "Normal displacement jumps"},
+  {_shear_displacement_jumps, "Shear displacement jumps" },
+  {_top_velocities, "Top velocities"},
+  {_bottom_velocities, "Bottom velocities"},
+  {_normal_velocity_jumps, "Normal velocity jumps"},
+  {_shear_velocity_jumps, "Shear velocity jumps"},
+  {_interface_tractions, "Interface tractions"},
+  {_top_loading, "Top far-field loading"},
+  {_bottom_loading, "Bottom far-field loading"},
+  {_normal_strength, "Normal strength"},
+  {_shear_strength, "Shear strength"},
+  {_frictional_strength, "Frictional strength"},
+  {_id_crack, "Crack index"}
 };
 
 //Structure used to encapsulate different type of data pointers
@@ -106,6 +126,9 @@ public:
 public:
   // Virtual method launching computations at a given time step
   virtual void compute(Real time)=0;
+  // Virtual method used in restart framework to save/retrieve computers values
+  // pausing=true->save computers | pausing=false->retrieve computers values
+  virtual void restart(std::fstream & file, bool pausing)=0;
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */
   /* ------------------------------------------------------------------------ */
@@ -121,7 +144,12 @@ class DataRegister {
 public:
 
   DataRegister(){};
-  virtual ~DataRegister(){};
+  virtual ~DataRegister(){
+#if defined (_OPENMP)
+    fftw_cleanup_threads();
+#endif
+    fftw_cleanup();  
+  };
 
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
@@ -136,7 +164,12 @@ public:
   static Computer * getComputer(std::string computer_name);
   //Method returning current crack position searched between x_start and x_end (searching along z=0)
   static UInt getCrackTipPosition(UInt x_start, UInt x_end);
-  
+  // Method used in restart framework to load/export a vector from/to a data_file 
+  // pausing=true->generate restart data_file | pausing=false->load vector from existing data_file
+  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  template<typename T>
+  static void restartData(std::vector<T> & my_data , const std::string data_file,
+			  bool pausing, UInt nele_2d=0);  
 protected:
  
   //Initialize the resgister providing the output folder of simulation as well as its description
@@ -148,12 +181,25 @@ protected:
   inline void registerData(DataFields my_field, T * in_data);
   //Launch all the registered computations for the given time
   void computeAll(Real time);
+  // Method used in restart framework of fields saved in DataRegister
+  // (displacements,velocities,crack_id,strength)
+  // pausing=true->generate restart files | pausing=false->restart simulation from existing files
+  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  static void restart(bool pausing=false, UInt nele_2d=0);
   
 private:
 
   // Return the current daytime
   std::string getCurrentDaytime();
+  // Method used in restart framework to save/retrieve computers values
+  // pausing=true->save computers | pausing=false->retrieve computers values
+  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  static void restartComputer(bool pausing, UInt nele_2d);
+  //Subrouting to restart 3d arrays from 2d
+  template<typename T>
+  static void restartDataFrom2d(std::vector<T> & my_data , std::fstream & file, UInt nele_2d);
 
+  
 public:
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */
@@ -162,8 +208,10 @@ public:
   static std::ofstream out_summary;
   // Ofstream of simulation parameters file
   static std::ofstream out_parameters;
-  // Output directory where simulation output will be written
+  // Output directory where simulation outputs will be written
   static std::string output_dir;
+  // Output directory where restart outputs will be written
+  static std::string restart_dir;
 
 protected:
   // Map of registered data
@@ -198,10 +246,25 @@ protected:
   // Compute rate following the templated integrator types
   template<IntegratorTypes IT>
   inline void compute();
-
+  
 public:
   // Compute rate at a given time
   virtual inline void compute(Real time);
+  // Method used in restart framework to save/retrieve integrators values
+  // pausing=true->save computers | pausing=false->retrieve computers values
+  virtual void restart(std::fstream & file, bool pausing) {
+    if(pausing){
+      file.write((char*) &(I), sizeof(Real));
+      file.write((char*) &(I_dot_old), sizeof(Real));
+      file.write((char*) &(t_old), sizeof(Real));
+    }
+    else {
+      file.read((char*) &(I), sizeof(Real));
+      file.read((char*) &(I_dot_old), sizeof(Real));
+      file.read((char*) &(t_old), sizeof(Real));
+    }
+  }
+  
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */

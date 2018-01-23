@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __SPECTRAL_MODEL_H__
 #define __SPECTRAL_MODEL_H__
@@ -116,6 +116,12 @@ public:
   // Initialization of the model. Specity a beta only to modify stable time step parameter
   // Default value defined in cRacklet_common.hh
   void initModel(Real beta=0.0);
+  // Create restarting files enabling to continue the current simulation later
+  void pauseModel();
+  // Restart a previous simulation from restarting file. Should be call after model initalization
+  // See ../tests/bima_fract/test_bima_fract_restart.cc for a practical example
+  // Restart can be made from 2d to 3d simulations (see ../tests/bima_fract_3d/test_alu_homa3d_restart.cc)
+  void restartModel(bool from_2dto3d=false);
   // Set a sinusoidal load distribution
   void sinusoidalLoading(Real min);
   // Set a brownian distributed loading
@@ -171,7 +177,7 @@ public:
   // Return uniform loading vector used to set average interface loading conditions
   std::vector<Real> & getUniformLoading() {return uniform_loading;}
   // Return pointer to the FractureLaw
-  FractureLaw * & getFractureLaw() {return fracture_law;}
+  FractureLaw ** getFractureLaw() {return &fracture_law;}
 
 public:
  
@@ -271,7 +277,7 @@ private:
   // Arrays allocated to store result of convolution integrals
   Real * h11u1,* h22u2,* h33u3,* h12u1,* h12u2,* h12u3,* h13u3,* h11u3,* h33u1;
   // Arrays allocated to store Fourier decomposition of the current displacements field
-  Real * U_top, * U_bot;
+  Real * U_top, * U_bot, * F_k;
   // Number of convolution kernel per domain used by the model
   UInt nb_kernels;
   // Ratio of top and bottom shear modulus

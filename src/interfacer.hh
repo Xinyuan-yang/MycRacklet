@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __INTERFACER__
 #define __INTERFACER__
@@ -65,7 +65,7 @@ public:
     total_n_ele = n_ele[0]*n_ele[1];
   }
 
-  virtual ~Interfacer(){delete fracture_law;};
+  virtual ~Interfacer(){};
   
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
@@ -156,7 +156,7 @@ public:
 private:
 
   // Fracture law object to build
-  FractureLaw * & fracture_law;
+  FractureLaw ** fracture_law;
   // Shear and normal strength arrays of the interface
   std::vector<Real> * shr_strength;
   std::vector<Real> * nor_strength;

@@ -79,7 +79,7 @@
    Real max_s_str = 5e6;
    Real max_n_str = 5e6;
    Real ratio = 1.5;
-   FractureLaw * fracturelaw;
+   FractureLaw * fracturelaw = NULL;
 
    // Friction parameters
    bool overlap = 0;
@@ -89,7 +89,7 @@
 
    //output parameters
    UInt direction=0; // if x axis 1 if z axis
-   UInt line=0.5*nez;//nex/2-1; //line is a raw or a line and begin with 0
+ 
    // Output point position on the line choosen
    std::vector<Real> point_his(8);
    Real dom_size;
@@ -189,8 +189,6 @@
 	 }
      ++print;
    }
-
-   delete contactlaw;
    
    return 0;
  }

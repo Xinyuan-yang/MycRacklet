@@ -26,11 +26,12 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #include <limits>
 #include "convolution_manager.hh"
 #include "ring_buffer.hh"
+#include "data_register.hh"
 /* -------------------------------------------------------------------------- */
 
 class SpectralConvolutionManager : public ConvolutionManager {
@@ -68,11 +69,17 @@ public:
   // The result is an array of size (2*nb_modes)
   void computeConvolution(Real * res, UInt field_id,
 			  UInt kernel_id);
+  // Method used in restart framework of fields involved in convolutions (K and field_values)
+  // pausing=true->generate restart files | pausing=false->restart simulation from existing files
+  // If 3d simulation is restarted from 2d one, specify the number of modes (n_ele_fft={nele_x/2+1,nele_z})
+  UInt restart(UInt side, bool pausing=false, std::vector<UInt> n_ele_fft={0,0});
 
 private:
 
   virtual void initK();
-
+  // Preintegrate nb_steps of convolution kernel (used mainly during restart) 
+  void restartPreintegratedKernel(UInt nb_steps);
+  
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */

@@ -27,7 +27,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __DATA_DUMPER__
 #define __DATA_DUMPER__
@@ -79,7 +79,7 @@ public:
     stride=data_stride;
     start=data_start;
   }
-  ~Dumper() {if (file.is_open()) file.close();}
+  virtual ~Dumper() {if (file.is_open()) file.close();}
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */  
@@ -148,8 +148,7 @@ public:
   //where to output fields value 
   PointsDumper(std::vector<DataFields> data_fields,
 	       std::vector<UInt> points_to_dump, UInt total_nb_elem) : 
-    fields(data_fields), points(points_to_dump) {
-    
+    points(points_to_dump), fields(data_fields) {
     this->ratio = 1.0/(Real)(total_nb_elem);
     this->stride=1;
   }

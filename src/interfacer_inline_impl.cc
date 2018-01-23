@@ -284,7 +284,7 @@ inline UInt Interfacer<_linear_coupled_cohesive>::createThroughMultiPolAsperity(
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::applyInterfaceCreation() {
 
-  fracture_law = new CohesiveLaw(crit_n_open, crit_s_open, *nor_strength, *shr_strength);
+  *fracture_law = new CohesiveLaw(crit_n_open, crit_s_open, *nor_strength, *shr_strength);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -296,7 +296,6 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughCenteredCrack(Rea
 									     Real max_shr_strength){
   
   Real pos = 0.5*dx[0];
-  Real crk_srt = 0.5*(n_ele[0]*dx[0]-initial_crack_size);
  
   crit_n_open.resize(total_n_ele, crit_nor_opening);
   crit_s_open.resize(total_n_ele, crit_shr_opening);

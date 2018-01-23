@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #ifndef __COHESIVE_LAW__
 #define __COHESIVE_LAW__
@@ -60,6 +60,8 @@ public:
   void updateFractureLaw(std::vector<Real> & nor_strength, std::vector<Real> & shr_strength,
 			 std::vector<unsigned int> & ind_crack, CrackProfile & nor_opening, 
 			 CrackProfile & shr_opening);
+  // Method used in restart framework but no history-dependant variable within this law
+  void restart(bool pausing=false, UInt nele_2d=0){};
   // dump current cohesive law in a given ofstream
   void printSelf(std::ofstream & parameters_file, std::ofstream & summary);
 

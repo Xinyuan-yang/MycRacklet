@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #include "spectral_model.hh"
 #include "cohesive_law.hh"
@@ -72,7 +72,7 @@ int main(){
   Real max_s_str = 5e6;
   Real max_n_str = 5e6;
 
-  FractureLaw * fracturelaw ;
+  FractureLaw * fracturelaw = NULL;
 
   // Friction paramters
   bool overlap = 0;
@@ -171,8 +171,6 @@ int main(){
 
     ++print;
   }
-
-  delete contactlaw;
    
   return 0;
 }

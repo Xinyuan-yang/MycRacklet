@@ -76,7 +76,8 @@ ConvolutionManager::~ConvolutionManager() {
   }
   if(this->K)
     delete[] K;
-  delete[] field_values;
+  if(this->field_values)
+    delete[] field_values;
 }
 
 /* -------------------------------------------------------------------------- */

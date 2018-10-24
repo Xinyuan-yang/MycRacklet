@@ -56,8 +56,14 @@ if(CRACKLET_ENGINE)
   add_subdirectory(cRacklet_engine)
 endif()
 
-#option(CONSTANT_CRACK_SPEED "Testing constant crack speed algorithm" ON)
+option(FRICTION "Testing frictional models of cRacklet library" ON)
 
-#if(CONSTANT_CRACK_SPEED)
-#  add_subdirectory(constant_crack_speed)
-#endif()
+if(FRICTION)
+  add_subdirectory(friction)
+endif()
+
+option(CONSTANT_CRACK_SPEED "Testing constant crack speed algorithm" ON)
+
+if(CONSTANT_CRACK_SPEED)
+  add_subdirectory(cst_speed)
+endif()

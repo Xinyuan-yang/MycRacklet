@@ -30,7 +30,7 @@ SpectralConvolutionManager::~SpectralConvolutionManager() {
   }
 }
 /* -------------------------------------------------------------------------- */
-void SpectralConvolutionManager::init(Real cut, UInt nb_time) {
+Idx SpectralConvolutionManager::init(Real cut, UInt nb_time, bool blank) {
 
   this->size_per_field = 0;
   
@@ -45,20 +45,23 @@ void SpectralConvolutionManager::init(Real cut, UInt nb_time) {
 
   Idx total_size = 2*size_per_field*nb_fields;
 
-  ConvolutionManager::allocateMemory(total_size);
+  if(!blank) {
+    ConvolutionManager::allocateMemory(total_size);
 
-  Real * it = field_values;
+    Real * it = field_values;
 
-  for(UInt f=0; f < nb_fields; ++f) {
-    for (UInt i=0; i < nb_modes; ++i) {
-      for (UInt j=0; j<2; ++j){
-	ConvolutionManager::initRingBuffer(*(field+2*i+j+2*nb_modes*f), it, mod_cut[i]);
-	it += mod_cut[i];
+    for(UInt f=0; f < nb_fields; ++f) {
+      for (UInt i=0; i < nb_modes; ++i) {
+	for (UInt j=0; j<2; ++j){
+	  ConvolutionManager::initRingBuffer(*(field+2*i+j+2*nb_modes*f), it, mod_cut[i]);
+	  it += mod_cut[i];
+	}
       }
     }
   }
-
+  
   initK();
+  return total_size+size_per_field*nb_kernels;
 }
 
 /* -------------------------------------------------------------------------- */

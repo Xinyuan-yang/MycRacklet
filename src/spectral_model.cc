@@ -51,7 +51,7 @@ void InterfaceFields::computeJumpFields() {
 }
 
 /* -------------------------------------------------------------------------- */
-void SpectralModel::initModel(Real reset_beta) {
+void SpectralModel::initModel(Real reset_beta, bool blank) {
 
   dim = 3;
   
@@ -93,7 +93,9 @@ void SpectralModel::initModel(Real reset_beta) {
   stresses.resize(2);
   loads.resize(2);
   eta.resize(2);
- 
+
+  loading_ratio.resize(total_n_ele,1.0);
+  
   for (UInt i = 0; i < 2; ++i) {
     
     displacements[i].SetGridSize(n_ele, dim);
@@ -110,14 +112,7 @@ void SpectralModel::initModel(Real reset_beta) {
   veloc_jump = new InterfaceFields(&velocities, dim);
 
   intfc_trac.SetGridSize(n_ele, dim);
-  nor_opening.SetGridSize(n_ele, 1);
-  shr_opening.SetGridSize(n_ele, 1);
 
-  nor_strength.resize(total_n_ele);
-  shr_strength.resize(total_n_ele);
-  fric_strength.resize(total_n_ele);
-  ind_crack.resize(total_n_ele);
- 
   /* -------------------------------------------------------------------------- */
   //set the modes q0, k and m
   if(interface_dim==2)
@@ -136,9 +131,9 @@ void SpectralModel::initModel(Real reset_beta) {
   F_k = new Real[2*total_nele_fft*dim];
   
   this->nb_kernels = 4;
-
-  initConvolutionManagers();
-
+  
+  initConvolutionManagers(blank);
+      
   registerModelFields();
   
   printSelf();
@@ -154,14 +149,26 @@ void SpectralModel::registerModelFields() {
   this->registerData(_top_velocities, &(velocities[0]));
   this->registerData(_bottom_velocities, &(velocities[1]));
   this->registerData(_shear_velocity_jumps, &(veloc_jump->delta_fields[0]));
-  this->registerData(_normal_velocity_jumps, &(veloc_jump->delta_fields[1])); 
+  this->registerData(_normal_velocity_jumps, &(veloc_jump->delta_fields[1]));
+  this->registerData(_top_dynamic_stress, &(stresses[0]));
+  this->registerData(_bottom_dynamic_stress, &(stresses[1]));
   this->registerData(_interface_tractions, &intfc_trac);
   this->registerData(_top_loading, &(loads[0]));
   this->registerData(_bottom_loading, &(loads[1]));
-  this->registerData(_normal_strength, &nor_strength);
-  this->registerData(_shear_strength, &shr_strength);
-  this->registerData(_frictional_strength, &fric_strength);
-  this->registerData(_id_crack, &ind_crack);
+
+  this->registerParameter("shear modulus top", mu[0]);
+  this->registerParameter("shear modulus bottom", mu[1]);
+  this->registerParameter("poisson ratio top", nu[0]);
+  this->registerParameter("poisson ratio bottom", nu[1]);
+  this->registerParameter("shear wave speed top", cs_t);
+  this->registerParameter("shear wave speed bottom", cs_t/ksi);
+  this->registerParameter("delta x", dx[0]);
+  this->registerParameter("delta z", dx[1]);
+  this->registerParameter("Domain length X", X[0]);
+  this->registerParameter("Domain length Z", X[1]);
+  this->registerParameter("beta", beta);
+  this->registerParameter("delta min", dxmin);
+  
 }
 
 /* -------------------------------------------------------------------------- */
@@ -172,7 +179,7 @@ void SpectralModel::resetStableTimeStep(Real new_beta) {
 }
 
 /* -------------------------------------------------------------------------- */
-void SpectralModel::initConvolutionManagers(){
+void SpectralModel::initConvolutionManagers(bool blank){
 
   std::stringstream nuk;
   UInt nu_int;
@@ -186,7 +193,8 @@ void SpectralModel::initConvolutionManagers(){
   Real nu_f;
 
   SpectralConvolutionManager ** convo_manager;
-
+  Idx size = 0;
+ 
   for (UInt side = 0; side < 2; ++side) {
     mod_numb.resize(total_nele_fft-1);
     
@@ -200,7 +208,7 @@ void SpectralModel::initConvolutionManagers(){
       convo_manager = &convo_manager_bot;
 
     (*convo_manager) = new SpectralConvolutionManager(beta*dxmin, mod_numb, dim, nb_kernels);
-    (*convo_manager)->init(t_cut[side],ntim);
+    size += (*convo_manager)->init(t_cut[side],ntim,blank);
 
     for (UInt i = 0; i < (nb_kernels-1); ++i) {
       
@@ -224,6 +232,9 @@ void SpectralModel::initConvolutionManagers(){
     ConvolutionManager::KernelFunctor ** funct = (*convo_manager)->getKernelFunctor(3);
     (*funct) = new ConvolutionManager::H_33();
   }
+  
+  if(blank)
+    std::cout << "Required memory size would be: " << size*sizeof(Real)*1e-6 << " MB " << std::endl;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -242,10 +253,8 @@ void SpectralModel::restartModel(bool from_2dto3d) {
   
   this->restart(false,nx);
 
-  if(contact_law)
-    contact_law->restart(false,nx);
-  if(fracture_law)
-    fracture_law->restart(false,nx);
+  if(interface_law)
+    interface_law->restart(false,nx);
   
   UInt step_top = convo_manager_top->restart(0,false,nfft);
   UInt step_bot = convo_manager_bot->restart(1,false,nfft);
@@ -254,6 +263,9 @@ void SpectralModel::restartModel(bool from_2dto3d) {
     it = step_top+1;
   else
     cRacklet::error("Mismatching restarting time step between top and bottom material");
+
+  displ_jump->computeJumpFields(); 
+  veloc_jump->computeJumpFields();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -266,10 +278,8 @@ void SpectralModel::pauseModel() {
 
   this->restart(true);
 
-  if(contact_law)
-    contact_law->restart(true);
-  if(fracture_law)
-    fracture_law->restart(true);
+  if(interface_law)
+    interface_law->restart(true);
   
   convo_manager_top->restart(0,true);
   convo_manager_bot->restart(1,true);
@@ -293,12 +303,12 @@ void SpectralModel::setLoadingCase(Real load, Real psi, Real phi) {
 
 /* -------------------------------------------------------------------------- */
 void SpectralModel::updateLoads(Real * loading_per_dim) {
-
+    
   for (UInt x = 0; x < n_ele[0]; ++x) {
     for (UInt z = 0; z < n_ele[1]; ++z) {
       for (UInt side = 0; side < 2; ++side) {
 	for (UInt j = 0; j < dim; ++j) {
-	  loads[side][(x*dim+j)+z*n_ele[0]*dim] = *(loading_per_dim+j);     
+	  loads[side][(x*dim+j)+z*n_ele[0]*dim] = *(loading_per_dim+j)*loading_ratio[x+z*n_ele[0]];     
 	}
       }
     }
@@ -314,7 +324,6 @@ void SpectralModel::updateLoads() {
 /* -------------------------------------------------------------------------- */
 void SpectralModel::sinusoidalLoading(Real min) {
   
-  loading_ratio = new Real[total_n_ele];
   Real ratio;
 
   for (UInt x = 0; x < n_ele[0]; ++x) {
@@ -350,8 +359,6 @@ void SpectralModel::brownianHeterogLoading(Real rms, long int seed,
   Surface<Real> & surface = surf_gen.buildSurface();
   std::cout << "Successfully generated loading distribution with an RMS of " << SurfaceStatistics::computeStdev(surface) << std::endl;
 
-  loading_ratio = new Real[total_n_ele];
-
   for (UInt ix = 0; ix < n_ele[0]; ++ix) {
     for (UInt iz = 0; iz < n_ele[1]; ++iz) {
       loading_ratio[ix+iz*n_ele[0]] = surface(ix,iz);      
@@ -361,79 +368,27 @@ void SpectralModel::brownianHeterogLoading(Real rms, long int seed,
 #endif
 
 /* -------------------------------------------------------------------------- */
-void SpectralModel::computeInitialVelocities() {
-
-  Real strength;
-  Real shr_trac;
-  Real shr_velo;
-  std::vector<Real> temp_f(2);
+void SpectralModel::initInterfaceFields() {
   
-  UInt i=0;
-  for (UInt h = 0; h < n_ele[0]; ++h) {
-    for (UInt j = 0; j < n_ele[1]; ++j) {
-      i=h+j*n_ele[0];
-    
-      if((nor_strength[i]==0)&&(loads[0][i*dim+1] < 0.0)) { 
-      
-	contact_law->computeFricStrength(loads[0][i*dim+1], strength, i, it); 
-      
-	for (UInt side = 0; side < 2; ++side) {
-	  velocities[side][i*dim+1] = 0.0;
-	}
-      }
-      else{//velocities u2
-	strength = shr_strength[i];
-	velocities[0][i*dim+1] = std::max((loads[0][i*dim+1]-nor_strength[i])/(mu[0]*eta[0]),0.0);
-	velocities[1][i*dim+1] = std::min((zeta/ksi)*(nor_strength[i]-loads[1][i*dim+1])/(mu[0]*eta[1]),0.0);
-      }
-
-      //velocities u1 & u3
-      for (UInt side = 0; side < 2; ++side) {
-  
-	for (UInt k = 0; k < 2; ++k) {
-	  temp_f[k] = loads[side][i*dim+2*k];
-	}
-      
-	shr_trac = sqrt(temp_f[0]*temp_f[0]+temp_f[1]*temp_f[1]);
-	if (shr_trac ==0) {
-	
-	  for (UInt k = 0; k < 2; ++k) {
-	  
-	    velocities[side][i*dim+2*k] = 0.0;
-	  }
-	}
-	else {
-	  if (side==0) shr_velo = std::max((shr_trac-strength)/mu[0],0.0);
-	  else shr_velo = std::min((zeta/ksi)*(strength - shr_trac)/mu[0],0.0);
-	  
-	  for (UInt k = 0; k < 2; ++k) {
-	    velocities[side][i*dim+2*k] = shr_velo*temp_f[k]/shr_trac;
-	  } 
-	}
-      }
-    }
-  }
+  veloc_jump->computeJumpFields();
+  interface_law->initInterfaceConditions();
   veloc_jump->computeJumpFields();
 }
+
 /* -------------------------------------------------------------------------- */
 void SpectralModel::updateDisplacements() {
 
   for (UInt i = 0; i < 2; ++i) {
     displacements[i] += velocities[i]*dxmin*beta;
-  }
-
+  } 
   displ_jump->computeJumpFields(); 
-
-  shr_opening = displ_jump->delta_fields[0];
-  nor_opening = displ_jump->delta_fields[1];
-
-  }
+}
 
 /* -------------------------------------------------------------------------- */
-void SpectralModel::updateMaterialProp(){
+void SpectralModel::computeInterfaceFields(){
 
- 
-  fracture_law->updateFractureLaw(nor_strength, shr_strength, ind_crack, nor_opening, shr_opening);  
+  interface_law->updateInterfaceConditions();
+  veloc_jump->computeJumpFields();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -479,160 +434,6 @@ void SpectralModel::computeStress() {
     stresses[side] += loads[side];
     
   }  
-}
-
-/* -------------------------------------------------------------------------- */
- void SpectralModel::computeVelocities(){
-
-   CrackProfile deltaStresses(n_ele,dim);
-   std::vector<Real> temp_veloc(dim);
-   Real trac;
-   
-   deltaStresses = stresses[0] - stresses[1];
-   
-   Real cste = 1/(mu[0]*(1+ksi/zeta)); 
-
-   velocities[0] =  deltaStresses * cste;
-
-   for (UInt i = 0; i < n_ele[0]; ++i) {
-     for (UInt j = 0; j < n_ele[1]; ++j) {
-        velocities[0][(i*dim+1)+j*n_ele[0]*dim] *= (1+ksi/zeta)/(eta[0]+ksi*eta[1]/zeta); 
-     }
-   }
-   velocities[1]=velocities[0]; 
-
-   for (UInt i = 0; i < n_ele[0]; ++i) {
-     for (UInt j = 0; j < n_ele[1]; ++j) {
-
-       trac = stresses[0][(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]*velocities[0][(i*dim+1)+j*n_ele[0]*dim];
-       if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0)) computeIndepNormalVelocities(i,j);
-       else {
-    
-	 intfc_trac[(i*dim+1)+j*n_ele[0]*dim] = trac;
-	 computeShearVelocities(shr_strength[i + n_ele[0]*j], i + j*n_ele[0]);
-       }
-     }
-   }
-   veloc_jump->computeJumpFields();
- }
-
-/* -------------------------------------------------------------------------- */
-void SpectralModel::computeIndepNormalVelocities(UInt ix, UInt iz){
-
-  std::vector<Real> temp_veloc(2);
-  std::vector<Real> cmpted_stress(2);
-  Real delta_overlap;
-
-  UInt i = ix+iz*n_ele[0];
-
-  for (UInt side = 0; side < 2; ++side) {
-    cmpted_stress[side] = stresses[side][i*dim+1]; 
-  }
-
-  temp_veloc[0] = 1/(mu[0]*eta[0]) * (cmpted_stress[0]-nor_strength[i]); 
-  temp_veloc[1] = 1/(mu[0]*eta[1]) * (zeta/ksi) * (nor_strength[i] - cmpted_stress[1]);
-
-  delta_overlap = displacements[0][i*dim+1] - displacements[1][i*dim+1] + beta*dxmin*(temp_veloc[0]-temp_veloc[1]); 
-
-  if (cRacklet::is_negative(delta_overlap)&&(!overlapping)) computeContactVelocities(ix, iz); 
-  else {
-
-    for (UInt side = 0; side < 2; ++side) {
-
-      velocities[side][i*dim+1] = temp_veloc[side];
-    }
-    intfc_trac[i*dim+1] = nor_strength[i]; 
-    computeShearVelocities(shr_strength[i], i);
-  }
-}
-
-/* -------------------------------------------------------------------------- */
-void SpectralModel::computeContactVelocities(UInt ix, UInt iz){
-
-  Real aux;
-  Real temp_velot;
-  Real temp_trac;
-  Real strength;
-  std::vector<Real> cmpted_stress(2);
-
-  UInt i = ix+iz*n_ele[0];
-
-  for (UInt side = 0; side < 2; ++side) {
-    cmpted_stress[side] = stresses[side][i*dim+1];
-  }
-
-  aux = (displacements[0][i*dim+1] - displacements[1][i*dim+1])/(dxmin*beta);
-  temp_velot = 1/(eta[0]+ksi*eta[1]/zeta)*((cmpted_stress[0]-cmpted_stress[1])/mu[0] - aux*ksi*eta[1]/zeta);
-  velocities[0][i*dim+1] = temp_velot;
-  velocities[1][i*dim+1] = temp_velot + aux;
-
-  temp_trac = cmpted_stress[0] - eta[0]*mu[0]*temp_velot;
-  intfc_trac[i*dim+1] = temp_trac;
-
-  contact_law->computeFricStrength(temp_trac, strength, i, it);
-
-  computeShearVelocities(strength, i);
-  
-  ind_crack[i] = 3;
-  fric_strength[i] = strength;
-}
-
-/* -------------------------------------------------------------------------- */
-void SpectralModel::computeShearVelocities(Real strength, UInt i) {
-
-  std::vector<Real> trac(2);
-  Real shr_trac;
-
-  for (UInt j = 0; j < 2; ++j) {
-  
-    trac[j] = stresses[0][i*dim+2*j] - mu[0]*velocities[0][i*dim+2*j]; 
-  }
- 
-  shr_trac = sqrt((trac[0]*trac[0])+(trac[1]*trac[1])); 
-
-  if ((strength < shr_trac)||(strength==0)) computeIndepShearVelocities(strength, i);
-  else{
-    
-    for (UInt j = 0; j < (dim-1); ++j) {
-      
-      intfc_trac[i*dim+2*j] = trac[j];
-    }
-  }
-
-}
-
-/* -------------------------------------------------------------------------- */
-void SpectralModel::computeIndepShearVelocities(Real strength, UInt i){
-
-   std::vector<Real> cmpted_stress(2);
-   Real dyn_stress;
-   Real shr_veloc;
-
-   for (UInt side = 0; side < 2; ++side) {
-     
-     for (UInt j = 0; j < 2; ++j) {
-       
-       cmpted_stress[j] = stresses[side][i*dim+2*j];
-     }
-
-     dyn_stress = sqrt((cmpted_stress[0]*cmpted_stress[0])+(cmpted_stress[1]*cmpted_stress[1])); 
-
-     if (side==0) shr_veloc = 1/mu[0]*(dyn_stress-strength); 
-     
-     else shr_veloc = 1/mu[0]*(zeta/ksi)*(strength-dyn_stress); 
-
-      
-
-     for (UInt j = 0; j < 2; ++j) {
-       
-       if(dyn_stress==0){velocities[side][i*dim+2*j]=0;}
-       else{velocities[side][i*dim+2*j] = shr_veloc*cmpted_stress[j]/dyn_stress;}
-       if (side==0){
-	 if(dyn_stress==0){intfc_trac[i*dim+2*j] =0;}
-	 else{intfc_trac[i*dim+2*j] = strength*cmpted_stress[j]/dyn_stress;}
-       }
-     }    
-   }
 }
 
 /* -------------------------------------------------------------------------- */

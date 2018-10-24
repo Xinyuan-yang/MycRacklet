@@ -9,9 +9,9 @@
 ==================================================================================================  
 * LICENSE
 
-cRacklet - A spectral boundary integral method for interface fracture simulation
+cRacklet - A spectral boundary integral method for interface rupture simulation
 Copyright (©) 2012 - 2013 Fabian Barras
-	      2014 EPFL (Ecole Polytechnique Fédérale de Lausanne)
+	      2014 - ongoing EPFL (Ecole Polytechnique Fédérale de Lausanne)
 
 cRacklet is the result of a collaboration between the Computational Solid Mechanics Laboratory 
 (LSMS) of Ecole Polytechnique Fédérale de Lausanne (EPFL), Switzerland and the Department of 
@@ -31,17 +31,18 @@ If not, see <http://www.gnu.org/licenses/>.
 ==================================================================================================
 * SCOPE
 
-cRacklet is a C++ boundary element library based on a spectral formulation of the elastodynamic wave
-equations in continuum solids. Its implementation is specially tailored for the modeling of dynamic crack
-propagation along a planar interface bonding two semi-infinite solids. The main benefit of this
-spectral method is a numerical discretization limited to the fracture plane, thereby providing a very fine
-description of the dynamic fracture processes unattainable with finite-element or finite-difference schemes.
+cRacklet is a C++ boundary integral library based on a spectral formulation of the dynamic wave
+equations in two semi-infinite linearly elastic solids. Its implementation is specially tailored
+for the modeling of dynamic crack/rupture propagation along a planar interface bonding the two
+half-spaces. The main benefit of this spectral method is a numerical discretization limited to
+the mid-plane, thereby providing a very fine description of the dynamic rupture processes,
+unattainable with finite-element or finite-difference schemes.
 For more details about the method and its applications, refer to "related publications" section.
 
 ==================================================================================================
-* COMPILATION AND EXTERNAL LIBRARIES
+* COMPILATION
 
-cRacklet library can be conveniently compiled using cMake (https://cmake.org/):
+You can compile cRacklet using cMake:
 
  > mkdir build
  > cd build
@@ -57,36 +58,37 @@ and LibSurfer to generate fractal interfaces (available on request).
 ==================================================================================================
 * USAGE
 
-Exemples of the simulations reported in [3-4] are avaiables in the folder "sim".
-Basically, five types of object shall be created during a simulation:
+Exemples of the simulation presented in [3-4] are avaiable in the folder "sim".
+Basically, the cRacklet engine is composed of seven major types of object:
 
 *SpectralModel:   
-This class is the core of cRacklet librairy and contains the methods processing the different steps of
-the spectral scheme described in [2].
+This class is the core of cRacklet librairy and contains the methods processing the different steps
+required to solve the elastodynamic response of the two semi-infinite half space as desribed in [2].
 
-*SimulationDriver:
-High level class providing a UI to drive SpectralModel during standard simulations. 
-
-*FractureLaw:
-This virtual class contains the law describing interface decohesion.
-New fracture laws can be added by creating classes inheriting from FractureLaw. 
+*InterfaceLaw:
+This abstract class contains the law describing interface conditions (e.g. cohesive law, frictional interface).
+New interface laws can be simply added by creating classes inheriting from InterfaceLaw framework. 
 
 *ContactLaw:
-This virtual class contains the law describing post-mortem friction along the interface.
+This abstract class contains law describing contact law in case overlapping is prevented at the interface.
 New contact laws can be added by creating classes inheriting from ContactLaw.
 
 *Interfacer:
-This class shall be used after model initialization to set initial interface properties.
+This object helps the user to create and define initial interface properties.
+Interfacer is templated by the chosen type of InterfaceLaw.
+
+*DataRegister:
+This class is the static centralized memory register which contains most of the simulation data
+
+*SimulationDriver:
+High-level class providing a UI to drive simulations in different standard situations.
 
 *DataDumper: 
 This class is used to generate various types of output file during simulation.
 
-*DataRegister:
-This class is the memory register of the library and can be used to access or register simulations data.
-
-IMPORTANT NOTE: The convolution kernels describing the elastodynamic behavior of the surrounding
-solids shall be precomputed using Fortran routine "inverse_serial.f" associated to the input 
-file "inverse_serial.in"   
+IMPORTANT NOTE: Before running cRacklet, the convolution kernels describing the elastodynamic response
+of the surrounding solids (as function of Poisson's ratio) shall be pre-computed using the Fortran routine
+"inverse_serial.f" provided in the folder pre-computed-kernels/
 
 ==================================================================================================
 * AUTHORS
@@ -107,11 +109,12 @@ file "inverse_serial.in"
 [2] Breitenfeld MS, Geubelle PH (1998) Numerical analysis of dynamic debonding under 2D in-plane 
     and 3D loading. Int J Fract 93(1–4):13–38
 
-[3] Barras F, Kammer DS, Geubelle PH, Molinari J-F (2014) A study of frictional contact in dynamic 
-    fracture along bimaterial interfaces. Int J Fract 189(2):149-162
+[3] Barras F, Kammer DS, Geubelle PH, Molinari J-F (2014) A study of frictional contact in dynamic
+    fracture along bimaterial interfaces. Int J Fract 189(2):149–162
 
 [4] Barras F, Geubelle PH, Molinari J-F (2017) Interplay between Process Zone and Material
-    Heterogeneities for Dynamic Cracks. Phys. Rev. Lett. 119(144101)
+    Heterogeneities for Dynamic Cracks. Phys Rev Let 119(144101)
+
 
                                                                                                   
                     ´.-,,,...´´                                                                     

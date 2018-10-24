@@ -26,7 +26,7 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program.  
  * If not, see <http://www.gnu.org/licenses/>.
-
+ */
 /* -------------------------------------------------------------------------- */
 #include "spectral_model.hh"
 #include "interfacer.hh"
@@ -74,10 +74,7 @@
    Real max_s_str = 5e6;
    Real max_n_str = 5e6;
 
-   FractureLaw * fracturelaw;
-
    // Friction paramters
-   bool overlap = 0;
    Real regularized_time_scale = 0.1;
    Real coef_frict = 0.25;
    ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
@@ -92,19 +89,22 @@
    /* -------------------------------------------------------------------------- */
    SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, nu_mtl, 
 		       nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
-		       tcut_mtl, tcut_poly, overlap, fracturelaw, contactlaw,
+		       tcut_mtl, tcut_poly, 
 		       "Mixed-mode debonding at Aluminium-Homalite interface");
 
    Real beta=0.4; //Stable time step coefficient
    
-   model.initModel(0.4);
+   model.initModel(beta);
    model.setLoadingCase(load, psi, phi);
 
    Interfacer<_linear_coupled_cohesive> interfacer(model);
    interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
-   interfacer.applyInterfaceCreation();
+
+   CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
+   cohesive_law->preventSurfaceOverlapping(contactlaw);
+
    model.updateLoads();
-   model.computeInitialVelocities();
+   model.initInterfaceFields();
 
    DataDumper dumper(model);
    std::string st_diag_id = "ST_Diagram_id.cra";
@@ -128,10 +128,9 @@
    for (UInt t = 0; t < nb_time_steps ; ++t) {
 
      model.updateDisplacements();
-     model.updateMaterialProp();
      model.fftOnDisplacements();
      model.computeStress();
-     model.computeVelocities();
+     model.computeInterfaceFields();
      model.increaseTimeStep();
 
      dumper.dump(st_diag_id);
@@ -151,8 +150,6 @@
 
      ++print;
    }
-
-   delete contactlaw;
    
    return 0;
  }

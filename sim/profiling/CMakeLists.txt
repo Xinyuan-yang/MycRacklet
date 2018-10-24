@@ -33,15 +33,11 @@
 
 include_directories (${cRacklet_SOURCE_DIR}/src)
 
+add_executable(size_checking size_checking.cc)
+target_link_libraries (size_checking cRacklet)
+
 add_executable(printKernels printKernels.cc)
 target_link_libraries (printKernels cRacklet)
-
-
-if(CRACKLET_MULTI_THREADED)
-  add_definitions(${OpenMP_CXX_FLAGS})
-  target_link_libraries(profiling_2d ${OpenMP_CXX_FLAGS})
-  target_link_libraries(profiling_3d ${OpenMP_CXX_FLAGS})
-endif()
 
 copy_kernel_files(33 FALSE)
 copy_kernel_files(35 TRUE)

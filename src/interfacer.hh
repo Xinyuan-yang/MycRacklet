@@ -33,14 +33,18 @@
 /* -------------------------------------------------------------------------- */
 #include "data_register.hh"
 #include "spectral_model.hh"
-#include "fracture_law.hh"
+#include "interface_law.hh"
+#include "rate_and_state_law.hh"
 #ifdef CRACKLET_USE_LIBSURFER
 #include "surface_generator_filter_fft.hh"
 #include "surface_statistics.hh"
 #endif
 /* -------------------------------------------------------------------------- */
 enum FractureLawType {
-  _linear_coupled_cohesive
+  _linear_coupled_cohesive,
+  _rate_and_state,
+  _regularized_rate_and_state,
+  _weakening_rate_and_state,
 };
 
 template<FractureLawType>
@@ -50,19 +54,17 @@ class Interfacer : public DataRegister {
   /* ------------------------------------------------------------------------ */
 public:
   
-  Interfacer(SpectralModel & model) : fracture_law(model.getFractureLaw()) {
+  Interfacer(SpectralModel & model) : interface_law(model.getInterfaceLaw()) {
 
-    shr_strength = datas[_shear_strength];
-    nor_strength = datas[_normal_strength];
-    ind_crack = datas[_id_crack];
-    
+    initInterfaceLaw();
+        
     dx.resize(2);
     dx[0] = model.getElementSize()[0];
     dx[1] = model.getElementSize()[1];
     n_ele.resize(2);
     n_ele[0] = model.getNbElements()[0];
     n_ele[1] = model.getNbElements()[1];
-    total_n_ele = n_ele[0]*n_ele[1];
+    total_n_ele = n_ele[0]*n_ele[1];   
   }
 
   virtual ~Interfacer(){};
@@ -77,10 +79,9 @@ public:
   //POLAR ASPERITY: designate an asperity made of weaker then stronger interface properties
   // polarity = 0: strong-weak / polarity = 1: weak-strong
 
-  void applyInterfaceCreation();
-  // create a uniform layer on the entire interface
-  void createUniformInterface(Real crit_nor_opening, Real crit_shr_opening, 
-			      Real max_nor_strength, Real max_shr_strength);
+  // create a uniform layer on the entire interface. Required parameters should be given through
+  // the simulation paramters
+  void createUniformInterface();
   // Tune interface properties from a text file starting at a given position
   void insertPatternfromFile(std::string filename, UInt origin=0);
   // create an heterogeneous interface following normal distribution of strength
@@ -149,21 +150,21 @@ public:
   
   // create an interface without initial cohesion between top and bottom solids
   void createIncohIntfc();
- 
+
+private:
+
+  // initialize corresponding interface_law pointer
+  void initInterfaceLaw();
+  // 
+  void createHomogeneousRateandStateIntfc();
+  
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */
   /* ------------------------------------------------------------------------ */
 private:
 
   // Fracture law object to build
-  FractureLaw ** fracture_law;
-  // Shear and normal strength arrays of the interface
-  std::vector<Real> * shr_strength;
-  std::vector<Real> * nor_strength;
-  std::vector<Real> crit_n_open;
-  std::vector<Real> crit_s_open;
-  // Cracking index
-  std::vector<UInt> * ind_crack;
+  InterfaceLaw ** interface_law;
   // Number of elements at the interface
   std::vector<UInt> n_ele;
   // Total number of elements

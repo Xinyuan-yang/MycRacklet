@@ -10,6 +10,15 @@ std::ofstream DataRegister::out_summary;
 std::ofstream DataRegister::out_parameters;
 std::map<DataFields,DataTypes> DataRegister::datas;
 std::map<std::string,Computer*> DataRegister::computers;
+std::map<std::string,Real> DataRegister::variables;
+UInt DataRegister::dim;
+UInt DataRegister::it;
+std::vector<UInt> DataRegister::n_ele;
+Real DataRegister::beta;
+Real DataRegister::dxmin;
+Real DataRegister::ksi;
+std::vector<Real> DataRegister::eta;
+Real DataRegister::zeta;
 /* -------------------------------------------------------------------------- */
 void DataRegister::data_initialize(const std::string output_folder,
 				   const std::string description) {
@@ -60,6 +69,12 @@ void DataRegister::data_finalize() {
 
   datas.clear();
   computers.clear();
+  variables.clear();
+
+#if defined (_OPENMP)
+  fftw_cleanup_threads();
+#endif
+  fftw_cleanup();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -86,6 +101,46 @@ void DataRegister::registerComputer(std::string computer_name, Computer * comput
     std::stringstream err;
     err << "Computer named " << computer_name << " already registered !";
     cRacklet::error(err);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+void DataRegister::registerParameter(std::string name, Real value) {
+
+  std::map<std::string,Real>::iterator it = variables.find(name);
+
+  if(it == variables.end())
+    variables[name] = value;
+  else {
+    std::stringstream err;
+    err << "Parameter named " << name << " already registered !";
+    cRacklet::error(err);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+void DataRegister::readInputFile(std::string filename) {
+  
+  std::ifstream file;
+  std::string line;
+  file.open(filename);
+
+  if (!file.is_open()){
+    std::stringstream err;
+    err << "Unable to open input file" << std::endl;
+    err << "Check that the file " << filename
+	<< " is in the current folder" << std::endl;
+    cRacklet::error(err);
+  }
+    
+  while(!file.eof()) { 
+    std::getline(file,line);
+    std::stringstream sstr(line);
+    std::string entry_name;
+    Real parameter;
+    sstr >> entry_name;
+    sstr >> parameter;
+    registerParameter(entry_name, parameter);
   }
 }
 
@@ -228,16 +283,13 @@ void DataRegister::restartDataFrom2d(std::vector<Real> & my_data , std::fstream 
 /* -------------------------------------------------------------------------- */
 UInt DataRegister::getCrackTipPosition(UInt x_start, UInt x_end) {
 
-  UInt x_tip=x_end;
+  UInt x_tip=x_start;
 
   const std::vector<UInt> * ind_crack = readData(_id_crack);
+
+  while (((*ind_crack)[x_tip]==2)&&(x_tip<x_end))
+    ++x_tip;
   
-  for (UInt x=x_start; x < x_end; ++x) {
-    if ((*ind_crack)[x]==1||(*ind_crack)[x]==0||(*ind_crack)[x]==4||(*ind_crack)[x]==5||(*ind_crack)[x]==6) {
-      x_tip = x;
-      break;
-    }
-  }
   return x_tip;
 }
 

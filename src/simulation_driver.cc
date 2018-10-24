@@ -19,7 +19,7 @@ void SimulationDriver::initConstantLoading(Real initial_loading, Real psi, Real 
   this->target_crack_speed=0.;
   model.setLoadingCase(initial_loading, psi, phi);
   model.updateLoads();
-  model.computeInitialVelocities();
+  model.initInterfaceFields();
 }
 /* -------------------------------------------------------------------------- */
 void SimulationDriver::initConstantSpeed(Real initial_loading, Real psi, Real phi,
@@ -62,7 +62,7 @@ void SimulationDriver::initConstantSpeed(Real initial_loading, Real psi, Real ph
     cRacklet::error("Please specify a valid crack speed control algorithm.");
   }
   model.updateLoads();
-  model.computeInitialVelocities();
+  model.initInterfaceFields();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -101,9 +101,8 @@ Real SimulationDriver::initLoadingFromFile(std::string loading_file,
   else {
     runReadingStep();
   }
-  
-  model.computeInitialVelocities();
-    
+
+  model.initInterfaceFields();  
   return nb_steps_file;
 }
 
@@ -131,35 +130,28 @@ Real SimulationDriver::adjustStableTimeStep() {
 }
 
 /* -------------------------------------------------------------------------- */
-void SimulationDriver::priorUpdates() {
-
-  model.updateDisplacements();
-  model.updateMaterialProp();
-  
-}
-/* -------------------------------------------------------------------------- */
 void SimulationDriver::solveTimeStep() {
 
+  model.updateDisplacements(); 
   model.fftOnDisplacements();
   model.computeStress();
-  model.computeVelocities();
+  model.computeInterfaceFields();
   model.increaseTimeStep();
+
 }
 
 /* -------------------------------------------------------------------------- */
 UInt SimulationDriver::solveStep() {
 
   UInt ret=0;
-
-  priorUpdates();
-  
+   
   if(this->target_crack_speed) {
     if(this->target_crack_speed==-1.)
       ret = runReadingStep();
     else
       ret = runWritingStep();
   }
-  
+
   solveTimeStep();
 
   return ret;  
@@ -294,7 +286,7 @@ void SimulationDriver::writeLoading(std::string load_file ) {
 
 /* -------------------------------------------------------------------------- */
 void SimulationDriver::launchCrack(Real crack_start, Real launched_size,
-				   Real v_init) {
+				   Real v_init, bool one_side_propagation) {
 
   std::vector<Real> dx = model.getElementSize();
   std::vector<UInt> nb_elements = model.getNbElements();
@@ -306,28 +298,44 @@ void SimulationDriver::launchCrack(Real crack_start, Real launched_size,
   
   std::vector<Real> * nor_strength = datas[_normal_strength];
   std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
   
   std::cout << "Rupture is currently artificially triggered with speed " << v_init
 	    << "*c_s" << std::endl; 
+
+  UInt growth_factor;
+
+  if(one_side_propagation)
+    growth_factor=1;
+  else
+    growth_factor=2;
   
+  l_end /= growth_factor;
+
   while ((x_tip-x_start)<l_end) {
-    
-    priorUpdates();
-    
+   
     x_tip = model.getCrackTipPosition(x_start,model.getNbElements()[0]);
 
     if (model.getCurrentTimeStep()%every_t==0) {
 
-      if (((x_tip-x_tip_prev)>2)&&(x_tip_prev!=0.))
+      if (((x_tip-x_tip_prev)>2)&&(x_tip_prev!=0.)) {
 	break;
+      }
+
+      std::cout << " Crack position is now at " << growth_factor*(x_tip-x_start)*dx[0] << std::endl;
+      x_tip_prev = model.getCrackTipPosition(x_start,model.getNbElements()[0]);
       
       for (UInt z = 0; z < nb_elements[1]; ++z) {
-	(*nor_strength)[x_tip+z*nb_elements[0]]=0;
-	(*shr_strength)[x_tip+z*nb_elements[0]]=0;
+	(*nor_strength)[x_tip+z*nb_elements[0]]=0.;
+	(*shr_strength)[x_tip+z*nb_elements[0]]=0.;
+ 	(*ind_crack)[x_tip+z*nb_elements[0]]=2;
+
+	if(!one_side_propagation) {
+	  (*nor_strength)[2*x_start-x_tip+z*nb_elements[0]]=0.;
+	  (*shr_strength)[2*x_start-x_tip+z*nb_elements[0]]=0.;
+	  (*ind_crack)[2*x_start-x_tip+z*nb_elements[0]]=2;
+	}
       }
-      
-      std::cout << " Crack position is now at " << x_tip*dx[0] << std::endl;
-      x_tip_prev = model.getCrackTipPosition(x_start,model.getNbElements()[0]);
     }
     solveTimeStep();
   }

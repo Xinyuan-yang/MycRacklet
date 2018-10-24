@@ -3,7 +3,7 @@
  * @author Fabian Barras <fabian.barras@epfl.ch>
  * @date   Mon Jan  7 10:05:32 2013
  *
- * @brief  Mother class dealing with contact's law of crack interface
+ * @brief  Abstract class representing the associated contact law in case of interface overlapping
  *
  * @section LICENSE
  *
@@ -29,9 +29,10 @@
 /* -------------------------------------------------------------------------- */
 #include <iostream>
 #include "cRacklet_common.hh"
+#include "data_register.hh"
 /* -------------------------------------------------------------------------- */
 
-class ContactLaw {
+class ContactLaw : public DataRegister {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
@@ -50,8 +51,6 @@ public:
   // pausing=true->generate restart files | pausing=false->restart simulation from existing files
   // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
   virtual void restart(bool pausing=false, UInt nele_2d=0)=0;
-  // dump contact law paramters in a given ofstream
-  virtual void printSelf(std::ofstream & parameters_file, std::ofstream & summary) = 0;
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */

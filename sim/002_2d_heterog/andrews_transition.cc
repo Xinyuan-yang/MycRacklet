@@ -118,10 +118,7 @@ int main(int argc, char *argv[]){
 
   Real crk_srt = crack_size;
  
-  FractureLaw * fracturelaw; 
-
   // Friction paramters
-  bool overlap = 1;
   Real regularized_time_scale = 0.1;
   Real coef_frict = 0.25;
   ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
@@ -141,14 +138,17 @@ int main(int argc, char *argv[]){
   /* -------------------------------------------------------------------------- */
 
   SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, nu, nu, 
-		      E, E, cs, cs, tcut, tcut, overlap,
-		      fracturelaw, contactlaw, sim_name, output_folder);
+		      E, E, cs, cs, tcut, tcut, sim_name, output_folder);
   
   SimulationDriver sim_driver(model);
 
   Interfacer<_linear_coupled_cohesive> interfacer(model);
-  interfacer.createUniformInterface(wk_crit_n_open, wk_crit_s_open, 
-				    mean_max_n_str, mean_max_s_str);
+
+  DataRegister::registerParameter("critical_normal_opening",wk_crit_n_open);
+  DataRegister::registerParameter("critical_shear_opening",wk_crit_s_open);
+  DataRegister::registerParameter("max_normal_strength",mean_max_n_str);
+  DataRegister::registerParameter("max_shear_strength",mean_max_s_str);
+  interfacer.createUniformInterface();
 
   interfacer.createThroughCrack(0., 5*dx);
   UInt x_end;
@@ -163,7 +163,8 @@ int main(int argc, char *argv[]){
   else 
     interfacer.createThroughWall(propagation_domain,dom_size);  
 
-  interfacer.applyInterfaceCreation();
+  CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
+  cohesive_law->preventSurfaceOverlapping(contactlaw);
 
   sim_driver.initConstantLoading(load,psi,phi);
   
@@ -195,8 +196,6 @@ int main(int argc, char *argv[]){
     }
     ++t;
   }
-
-  delete contactlaw;
    
   return 0;
 }

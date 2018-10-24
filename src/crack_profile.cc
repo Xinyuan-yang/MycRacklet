@@ -49,6 +49,15 @@ void CrackProfile::initFFT(bool forward_fft, UInt dim) {
 }
 
 /* -------------------------------------------------------------------------- */
+void CrackProfile::finalizeFFT() {
+  
+  if(data_fft) {
+    fftw_destroy_plan(plan);
+    delete[] data_fft;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
 void CrackProfile::squareRoot() {
 
   for (UInt i = 0; i < heights.size(); ++i) {

@@ -49,8 +49,6 @@ public:
   void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it);
   // Method used in restart framework but no history-dependant variable within this law
   void restart(bool pausing=false, UInt nele_2d=0){};
-  // dump current contact law in a given ofstream
-  void printSelf(std::ofstream & parameters_file, std::ofstream & summary);
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */
@@ -72,7 +70,15 @@ private:
 inline CoulombLaw::CoulombLaw(Real coef) : ContactLaw(){							
 
   cf = coef;
-										
+
+  out_summary << "/* -------------------------------------------------------------------------- */ "; 
+  out_summary << std::endl;
+  out_summary << " CONTACT LAW VARIABLES " << std::endl;
+  out_summary << "* Type of contact law: Coulomb law" << std::endl;		        
+  out_summary << "* Coefficient of friction: " << cf << std::endl;
+  out_summary << std::endl;	
+
+  out_parameters << cf << " "; 
 }										
 /* -------------------------------------------------------------------------- */
 inline CoulombLaw::~CoulombLaw(){							  

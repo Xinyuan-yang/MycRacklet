@@ -79,10 +79,7 @@ int main(){
   Real max_s_str = 5e6;
   Real max_n_str = 5e6;
 
-  FractureLaw * fracturelaw = NULL;
-
   // Friction paramters
-  bool overlap = 0;
   Real regularized_time_scale = 0.1;
   Real coef_frict = 0.25;
   ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nex*nez);
@@ -97,18 +94,19 @@ int main(){
 
   SpectralModel model({nex,nez}, nb_time_steps, {dom_sizex,dom_sizez},
 		      nu_mtl,nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
-		      tcut_mtl, tcut_poly, overlap, fracturelaw,
-		      contactlaw, "test_alu_homa3d");
+		      tcut_mtl, tcut_poly, "test_alu_homa3d");
   
   model.initModel(0.37);
   model.setLoadingCase(load, psi, phi);
 
   Interfacer<_linear_coupled_cohesive> interfacer(model);
   interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
-  interfacer.applyInterfaceCreation();
 
+  CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
+  cohesive_law->preventSurfaceOverlapping(contactlaw);
+  
   model.updateLoads();
-  model.computeInitialVelocities();
+  model.initInterfaceFields();
 
   const CrackProfile * t_displacements = model.readData(_top_displacements);
   const CrackProfile * b_displacements = model.readData(_bottom_displacements);
@@ -151,12 +149,11 @@ int main(){
   std::cout.precision(6);
 
   for (UInt t = 0; t < nb_time_steps ; ++t) {
-
+    
     model.updateDisplacements();
-    model.updateMaterialProp();
     model.fftOnDisplacements();
     model.computeStress();
-    model.computeVelocities();
+    model.computeInterfaceFields();
     model.increaseTimeStep();
 
     if (print == (UInt)(0.1*nb_time_steps)) {
@@ -171,10 +168,8 @@ int main(){
        
       print=0;
     }
-
     ++print;
   }
-   
   return 0;
 }
 

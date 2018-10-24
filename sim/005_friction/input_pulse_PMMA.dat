@@ -1,0 +1,12 @@
+D_hom 5e-7
+f_0_hom 0.285
+a_hom 0.005
+b_hom 0.075
+v_star_hom 1e-7
+phi_star_hom 0.00033
+sigma_0 1e6
+v0_predictor 1e-7
+dumping_every_t 50
+xi 0.005
+theta 0.28
+v0 1e-7

@@ -86,7 +86,7 @@ public:
   
   ConvolutionManager(){};
   // Construct manager with a given discretization used by the numerical integration
-  ConvolutionManager(Real dx){this->dx=dx;this->func=NULL;}
+  ConvolutionManager(Real dx){this->dx=dx;this->func=NULL;this->K=NULL;this->field_values=NULL;}
   virtual ~ConvolutionManager();
   
   /* ------------------------------------------------------------------------ */

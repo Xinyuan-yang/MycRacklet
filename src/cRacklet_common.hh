@@ -48,23 +48,26 @@ namespace cRacklet {
   
   // Error handling
   /* -------------------------------------------------------------------------- */
-  static void error(const std::stringstream & message) {
-    std::string err = "!!! cRacklet Error !!! ";
-    std::cerr << err << message.str() << std::endl;
-    throw;
-  }
-
-  /* -------------------------------------------------------------------------- */
-  static void error(const std::string & message) {
+  static inline void error(const std::string & message) {
     std::string err = "!!! cRacklet Error !!! ";
     std::cerr << err+message << std::endl;
     throw;
   }
+  
+  /* -------------------------------------------------------------------------- */
+  static inline void error(const std::stringstream & message) {
+    error(message.str());
+  }
 
+  /* -------------------------------------------------------------------------- */
+  static inline bool has_converged(const Real error) {
+    return std::abs(error)<1e-13;
+  }
+  
   // Compare is two values are identical up to machine precision
   /* -------------------------------------------------------------------------- */
   template<typename T>
-  static bool is_equal(const T value1, const T value2) {
+  static inline bool is_equal(const T value1, const T value2) {
     
     return std::abs((value1-value2)/value1) < std::numeric_limits<T>::epsilon();
   }
@@ -72,7 +75,7 @@ namespace cRacklet {
   // Check if a value is negative up to machine precision
   /* -------------------------------------------------------------------------- */
   template<typename T>
-  static bool is_negative(const T value) {
+  static inline bool is_negative(const T value) {
 
     return ((std::abs(value) > std::numeric_limits<T>::epsilon())&&(value<0.0)); 
   }

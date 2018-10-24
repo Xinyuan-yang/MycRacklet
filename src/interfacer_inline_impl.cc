@@ -3,16 +3,80 @@
 #include <chrono>
 /* -------------------------------------------------------------------------- */
 template<>
-inline void Interfacer<_linear_coupled_cohesive>::createUniformInterface(Real crit_nor_opening, 
-									 Real crit_shr_opening, 
-									 Real max_nor_strength, 
-									 Real max_shr_strength) {
+inline void Interfacer<_linear_coupled_cohesive>::initInterfaceLaw() {
+  *interface_law = new CohesiveLaw(); 
+}
 
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_rate_and_state>::initInterfaceLaw() {
+  *interface_law = new RateAndStateLaw();
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_weakening_rate_and_state>::initInterfaceLaw() {
+  *interface_law = new RateAndStateLaw();
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_regularized_rate_and_state>::initInterfaceLaw() {
+  *interface_law = new RateAndStateLaw();
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_rate_and_state>::createUniformInterface() {
+
+  createHomogeneousRateandStateIntfc();
+  RateAndStateLaw * r_and_s = dynamic_cast<RateAndStateLaw*>(*interface_law);
+  r_and_s->initStandardFormulation();
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_weakening_rate_and_state>::createUniformInterface() {
+
+  createHomogeneousRateandStateIntfc();
+  RateAndStateLaw * r_and_s = dynamic_cast<RateAndStateLaw*>(*interface_law);
+  r_and_s->initVelocityWeakeningFormulation();
+  
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_regularized_rate_and_state>::createUniformInterface() {
+
+  Real theta = DataRegister::getParameter("theta");
+  Real xi = DataRegister::getParameter("xi");
+  Real v0 = DataRegister::getParameter("v0");
+   
+  createHomogeneousRateandStateIntfc();
+  RateAndStateLaw * r_and_s = dynamic_cast<RateAndStateLaw*>(*interface_law);
+  r_and_s->initRegularizedFormulation(v0,theta,xi);
+  
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_linear_coupled_cohesive>::createUniformInterface() {
+
+  Real crit_nor_opening = DataRegister::getParameter("critical_normal_opening");
+  Real crit_shr_opening = DataRegister::getParameter("critical_shear_opening");
+  Real max_nor_strength = DataRegister::getParameter("max_normal_strength");
+  Real max_shr_strength = DataRegister::getParameter("max_shear_strength");
+
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+  
   std::fill(nor_strength->begin(), nor_strength->end(), max_nor_strength);
   std::fill(shr_strength->begin(), shr_strength->end(), max_shr_strength);
-  crit_n_open.resize(total_n_ele, crit_nor_opening);
-  crit_s_open.resize(total_n_ele, crit_shr_opening);
-
+  std::fill(crit_n_open->begin(), crit_n_open->end(), crit_nor_opening);
+  std::fill(crit_s_open->begin(), crit_s_open->end(), crit_shr_opening);
+  
   out_summary << "/* -------------------------------------------------------------------------- */ "
 	      << std::endl
 	      << " UNIFORM INTERFACE " << std::endl
@@ -26,13 +90,17 @@ inline void Interfacer<_linear_coupled_cohesive>::createUniformInterface(Real cr
 		 << "delta_c_shr " << crit_shr_opening << std::endl
 		 << "tau_max_nor " << max_nor_strength << std::endl
 		 << "tau_max_shr " << max_shr_strength << std::endl;  
-
-  
 }
 
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::insertPatternfromFile(std::string filename, UInt origin) {
+
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
 
   std::ifstream file;
   std::string line;
@@ -46,14 +114,25 @@ inline void Interfacer<_linear_coupled_cohesive>::insertPatternfromFile(std::str
     std::stringstream sstr(line);
     for (UInt z = 0; z < n_ele[1]; ++z ) {
       sstr >> ratio;
-      (*shr_strength)[x+z*n_ele[0]]*= ratio;
-      (*nor_strength)[x+z*n_ele[0]]*= ratio;
-      if(ratio>1)
+      //(*shr_strength)[x+z*n_ele[0]]*= ratio;
+      //(*nor_strength)[x+z*n_ele[0]]*= ratio;
+      if(ratio==0) {
 	(*ind_crack)[x+z*n_ele[0]] = 0;
-      else if(ratio<1)
-	(*ind_crack)[x+z*n_ele[0]] = 0;
+	(*shr_strength)[x+z*n_ele[0]] *= 0.75;
+	(*nor_strength)[x+z*n_ele[0]] *= 0.75;
+	(*crit_s_open)[x+z*n_ele[0]] /= 0.75;
+	(*crit_n_open)[x+z*n_ele[0]] /= 0.75;
+	
+      }
+      //else if(ratio<1)
+      //	(*ind_crack)[x+z*n_ele[0]] = 0;
     }
-  } 
+  }
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " TOUGHNESS PATTERN INSERTED FROM FILE " << std::endl
+	      << "* Filename: " << filename << std::endl
+	      << std::endl;	
 }
 
 /* -------------------------------------------------------------------------- */
@@ -67,6 +146,11 @@ inline void Interfacer<_linear_coupled_cohesive>::createBrownianHeterogInterface
 										 Real hurst, UInt q0,
 										 UInt q1, UInt q2){
 
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+  
   SurfaceGeneratorFilterFFT surf_gen;
   int & grid_size = surf_gen.getGridSize();
   grid_size = std::max(n_ele[0],n_ele[1]);
@@ -92,10 +176,24 @@ inline void Interfacer<_linear_coupled_cohesive>::createBrownianHeterogInterface
       UInt index = ix+iz*n_ele[0];
       (*nor_strength)[index] = max_nor_strength+surface(ix,iz);      
       (*shr_strength)[index] = max_shr_strength+surface(ix,iz);      
-      crit_n_open[index]  = crit_nor_opening;
-      crit_s_open[index]  = crit_shr_opening;
+      (*crit_n_open)[index]  = crit_nor_opening;
+      (*crit_s_open)[index]  = crit_shr_opening;
     }
   }
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " BROWNIAN HETEROGENEOUS INTERFACE " << std::endl
+	      << "* Hurst exponent: " << hurst << std::endl
+	      << "* Root mean square " << rms << std::endl
+	      << "* q0: " << q0 << std::endl
+	      << "* q1: " << q1 << std::endl
+    	      << "* q2: " << q2 << std::endl
+    	      << "* Seed: " << seed << std::endl
+	      << std::endl;
+  out_parameters << "delta_c_nor " << crit_nor_opening << std::endl
+		 << "delta_c_shr " << crit_shr_opening << std::endl
+		 << "tau_max_nor " << max_nor_strength << std::endl
+		 << "tau_max_shr " << max_shr_strength << std::endl;  
 }
 
 #endif
@@ -107,6 +205,12 @@ void Interfacer<_linear_coupled_cohesive>::createNormalDistributedInterface(Real
 									    Real max_shr_strength,
 									    Real stddev, Real seed) {
  
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+
   // construct a trivial random generator engine from a time-based seed:
   //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator (seed);
@@ -118,10 +222,25 @@ void Interfacer<_linear_coupled_cohesive>::createNormalDistributedInterface(Real
 
     (*nor_strength)[i] = random_strength;
     (*shr_strength)[i] = random_strength;
-    crit_n_open[i] = crit_nor_opening;
-    crit_s_open[i] = crit_shr_opening;
+    (*crit_n_open)[i] = crit_nor_opening;
+    (*crit_s_open)[i] = crit_shr_opening;
     (*ind_crack)[i] = 0;
   }
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " HETEROGENEOUS INTERFACE FOLLOWING A NORMAL DISTRIBUTION" << std::endl
+	      << "* Standard deviation: " << stddev << std::endl
+	      << "* Seed: " << seed << std::endl
+    	      << "* Critical normal opening: " << crit_nor_opening << std::endl
+	      << "* Critical shear opening: " << crit_shr_opening << std::endl
+	      << "* Maximal normal strength: " << max_nor_strength << std::endl
+	      << "* Maximal shear strength: " << max_shr_strength << std::endl
+	      << std::endl;	
+  
+  out_parameters << "delta_c_nor " << crit_nor_opening << std::endl
+		 << "delta_c_shr " << crit_shr_opening << std::endl
+		 << "tau_max_nor " << max_nor_strength << std::endl
+		 << "tau_max_shr " << max_shr_strength << std::endl;  
 }
 
 /* -------------------------------------------------------------------------- */
@@ -134,6 +253,12 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughArea(Real area_st
 								    Real ratio_crit_shr_opening,
 								    bool vrtr) {
 
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+
   UInt i_start = (UInt)(area_start/dx[0]);
   UInt i_end = (UInt)(area_end/dx[0]);
 
@@ -144,8 +269,8 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughArea(Real area_st
 
       (*nor_strength)[index] *= (vrtr+ratio_max_nor_strength);      
       (*shr_strength)[index] *= (vrtr+ratio_max_shr_strength);
-      crit_n_open[index] *= (vrtr+ratio_crit_nor_opening);
-      crit_s_open[index] *= (vrtr+ratio_crit_shr_opening);
+      (*crit_n_open)[index] *= (vrtr+ratio_crit_nor_opening);
+      (*crit_s_open)[index] *= (vrtr+ratio_crit_shr_opening);
       (*ind_crack)[index] = cracking_index;
     }
   }
@@ -217,6 +342,12 @@ inline UInt Interfacer<_linear_coupled_cohesive>::createThroughMultiPolAsperity(
 										Real delta_crit_shr_opening, 
 										bool polarity) {
 
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+
   UInt i_start = (UInt)(start/dx[0]);
   UInt i_end = (UInt)(end/dx[0]);
 
@@ -248,15 +379,15 @@ inline UInt Interfacer<_linear_coupled_cohesive>::createThroughMultiPolAsperity(
 
 	(*nor_strength)[index] *= (1+delta_max_nor_strength);      
 	(*shr_strength)[index] *= (1+delta_max_shr_strength);
-	crit_n_open[index] *= (1+delta_crit_nor_opening);
-	crit_s_open[index] *= (1+delta_crit_shr_opening);
+	(*crit_n_open)[index] *= (1+delta_crit_nor_opening);
+	(*crit_s_open)[index] *= (1+delta_crit_shr_opening);
 	(*ind_crack)[index] = 5;
       }
       else {
 	(*nor_strength)[index] *= (1-delta_max_nor_strength);      
 	(*shr_strength)[index] *= (1-delta_max_shr_strength);
-	crit_n_open[index] *= (1-delta_crit_nor_opening);
-	crit_s_open[index] *= (1-delta_crit_shr_opening);
+	(*crit_n_open)[index] *= (1-delta_crit_nor_opening);
+	(*crit_s_open)[index] *= (1-delta_crit_shr_opening);
 	(*ind_crack)[index] = 4;
       }
     }
@@ -282,24 +413,23 @@ inline UInt Interfacer<_linear_coupled_cohesive>::createThroughMultiPolAsperity(
 
 /* -------------------------------------------------------------------------- */
 template<>
-inline void Interfacer<_linear_coupled_cohesive>::applyInterfaceCreation() {
-
-  *fracture_law = new CohesiveLaw(crit_n_open, crit_s_open, *nor_strength, *shr_strength);
-}
-
-/* -------------------------------------------------------------------------- */
-template<>
 inline void Interfacer<_linear_coupled_cohesive>::createThroughCenteredCrack(Real initial_crack_size,
 									     Real crit_nor_opening, 
 									     Real crit_shr_opening, 
 									     Real max_nor_strength, 
 									     Real max_shr_strength){
   
-  Real pos = 0.5*dx[0];
- 
-  crit_n_open.resize(total_n_ele, crit_nor_opening);
-  crit_s_open.resize(total_n_ele, crit_shr_opening);
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
   
+  std::fill(crit_n_open->begin(), crit_n_open->end(), crit_nor_opening);
+  std::fill(crit_s_open->begin(), crit_s_open->end(), crit_shr_opening);
+  
+  Real pos = 0.5*dx[0];
+   
   for (UInt ix = 0; ix < n_ele[0]/2; ++ix) {
     for (UInt iz = 0; iz < n_ele[1]; ++iz) {
 
@@ -354,11 +484,16 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughLeftSidedCrack(Re
 									      Real crit_shr_opening, 
 									      Real max_nor_strength, 
 									      Real max_shr_strength){
-
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+  
+  std::fill(crit_n_open->begin(), crit_n_open->end(), crit_nor_opening);
+  std::fill(crit_s_open->begin(), crit_s_open->end(), crit_shr_opening);
+  
   Real pos = 0.5*dx[0];
-
-  crit_n_open.resize(total_n_ele, crit_nor_opening);
-  crit_s_open.resize(total_n_ele, crit_shr_opening);
 
   for (UInt ix = 0; ix < n_ele[0]; ++ix) {
     for (UInt iz = 0; iz < n_ele[1]; ++iz) {
@@ -378,6 +513,21 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughLeftSidedCrack(Re
     }
     pos +=dx[0];
   }
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " LEFT-SIDED CRACK " << std::endl
+	      << "* Initial crack size: " << initial_crack_size << std::endl
+	      << "* Critical normal opening: " << crit_nor_opening << std::endl
+	      << "* Critical shear opening: " << crit_shr_opening << std::endl
+	      << "* Maximal normal strength: " << max_nor_strength << std::endl
+	      << "* Maximal shear strength: " << max_shr_strength << std::endl
+	      << std::endl;	
+  
+  out_parameters << "a0 " << initial_crack_size << std::endl
+		 << "delta_c_nor " << crit_nor_opening << std::endl
+		 << "delta_c_shr " << crit_shr_opening << std::endl
+		 << "tau_max_nor " << max_nor_strength << std::endl
+		 << "tau_max_shr " << max_shr_strength << std::endl;  
 }
 
 /* -------------------------------------------------------------------------- */
@@ -394,8 +544,14 @@ inline void Interfacer<_linear_coupled_cohesive>::createRightPropagatingCrackRou
 
   std::vector<Real> pos = {0.5*dx[0], 0.5*dx[1]}; 
 
-  crit_n_open.resize(total_n_ele, crit_nor_opening);
-  crit_s_open.resize(total_n_ele, crit_shr_opening);
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+  
+  std::fill(crit_n_open->begin(), crit_n_open->end(), crit_nor_opening);
+  std::fill(crit_s_open->begin(), crit_s_open->end(), crit_shr_opening);
 
   for (UInt i = 0; i < n_ele[0]; ++i) {
     pos[1]=0.5*dx[1];
@@ -415,8 +571,8 @@ inline void Interfacer<_linear_coupled_cohesive>::createRightPropagatingCrackRou
 	(*nor_strength)[cmpnt]=ratio_strength*max_nor_strength;
 	(*shr_strength)[cmpnt]=ratio_strength*max_shr_strength;
 	
-	crit_n_open[cmpnt] = ratio_crit_open*crit_nor_opening;
-	crit_s_open[cmpnt] = ratio_crit_open*crit_shr_opening;
+	(*crit_n_open)[cmpnt] = ratio_crit_open*crit_nor_opening;
+	(*crit_s_open)[cmpnt] = ratio_crit_open*crit_shr_opening;
 
 	(*ind_crack)[cmpnt]=5;
 	}
@@ -453,18 +609,24 @@ inline void Interfacer<_linear_coupled_cohesive>::createRightPropagatingCrackRou
 		 << "tau_max_nor " << max_nor_strength << std::endl
 		 << "tau_max_shr " << max_shr_strength << std::endl
     		 << "ratio_str " << ratio_strength << std::endl
-    		 << "ratio_delta_c " << ratio_crit_open << std::endl
-    ;
+    		 << "ratio_delta_c " << ratio_crit_open << std::endl;
 }
 
 /* -------------------------------------------------------------------------- */
 template<>
 void Interfacer<_linear_coupled_cohesive>::createIncohIntfc() {
 
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  
   for (UInt i = 0; i < total_n_ele; ++i) {
     
       (*nor_strength)[i]=0;
       (*shr_strength)[i]=0;
       (*ind_crack)[i] = 2;
   }
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " INTERFACE WITHOUT INITIAL COHESION" << std::endl;
 }

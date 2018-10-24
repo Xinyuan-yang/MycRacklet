@@ -31,6 +31,7 @@
 #include <vector>
 #include <fftw3.h>
 #include <complex>
+#include <algorithm>
 #include "cRacklet_common.hh"
 #if defined (_OPENMP)
 #include <omp.h>
@@ -46,7 +47,7 @@ public:
   
   CrackProfile();
   CrackProfile(std::vector<UInt> size, UInt total_lgth);
-  virtual ~CrackProfile();
+  virtual ~CrackProfile(){};
   
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
@@ -59,10 +60,14 @@ public:
   // crack_profile in initialized to perform eihter forward (forward_fft=true)
   // or backward ((forward_fft=false) operations
   void initFFT(bool forward_fft, UInt dim);
+  // finalize and free fftw library objects. Note that cleanup is only call once by the DataRegister
+  void finalizeFFT();
   // get the total number of data stored
   UInt size() const {return heights.size();}
   // return a profile made of strided values
   CrackProfile getStridedPart(UInt stride, UInt start) const;
+  // return the value of maximum height
+  Real getMaxValue() const {return *(max_element(heights.begin(), heights.end()));}
   // take the square root of each components
   void squareRoot();
   // compute a strided forward FFT and store only half spectrum without mean
@@ -107,14 +112,6 @@ private:
 inline CrackProfile::CrackProfile(){
 
   data_fft=NULL;
-}
-/* -------------------------------------------------------------------------- */
-inline CrackProfile::~CrackProfile(){
-
-  if(data_fft) {
-    fftw_destroy_plan(plan);
-    delete[] data_fft;
-  }
 }
 
 /* -------------------------------------------------------------------------- */

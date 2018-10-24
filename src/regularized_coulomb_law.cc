@@ -1,6 +1,5 @@
 /* -------------------------------------------------------------------------- */
 #include "regularized_coulomb_law.hh"
-#include "data_register.hh"
 #include <stdlib.h>
 #include <stdio.h>
 #include <fstream>
@@ -40,21 +39,7 @@ void RegularizedCoulombLaw::computeFricStrength(Real & norm_comp_stress, Real & 
 /* -------------------------------------------------------------------------- */
 void RegularizedCoulombLaw::restart(bool pausing, UInt nele_2d) {
 
-  DataRegister::restartData(sigma_np1, "restart_sigma_np1.cra",pausing, nele_2d);
-  DataRegister::restartData(contact_history, "restart_contact_history.cra",pausing, nele_2d);
+  restartData(sigma_np1, "restart_sigma_np1.cra",pausing, nele_2d);
+  restartData(contact_history, "restart_contact_history.cra",pausing, nele_2d);
 }
 
-/* -------------------------------------------------------------------------- */
-void RegularizedCoulombLaw::printSelf(std::ofstream & parameters_file, std::ofstream & summary) {
-
-  summary << "/* -------------------------------------------------------------------------- */ "; 
-  summary << std::endl;
-  summary << " CONTACT LAW VARIABLES " << std::endl;
-  summary << "* Type of contact law: Coulomb law with normal pressure regularization" << std::endl;	        
-  summary << "* Coefficient of friction: " << cf << std::endl;
-  summary << "* Regularization time scale dt/t*:  " << dt_tstar << std::endl; 
-  summary << std::endl;	
-
-  parameters_file << cf << " ";
-
-}

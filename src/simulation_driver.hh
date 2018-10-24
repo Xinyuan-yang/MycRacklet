@@ -72,7 +72,6 @@ private:
   // Read and update the loading conditions
   UInt runReadingStep();
   // Solve one time step of SpectralModel in two phases
-  void priorUpdates();
   void solveTimeStep();
   // Verify the compatibility of input file target speed with the one used to reset beta
   void checkForTargetSpeed(std::ifstream & file);
@@ -96,7 +95,7 @@ public:
   // Print tailored loading conditions to file
   void writeLoading(std::string load_file);
   // Launching artificially a through crack from position crack_start up to a given launched_size by artificially growing it at speed v_init*cs
-  void launchCrack(Real crack_start, Real launched_size, Real v_init);
+  void launchCrack(Real crack_start, Real launched_size, Real v_init, bool one_side_propagation=true);
 
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */

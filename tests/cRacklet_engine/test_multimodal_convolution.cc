@@ -77,7 +77,7 @@ int main() {
 
   SpectralConvolutionManager convo_manager(dt, j_ksi, 1, 1);
 
-  convo_manager.init(cut, nb_time);
+  convo_manager.init(cut, nb_time,false);
 
   ConvolutionManager::KernelFunctor ** h33 = convo_manager.getKernelFunctor(0);
   (*h33) = new H33;

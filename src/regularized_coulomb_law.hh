@@ -54,8 +54,6 @@ public:
   // pausing=true->generate restart files | pausing=false->restart simulation from existing files
   // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
   void restart(bool pausing=false, UInt nele_2d=0);
-  // dump current contact law in a given ofstream
-  void printSelf(std::ofstream & parameters_file, std::ofstream & summary);
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */
@@ -87,7 +85,18 @@ inline RegularizedCoulombLaw::RegularizedCoulombLaw(Real coef, Real ratio, UInt 
   dt_tstar = ratio;
   sigma_np1.resize(n_ele);
   contact_history.resize(n_ele);
-										
+
+  out_summary << "/* -------------------------------------------------------------------------- */ "; 
+  out_summary << std::endl;
+  out_summary << " CONTACT LAW VARIABLES " << std::endl;
+  out_summary << "* Type of contact law: Coulomb law with normal pressure regularization" << std::endl;	        
+  out_summary << "* Coefficient of friction: " << cf << std::endl;
+  out_summary << "* Regularization time scale dt/t*:  " << dt_tstar << std::endl; 
+  out_summary << std::endl;	
+
+  out_parameters << cf << " ";
+
+  
 }										
 /* -------------------------------------------------------------------------- */
 inline RegularizedCoulombLaw::~RegularizedCoulombLaw(){							  

@@ -39,6 +39,7 @@ set(cRacklet_SRC
   convolution_manager.cc
   spectral_convolution_manager.cc
   cohesive_law.cc
+  rate_and_state_law.cc
   coulomb_law.cc
   regularized_coulomb_law.cc
   data_dumper.cc

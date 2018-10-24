@@ -54,7 +54,8 @@ public:
 public:
   
   // Initialize the manager given convolution cut and number of time steps
-  void init(Real cut, UInt nb_time_steps);
+  // If blank is True, memory is not allocated (used to estimate the hardware capacity required to run a simulation)
+  Idx init(Real cut, UInt nb_time_steps, bool blank);
   // (For a given kernel):
   // Use the default KernelFunctor and read pre-computed kernel values from file
   // Return poisson ratio read in the file for Real-check

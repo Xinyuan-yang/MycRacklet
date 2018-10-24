@@ -3,17 +3,103 @@
 #include <fstream>
 #include <algorithm>
 /* -------------------------------------------------------------------------- */
-void CohesiveLaw::updateFractureLaw(std::vector<Real> & nor_strength, std::vector<Real> & shr_strength,
-				    std::vector<UInt> & ind_crack, CrackProfile & nor_opening, 
-				    CrackProfile & shr_opening) {
+void CohesiveLaw::initInterfaceConditions() {
+  
+  memcpy(&max_nor_strength[0],&nor_strength[0],nor_strength.size()*sizeof(Real));
+  memcpy(&max_shr_strength[0],&shr_strength[0],shr_strength.size()*sizeof(Real));
+  
+  computeInitialVelocities();
+}
 
+/* -------------------------------------------------------------------------- */
+void CohesiveLaw::preventSurfaceOverlapping(ContactLaw* contactlaw) {
+
+  allow_overlapping = false;
+  contact_law = contactlaw;  
+}
+
+/* -------------------------------------------------------------------------- */
+void CohesiveLaw::restart(bool pausing, UInt nele_2d) {
+  
+  if(contact_law)
+    contact_law->restart(pausing,nele_2d);
+}
+
+/* -------------------------------------------------------------------------- */
+void CohesiveLaw::updateInterfaceConditions() {
+  updateCohesiveLaw();
+  computeVelocities();
+}
+
+/* -------------------------------------------------------------------------- */
+void CohesiveLaw::computeInitialVelocities() {
+
+  Real strength;
+  Real shr_trac;
+  Real shr_velo;
+  std::vector<Real> temp_f(2);
+
+  std::vector<CrackProfile*> loads = {datas[_top_loading],datas[_bottom_loading]};
+  
+  UInt i=0;
+  for (UInt h = 0; h < n_ele[0]; ++h) {
+    for (UInt j = 0; j < n_ele[1]; ++j) {
+      i=h+j*n_ele[0];
+    
+      if((nor_strength[i]==0)&&((*loads[0])[i*dim+1] < 0.0)) { 
+      
+	contact_law->computeFricStrength((*loads[0])[i*dim+1], strength, i, it); 
+      
+	for (UInt side = 0; side < 2; ++side) {
+	  (*velocities[side])[i*dim+1] = 0.0;
+	}
+      }
+      else{//velocities u2
+	strength = shr_strength[i];
+	(*velocities[0])[i*dim+1] = std::max(((*loads[0])[i*dim+1]-nor_strength[i])/(mu[0]*eta[0]),0.0);
+	(*velocities[1])[i*dim+1] = std::min((zeta/ksi)*(nor_strength[i]-(*loads[1])[i*dim+1])/(mu[0]*eta[1]),0.0);
+      }
+
+      //velocities u1 & u3
+      for (UInt side = 0; side < 2; ++side) {
+  
+	for (UInt k = 0; k < 2; ++k) {
+	  temp_f[k] = (*loads[side])[i*dim+2*k];
+	}
+      
+	shr_trac = sqrt(temp_f[0]*temp_f[0]+temp_f[1]*temp_f[1]);
+	if (shr_trac ==0) {
+	
+	  for (UInt k = 0; k < 2; ++k) {
+	  
+	    (*velocities[side])[i*dim+2*k] = 0.0;
+	  }
+	}
+	else {
+	  if (side==0) shr_velo = std::max((shr_trac-strength)/mu[0],0.0);
+	  else shr_velo = std::min((zeta/ksi)*(strength - shr_trac)/mu[0],0.0);
+	  
+	  for (UInt k = 0; k < 2; ++k) {
+	    (*velocities[side])[i*dim+2*k] = shr_velo*temp_f[k]/shr_trac;
+	  } 
+	}
+      }
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+void CohesiveLaw::updateCohesiveLaw() {
+
+  CrackProfile * shr_opening = datas[_shear_displacement_jumps];
+  CrackProfile * nor_opening = datas[_normal_displacement_jumps];
 
   UInt n_ele = max_nor_strength.size();
   Real aux;
 
   for (UInt i = 0; i < n_ele; ++i) {     
 
-    if ((nor_opening[i]==0)&&(shr_opening[i]==0)){
+    if (((*nor_opening)[i]==0)&&((*shr_opening)[i]==0)&&(ind_crack[i]!=2)){
 
       nor_strength[i] = max_nor_strength[i];
       shr_strength[i] = max_shr_strength[i];
@@ -22,74 +108,62 @@ void CohesiveLaw::updateFractureLaw(std::vector<Real> & nor_strength, std::vecto
     
     else {
       
-      aux = sqrt((nor_opening[i]/crit_nor_opening[i])*(nor_opening[i]/crit_nor_opening[i])+
-		 (shr_opening[i]/crit_shr_opening[i])*(shr_opening[i]/crit_shr_opening[i]));
+      aux = sqrt(((*nor_opening)[i]/crit_nor_opening[i])*((*nor_opening)[i]/crit_nor_opening[i])+
+		 ((*shr_opening)[i]/crit_shr_opening[i])*((*shr_opening)[i]/crit_shr_opening[i]));
       
       if ((aux>=1)||(nor_strength[i] * shr_strength[i] == 0)) {
 
-	if ((nor_strength[i] == 0)&&(cRacklet::is_negative(nor_opening[i]))){} 
-	//nodes whith contact are handled by ContactLaw} 
+	bool in_contact = ((nor_strength[i] == 0)&&(cRacklet::is_negative((*nor_opening)[i])));
+	// the case of contact is handled by the associated ContactLaw
 	
-	else 
+	if (!in_contact) { 
+
 	  ind_crack[i] = 2;
-	
-	nor_strength[i] = 0.0;
-	shr_strength[i] = 0.0;
-	
+	  nor_strength[i] = 0.0;
+	  shr_strength[i] = 0.0;
+	}
       }
 
       else {
-	
+
+	ind_crack[i] = 1;
 	nor_strength[i] = max_nor_strength[i] * (1-aux);
 	shr_strength[i] = max_shr_strength[i] * (1-aux);
-	ind_crack[i] = 1;
-
       }
     }
   }    
 }
 
 /* -------------------------------------------------------------------------- */
-void CohesiveLaw::printSelf(std::ofstream & parameters_file, std::ofstream & summary) {
+void CohesiveLaw::computeVelocities(){
 
-  Real max_nor_str = *std::max_element(max_nor_strength.begin(),max_nor_strength.end());
-  Real min_nor_str = *std::min_element(max_nor_strength.begin(),max_nor_strength.end());
+  CrackProfile deltaStresses(n_ele,dim);
+  std::vector<Real> temp_veloc(dim);
+  Real trac;
+   
+  deltaStresses = (*stresses[0]) - (*stresses[1]);
+   
+  Real cste = 1/(mu[0]*(1+ksi/zeta)); 
 
-  Real max_shr_str = *std::max_element(max_shr_strength.begin(),max_shr_strength.end());
-  Real min_shr_str = *std::min_element(max_shr_strength.begin(),max_shr_strength.end());
+  (*velocities[0]) =  deltaStresses * cste;
 
-  Real max_nor_op = *std::max_element(crit_nor_opening.begin(),crit_nor_opening.end());
-  Real min_nor_op = *std::min_element(crit_nor_opening.begin(),crit_nor_opening.end());
+  for (UInt i = 0; i < n_ele[0]; ++i) {
+    for (UInt j = 0; j < n_ele[1]; ++j) {
+      (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim] *= (1+ksi/zeta)/(eta[0]+ksi*eta[1]/zeta); 
+    }
+  }
+  (*velocities[1])=(*velocities[0]); 
 
-  Real max_shr_op = *std::max_element(crit_shr_opening.begin(),crit_shr_opening.end());
-  Real min_shr_op = *std::min_element(crit_shr_opening.begin(),crit_shr_opening.end());
+  for (UInt i = 0; i < n_ele[0]; ++i) {
+    for (UInt j = 0; j < n_ele[1]; ++j) {
 
-  bool homog = false;
-
-  if ((max_nor_str==min_nor_str)&&(max_shr_str==min_shr_str)
-      &&(max_nor_op==min_nor_op)&&(max_shr_str==min_shr_str)) homog = true;
-
-  summary << "/* -------------------------------------------------------------------------- */ "; 
-  summary << std::endl;
-  summary << " FRACTURE LAW VARIABLES " << std::endl;
-  summary << "* Type of fracture law: Linear rate-independant coupled cohesive law" 
-	  << std::endl;		        
-  summary << "* Maximum shear strength: " << min_shr_str << std::endl;
-  summary << "* Maximum normal strength: " << min_nor_str << std::endl;
-  summary << "* Critical shear opening: " << min_shr_op << std::endl;
-  summary << "* Critical normal opening: " << min_nor_op << std::endl;
-  summary << std::endl;	
-  parameters_file << min_nor_str << " " << min_nor_op << " " << min_shr_str 
-		  << " " << min_shr_op << " ";
-  if (!homog) {
-  summary << "* Heterogeneous tougher area with properties: " << std::endl;  
-  summary << "* Maximum shear strength: " << max_shr_str << std::endl;
-  summary << "* Maximum normal strength: " << max_nor_str << std::endl;
-  summary << "* Critical shear opening: " << max_shr_op << std::endl;
-  summary << "* Critical normal opening: " << max_nor_op << std::endl;
-  summary << std::endl;
-  parameters_file << max_nor_str << " " << max_nor_op << " " << max_shr_str 
-		  << " " << max_shr_op << " ";
+      trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim];
+      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0)) computeIndepNormalVelocities(i,j);
+      else {
+	(*intfc_trac)[(i*dim+1)+j*n_ele[0]*dim] = trac;
+	computeShearVelocities(shr_strength[i+n_ele[0]*j], i+j*n_ele[0]);
+      }
+    }
   }
 }
 

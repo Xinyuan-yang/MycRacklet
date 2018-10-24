@@ -135,8 +135,6 @@ int main(int argc, char *argv[]){
   for (UInt phase = 0; phase < nb_simulation_phases; ++phase) {
     
     SpectralModel * model;
-    FractureLaw * fracturelaw=NULL;
-    ContactLaw * contactlaw=NULL;
     
     if ((ratio==1.)||(phase==0)){
       outfolder = output_folder+"2d_outputs/";
@@ -147,8 +145,8 @@ int main(int argc, char *argv[]){
       omp_set_num_threads(1);
 #endif
       model = new SpectralModel({nex,1}, 0, {dom_sizex,0.},
-				nu, nu, E, E, cs, cs, tcut, tcut, overlap,
-				fracturelaw, contactlaw, sim_name, outfolder);      
+				nu, nu, E, E, cs, cs, tcut, tcut,
+				sim_name, outfolder);      
     } else {
       outfolder = output_folder;
       mkdir(outfolder.c_str(),0777);
@@ -157,8 +155,8 @@ int main(int argc, char *argv[]){
       omp_set_num_threads(max_num_threads);
 #endif
       model = new SpectralModel({nex,nez}, 0, {dom_sizex,dom_sizez},
-				nu, nu, E, E, cs, cs, tcut, tcut, overlap,
-				fracturelaw, contactlaw, sim_name, outfolder);
+				nu, nu, E, E, cs, cs, tcut, tcut,
+				sim_name, outfolder);
     }
     
     SimulationDriver sim_driver(*model);
@@ -166,8 +164,11 @@ int main(int argc, char *argv[]){
     Interfacer<_linear_coupled_cohesive> interfacer(*model);   
 
     if ((ratio==1.)||(phase==0)) {
-      interfacer.createUniformInterface(crit_n_open, crit_s_open, 
-					max_n_str, max_s_str);
+      DataRegister::registerParameter("critical_normal_opening",crit_n_open);
+      DataRegister::registerParameter("critical_shear_opening",crit_s_open);
+      DataRegister::registerParameter("max_normal_strength",max_n_str);
+      DataRegister::registerParameter("max_shear_strength",max_s_str);
+      interfacer.createUniformInterface();
       interfacer.createThroughCrack(0.,crack_size);
     } else
       interfacer.createRightPropagatingCrackRoundAsp(crack_size, crit_n_open,crit_s_open,max_n_str,
@@ -175,7 +176,9 @@ int main(int argc, char *argv[]){
 						     sqrt(ratio),sqrt(ratio));
 
     interfacer.createThroughWall(0.95*dom_sizex,dom_sizex);
-    interfacer.applyInterfaceCreation();
+
+    CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model->getInterfaceLaw()));
+    cohesive_law->preventSurfaceOverlapping(NULL);
     
     sim_driver.initConstantLoading(load, psi, phi);
     

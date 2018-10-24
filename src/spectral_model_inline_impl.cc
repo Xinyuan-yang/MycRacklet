@@ -10,7 +10,7 @@ inline SpectralModel::SpectralModel(){
   rho.resize(2);
   t_cut.resize(2);
   ksi = 0;
-  overlapping = 0;
+  interface_law=NULL;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -20,8 +20,6 @@ inline SpectralModel::SpectralModel(std::vector<UInt> nele, UInt nb_time_steps,
 				    Real E_top, Real E_bot,
 				    Real cs_top, Real cs_bot,
 				    UInt tcut_top, UInt tcut_bot, 
-				    bool overlap,
-				    FractureLaw * fracturelaw, ContactLaw * contactlaw,
 				    const std::string & simulation_summary,
 				    const std::string output_dir) {
 
@@ -45,14 +43,11 @@ inline SpectralModel::SpectralModel(std::vector<UInt> nele, UInt nb_time_steps,
   t_cut.resize(2);
   t_cut[0] = tcut_top;
   t_cut[1] = tcut_bot;
-  overlapping = overlap;
-  fracture_law = fracturelaw;
-  contact_law = contactlaw;
-  loading_ratio = NULL;
   dx.resize(2);
   q0.resize(2);
   nele_fft.resize(2);
   this->data_initialize(output_dir, simulation_summary);
+  interface_law=NULL;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -233,6 +228,11 @@ inline void SpectralModel::computeConvolutions<2>(Real * F_it, UInt side) {
 /* -------------------------------------------------------------------------- */
 inline SpectralModel::~SpectralModel(){
 
+  for (UInt side = 0; side < 2; ++side) {
+    displacements[side].finalizeFFT();
+    stresses[side].finalizeFFT();
+  }
+
   this->data_finalize();
   
   delete displ_jump;
@@ -255,12 +255,6 @@ inline SpectralModel::~SpectralModel(){
   delete convo_manager_top;
   delete convo_manager_bot;
 
-  if(loading_ratio)
-    delete[] loading_ratio;
-  
-  if(fracture_law)
-    delete fracture_law;
-
-  if(contact_law)
-    delete contact_law;
+  if(interface_law)
+    delete interface_law;
 };

@@ -115,7 +115,6 @@ int main(int argc, char *argv[]){
   Real sg_max_s_str = 14e6;
 
   Real G_length = crit_s_open*max_s_str/(load*load*M_PI)*E/(1-nu*nu);
-  FractureLaw * fracturelaw; 
 
   std::cout << "Griffith length: " << G_length << std::endl; 
 
@@ -125,7 +124,6 @@ int main(int argc, char *argv[]){
   UInt propagation_domain = 0.25*nb_elements;
   
   // Friction paramters
-  bool overlap = 0;
   Real regularized_time_scale = 0.1;
   Real coef_frict = 0.25;
   ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
@@ -133,28 +131,32 @@ int main(int argc, char *argv[]){
   /* -------------------------------------------------------------------------- */
 
   SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, 
-		      nu, nu, E, E, cs, cs, tcut, tcut, overlap,
-		      fracturelaw, contactlaw, sim_name, output_folder); 
+		      nu, nu, E, E, cs, cs, tcut, tcut, sim_name, output_folder); 
 
   // SimulationDriver object helping to launch controlled-speed simulation
   SimulationDriver sim_driver(model, cr_speed, 0.0);
   
   Interfacer<_linear_coupled_cohesive> interfacer(model);
 
-  interfacer.createUniformInterface(crit_n_open, crit_s_open, 
-				    max_n_str, max_s_str);
+  DataRegister::registerParameter("critical_normal_opening",crit_n_open);
+  DataRegister::registerParameter("critical_shear_opening",crit_s_open);
+  DataRegister::registerParameter("max_normal_strength",max_n_str);
+  DataRegister::registerParameter("max_shear_strength",max_s_str);
+  interfacer.createUniformInterface();
   interfacer.createThroughCrack(0.,5*dx);
   
   if(nb_heterog>0) {
-    UInt x_end;
-    x_end = interfacer.createThroughMultiPolAsperity(5*G_length, 11.25*G_length, nb_heterog,
-						     (sg_max_s_str-max_s_str)/max_n_str, 
-						     (sg_max_s_str-max_n_str)/max_s_str,
-						     0.,0.,true);
+    
+    interfacer.createThroughMultiPolAsperity(5*G_length, 11.25*G_length, nb_heterog,
+					     (sg_max_s_str-max_s_str)/max_s_str, 
+					     (sg_max_n_str-max_n_str)/max_n_str,
+					     0.,0.,true);
   }
   
   interfacer.createThroughWall(wall_position,dom_size);
-  interfacer.applyInterfaceCreation();
+
+  CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
+  cohesive_law->preventSurfaceOverlapping(contactlaw);
 
   if(write){
     // Init algorithm to tailor constant speed loading conditions
@@ -214,8 +216,6 @@ int main(int argc, char *argv[]){
   // Do not forget to create the resulting loading file
   if (write)
     sim_driver.writeLoading(output_folder+load_file);
-
-  delete contactlaw;
   
   return 0;
 }

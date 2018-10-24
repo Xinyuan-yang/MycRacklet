@@ -1,9 +1,9 @@
 /**
- * @file   material.hh
+ * @file   interface_law.hh
  * @author Fabian Barras <fabian.barras@epfl.ch>
  * @date   Sun Jan  6 19:05:32 2013
  *
- * @brief  Mother class dealing with fracure's law of crack interface
+ * @brief  Abstract class representing the laws governing interface conditions
  *
  * @section LICENSE
  *
@@ -24,36 +24,37 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 /* -------------------------------------------------------------------------- */
-#ifndef __FRACTURE_LAW__
-#define __FRACTURE_LAW__
+#ifndef __INTERFACE_LAW__
+#define __INTERFACE_LAW__
 /* -------------------------------------------------------------------------- */
 #include "crack_profile.hh"
+#include "data_register.hh"
 #include <iostream>
 /* -------------------------------------------------------------------------- */
 
-class FractureLaw {
+class InterfaceLaw : public DataRegister {
+
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
   
-  FractureLaw();
-  virtual ~FractureLaw();
+  InterfaceLaw();
+  virtual ~InterfaceLaw();
   
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
-  // update the strength of the material in function of the opening profile
-  virtual void updateFractureLaw(std::vector<Real> & nor_strength, std::vector<Real> & shr_strength,
-				 std::vector<UInt> & ind_crack, CrackProfile & nor_opening, 
-				 CrackProfile & shr_opening) = 0;
+  // initialize the conditions at the interface
+  virtual void initInterfaceConditions() = 0;
+  // solve the interface conditions in function of the opening profile and dynamic stress field
+  virtual void updateInterfaceConditions() = 0;
   // Method used in restart framework in case of history dependant fracture law
   // pausing=true->generate restart files | pausing=false->restart simulation from existing files
   // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
   virtual void restart(bool pausing=true, UInt nele_2d=0)=0;
-  // dump fracture law paramters in a given ofstream
-  virtual void printSelf(std::ofstream & parameters_file, std::ofstream & summary) = 0;
+
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */
@@ -69,14 +70,14 @@ protected:
 /* -------------------------------------------------------------------------- */
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
-inline FractureLaw::FractureLaw(){							
+inline InterfaceLaw::InterfaceLaw(){							
  										
 }										
 /* -------------------------------------------------------------------------- */
-inline FractureLaw::~FractureLaw(){							  
+inline InterfaceLaw::~InterfaceLaw(){							  
 										 
 }										
 
-#endif /* __FRACTURE_LAW__ */
+#endif /* __INTERFACE_LAW__ */
  
   

@@ -34,6 +34,8 @@
 option(UIUC_ALU_HOMA "Activate Aluminium-Homalite simulations" ON) 
 option(2D_HETEROG "Activate 2-D heterogenous interface simulations" ON)
 option(3D_ASPERTITY "Activate 3-D interface with asperities simulations" ON)
+option(FRICTION "Activate simulation of frictional contact problems" OFF)
+option(PROFILING "Executables to analyze code performance" OFF)
 
 if(UIUC_ALU_HOMA)
   add_subdirectory(001_UIUC_AluHoma)
@@ -45,4 +47,12 @@ endif()
 
 if(3D_ASPERTITY)
   add_subdirectory(003_3d_asperity)
+endif()
+
+if(FRICTION)
+  add_subdirectory(005_friction)
+endif()
+
+if(PROFILING)
+  add_subdirectory(profiling)
 endif()

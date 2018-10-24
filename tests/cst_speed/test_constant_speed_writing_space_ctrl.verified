@@ -1,0 +1,137 @@
+Griffith length: 0.0378643
+!! Stable time step reinitialized to beta = 0.2
+Convolution kernel correctly loaded from nu_.33_h11.dat
+Convolution kernel correctly loaded from nu_.33_h22.dat
+Convolution kernel correctly loaded from nu_.33_k12.dat
+Convolution kernel correctly loaded from nu_.33_h11b.dat
+Convolution kernel correctly loaded from nu_.33_h22b.dat
+Convolution kernel correctly loaded from nu_.33_k12b.dat
+Rupture is currently artificially triggered with speed 0.05*c_s
+ Crack position is now at 0.00369768
+ Crack position is now at 0.00443722
+ Crack position is now at 0.00517676
+ Crack position is now at 0.00591629
+ Crack position is now at 0.00665583
+ Crack position is now at 0.00739536
+ Crack position is now at 0.0081349
+ Crack position is now at 0.00887444
+ Crack position is now at 0.00961397
+ Crack position is now at 0.0103535
+ Crack position is now at 0.011093
+ Crack position is now at 0.0118326
+ Crack position is now at 0.0125721
+ Crack position is now at 0.0133117
+ Crack position is now at 0.0140512
+ Crack position is now at 0.0147907
+ Crack position is now at 0.0155303
+ Crack position is now at 0.0162698
+ Crack position is now at 0.0170093
+ Crack position is now at 0.0177489
+ Crack position is now at 0.0184884
+ Crack position is now at 0.0192279
+ Crack position is now at 0.0199675
+ Crack position is now at 0.020707
+ Crack position is now at 0.0214466
+ Crack position is now at 0.0221861
+ Crack position is now at 0.0229256
+ Crack position is now at 0.0236652
+ Crack position is now at 0.0244047
+ Crack position is now at 0.0251442
+ Crack position is now at 0.0258838
+ Crack position is now at 0.0266233
+ Crack position is now at 0.0273628
+ Crack position is now at 0.0281024
+ Crack position is now at 0.0288419
+ Crack position is now at 0.0295815
+ Crack position is now at 0.030321
+ Crack position is now at 0.0310605
+ Crack position is now at 0.0318001
+ Crack position is now at 0.0325396
+ Crack position is now at 0.0332791
+ Crack position is now at 0.0340187
+ Crack position is now at 0.0347582
+ Crack position is now at 0.0354977
+ Crack position is now at 0.0369768
+ Crack position is now at 0.0384559
+Initiation just ends...
+Crack tip at 10.9375%  and far-field loading               0           3e+06               0
+Crack tip at 14.4531%  and far-field loading               0           3e+06               0
+Initiation phase just ends -> time: 1.93984
+Crack tip at 20.1172%  and far-field loading               0     2.19976e+06               0
+Crack tip at 25.9766%  and far-field loading               0     1.97667e+06               0
+Crack tip at 31.6406%  and far-field loading               0     1.81719e+06               0
+Crack tip at 37.1094%  and far-field loading               0     1.80812e+06               0
+Crack tip at 42.7734%  and far-field loading               0     1.66944e+06               0
+Crack tip at 48.4375%  and far-field loading               0     1.53566e+06               0
+Crack tip at 54.1016%  and far-field loading               0     1.38593e+06               0
+Crack tip at 59.7656%  and far-field loading               0     1.23117e+06               0
+Crack tip at 65.625%  and far-field loading               0     1.17108e+06               0
+Crack tip at 71.4844%  and far-field loading               0     1.12206e+06               0
+!! Stable time step reinitialized to beta = 0.2
+Convolution kernel correctly loaded from nu_.33_h11.dat
+Convolution kernel correctly loaded from nu_.33_h22.dat
+Convolution kernel correctly loaded from nu_.33_k12.dat
+Convolution kernel correctly loaded from nu_.33_h11b.dat
+Convolution kernel correctly loaded from nu_.33_h22b.dat
+Convolution kernel correctly loaded from nu_.33_k12b.dat
+Loading tailored to fix crack speed at 0.5c_s has just been read.
+Rupture is currently artificially triggered with speed 0.05*c_s
+ Crack position is now at 0.00369768
+ Crack position is now at 0.00443722
+ Crack position is now at 0.00517676
+ Crack position is now at 0.00591629
+ Crack position is now at 0.00665583
+ Crack position is now at 0.00739536
+ Crack position is now at 0.0081349
+ Crack position is now at 0.00887444
+ Crack position is now at 0.00961397
+ Crack position is now at 0.0103535
+ Crack position is now at 0.011093
+ Crack position is now at 0.0118326
+ Crack position is now at 0.0125721
+ Crack position is now at 0.0133117
+ Crack position is now at 0.0140512
+ Crack position is now at 0.0147907
+ Crack position is now at 0.0155303
+ Crack position is now at 0.0162698
+ Crack position is now at 0.0170093
+ Crack position is now at 0.0177489
+ Crack position is now at 0.0184884
+ Crack position is now at 0.0192279
+ Crack position is now at 0.0199675
+ Crack position is now at 0.020707
+ Crack position is now at 0.0214466
+ Crack position is now at 0.0221861
+ Crack position is now at 0.0229256
+ Crack position is now at 0.0236652
+ Crack position is now at 0.0244047
+ Crack position is now at 0.0251442
+ Crack position is now at 0.0258838
+ Crack position is now at 0.0266233
+ Crack position is now at 0.0273628
+ Crack position is now at 0.0281024
+ Crack position is now at 0.0288419
+ Crack position is now at 0.0295815
+ Crack position is now at 0.030321
+ Crack position is now at 0.0310605
+ Crack position is now at 0.0318001
+ Crack position is now at 0.0325396
+ Crack position is now at 0.0332791
+ Crack position is now at 0.0340187
+ Crack position is now at 0.0347582
+ Crack position is now at 0.0354977
+ Crack position is now at 0.0369768
+ Crack position is now at 0.0384559
+Initiation just ends...
+Crack tip at 10.9375%  and far-field loading               0           3e+06               0
+Crack tip at 14.4531%  and far-field loading               0           3e+06               0
+Crack tip at 20.1172%  and far-field loading               0     2.19976e+06               0
+Crack tip at 25.9766%  and far-field loading               0     1.97667e+06               0
+Crack tip at 31.6406%  and far-field loading               0     1.81719e+06               0
+Crack tip at 37.1094%  and far-field loading               0     1.80812e+06               0
+Crack tip at 42.7734%  and far-field loading               0     1.66944e+06               0
+Crack tip at 48.4375%  and far-field loading               0     1.53566e+06               0
+Crack tip at 54.1016%  and far-field loading               0     1.38593e+06               0
+Crack tip at 59.7656%  and far-field loading               0     1.23117e+06               0
+Crack tip at 65.625%  and far-field loading               0     1.17108e+06               0
+Crack tip at 71.4844%  and far-field loading               0     1.12206e+06               0

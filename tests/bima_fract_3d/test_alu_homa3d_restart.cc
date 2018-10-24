@@ -80,7 +80,6 @@ int main(){
   Real max_n_str = 5e6;
    
   // Friction paramters
-  bool overlap = 0;
   Real regularized_time_scale = 0.1;
   Real coef_frict = 0.25;
   
@@ -93,7 +92,6 @@ int main(){
   
   for (UInt step = 0; step < 2; ++step) {
     
-    FractureLaw * fracturelaw = NULL;
     ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nex*nez);
     SpectralModel * model;
 
@@ -104,8 +102,8 @@ int main(){
       nez = 1;
       model = new SpectralModel({nex,nez}, nb_time_steps, {dom_sizex,0.},
 				nu_mtl,nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
-				tcut_mtl, tcut_poly, overlap, fracturelaw,
-				contactlaw, "test_alu_homa2d","2d_outputs/");
+				tcut_mtl, tcut_poly, 
+				"test_alu_homa2d","2d_outputs/");
       t_start = 0;
       t_end = 101;
     }
@@ -113,8 +111,8 @@ int main(){
       nez = 8;
       model = new SpectralModel({nex,nez}, nb_time_steps, {dom_sizex,dom_sizez},
 				nu_mtl,nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
-				tcut_mtl, tcut_poly, overlap, fracturelaw,
-				contactlaw, "test_alu_homa3d","3d_outputs/");
+				tcut_mtl, tcut_poly,
+				"test_alu_homa3d","3d_outputs/");
       t_start = 101;
       t_end = nb_time_steps;
     }
@@ -123,8 +121,10 @@ int main(){
   
     Interfacer<_linear_coupled_cohesive> interfacer(*model);
     interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
-    interfacer.applyInterfaceCreation();
 
+    CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model->getInterfaceLaw()));
+    cohesive_law->preventSurfaceOverlapping(contactlaw);
+    
     driver.initConstantLoading(load, psi, phi);
   
     const CrackProfile * t_displacements = model->readData(_top_displacements);
@@ -171,7 +171,6 @@ int main(){
       model->restartModel(true);
     }
 
-
     for (UInt t = t_start; t < t_end ; ++t) {
 
       driver.solveStep();
@@ -188,16 +187,13 @@ int main(){
        
 	print=0;
       }
-
       ++print;
     }
-
     if(step==0)
       model->pauseModel();
     
     delete model;
   }
-  
   return 0;
 }
 

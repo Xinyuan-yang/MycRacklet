@@ -3,6 +3,21 @@ inline const DataTypes DataRegister::readData(DataFields my_field) {
 }
 
 /* -------------------------------------------------------------------------- */
+inline Real DataRegister::getParameter(std::string name) {
+
+  std::map<std::string,Real>::iterator it = variables.find(name);
+
+  if(it != variables.end())
+    return variables[name];
+  else {
+    std::stringstream err;
+    err << "No registered parameter named " << name << " !";
+    cRacklet::error(err);
+    return 0.;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
 template<>
 inline DataTypes::operator const std::vector<UInt>*() const {
   return vec_uint;  

@@ -52,10 +52,25 @@ enum DataFields {
   _interface_tractions, //n_ele*dim
   _top_loading, //n_ele*dim
   _bottom_loading, //n_ele*dim
+  _top_dynamic_stress, //n_ele*dim
+  _bottom_dynamic_stress, //n_ele*dim
+  
   _normal_strength, //n_ele
   _shear_strength, //n_ele
   _frictional_strength, //n_ele
   _id_crack, //n_ele
+  _critical_normal_opening, //n_ele
+  _critical_shear_opening, //n_ele
+
+  _state_variable, //n_ele
+  _friction_coefficient, //n_ele
+  _rands_D, //n_ele
+  _rands_f_0, //n_ele
+  _rands_a, //n_ele
+  _rands_b, //n_ele
+  _rands_v_star, //n_ele
+  _rands_phi_star, //n_ele
+  
 };
 
 //Human readable names associated to each DataFields
@@ -71,10 +86,22 @@ static std::map<DataFields, std::string> datafields_name = {
   {_interface_tractions, "Interface tractions"},
   {_top_loading, "Top far-field loading"},
   {_bottom_loading, "Bottom far-field loading"},
+  {_top_dynamic_stress, "Stress contribution from the history of the top displacements"},
+  {_bottom_dynamic_stress, "Stress contribution from the history of the top displacements"},
   {_normal_strength, "Normal strength"},
   {_shear_strength, "Shear strength"},
   {_frictional_strength, "Frictional strength"},
-  {_id_crack, "Crack index"}
+  {_id_crack, "Crack index"},
+  {_critical_normal_opening, "Critical normal opening displacement"},
+  {_critical_shear_opening, "Critical shear opening displacement"},
+  {_state_variable, "State variable for R&S friction law"},
+  {_friction_coefficient, "Coefficient of friction"},
+  {_rands_D, "D coefficient of R&S friction law"},
+  {_rands_f_0, "f_0 coefficient of R&S friction law"},
+  {_rands_a, "a coefficient of R&S friction law"},
+  {_rands_b, "b coefficient of R&S friction law"},
+  {_rands_v_star, "v* coefficient of R&S friction law"},
+  {_rands_phi_star, "phi* coefficient of R&S friction law"}
 };
 
 //Structure used to encapsulate different type of data pointers
@@ -144,12 +171,7 @@ class DataRegister {
 public:
 
   DataRegister(){};
-  virtual ~DataRegister(){
-#if defined (_OPENMP)
-    fftw_cleanup_threads();
-#endif
-    fftw_cleanup();  
-  };
+  virtual ~DataRegister(){};
 
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
@@ -158,6 +180,12 @@ public:
 
   //Access to a given field returned in the type DataTypes
   static inline const DataTypes readData(DataFields my_field);
+  // Register a global simulation parameter
+  static void registerParameter(std::string name, Real value);
+  //Register a set of global parameters from input file
+  static void readInputFile(std::string input_file);
+  // Access a global simulation parameter
+  static inline Real getParameter(std::string name);
   //Register a computer object with a given name
   static void registerComputer(std::string computer_name, Computer * computer);
   //Access a registered computer object
@@ -214,11 +242,29 @@ public:
   static std::string restart_dir;
 
 protected:
+
   // Map of registered data
   static std::map<DataFields,DataTypes> datas;
   // Map of registered computers
   static std::map<std::string,Computer*> computers;
-
+  // Map to share global simulation variables
+  static std::map<std::string,Real> variables;
+  // Dimension of fields vectors (=3)
+  static UInt dim; 
+  // Current time step
+  static UInt it;
+  // Number of elements must be a power of 2
+  static std::vector<UInt> n_ele;
+  // Stable time step beta = cs*dt/dx
+  static Real beta;
+  // Minimum between dx and dz used in the computation of compute dt
+  static Real dxmin;
+  // Ratio of top and bottom shear wave spead
+  static Real ksi;
+  // Dilatation over shear wave speed of top and bottom material
+  static std::vector<Real> eta;
+  // Ratio of top and bottom shear modulus
+  static Real zeta;
 };
 
 // Class computing integral over a defined sets of interface points (a.e. energy integration)

@@ -137,13 +137,13 @@ public:
   // Definition of the loading case
   void setLoadingCase(Real load_in, Real psi, Real phi);
   // Set loading case using a pre-computed loading file
-  Real setLoadingCase(std::string loading_file, Real psi, Real phi);
+  // Real setLoadingCase(std::string loading_file, Real psi, Real phi);
   // update loading case
   void updateLoads();
   // Update point-wise loading conidtions using an uniform constant value per dimension  
   void updateLoads(Real * loading_per_dim);
   // update loading case from pre-computed loading condition
-  UInt readUpdateLoads(Real start=0.0);
+  //UInt readUpdateLoads(Real start=0.0);
   // Set the initial values of interface fields (strength,traction,velocities)
   // using the interface conditions given in the associated InterfaceLaw
   void initInterfaceFields();

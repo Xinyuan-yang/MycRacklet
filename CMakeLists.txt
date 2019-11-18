@@ -99,7 +99,16 @@ function(copy_kernel_files poisson_ratio is_bottom)
     endif()
   endforeach()
 endfunction()
-  
+
+#===============================================================================
+# Python interface
+#===============================================================================
+option(CRACKLET_PYTHON_INTERFACE "Activate python binding" OFF)
+
+if(CRACKLET_PYTHON_INTERFACE)
+  add_subdirectory(python)
+endif()
+
 #===============================================================================
 # Library
 #===============================================================================

@@ -12,7 +12,7 @@ void CohesiveLaw::initInterfaceConditions() {
 }
 
 /* -------------------------------------------------------------------------- */
-void CohesiveLaw::preventSurfaceOverlapping(ContactLaw* contactlaw) {
+void CohesiveLaw::preventSurfaceOverlapping(std::shared_ptr<ContactLaw> contactlaw) {
 
   allow_overlapping = false;
   contact_law = contactlaw;  

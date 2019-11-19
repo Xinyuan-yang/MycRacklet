@@ -77,8 +77,8 @@
    // Friction paramters
    Real regularized_time_scale = 0.1;
    Real coef_frict = 0.25;
-   ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
-
+   std::shared_ptr<ContactLaw> contactlaw = std::make_shared<RegularizedCoulombLaw>(coef_frict, regularized_time_scale, nb_elements);
+   
    // Output point position
    std::vector<UInt> points_int;
    points_int = {(UInt)(nb_elements*0.1), (UInt)(nb_elements*0.2), (UInt)(nb_elements*0.25), (UInt)(nb_elements*0.3),
@@ -100,7 +100,7 @@
    Interfacer<_linear_coupled_cohesive> interfacer(model);
    interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
 
-   CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
+   std::shared_ptr<CohesiveLaw> cohesive_law = std::dynamic_pointer_cast<CohesiveLaw>(model.getInterfaceLaw());
    cohesive_law->preventSurfaceOverlapping(contactlaw);
 
    model.updateLoads();

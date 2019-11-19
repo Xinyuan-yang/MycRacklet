@@ -54,10 +54,11 @@ class Interfacer : public DataRegister {
   /* ------------------------------------------------------------------------ */
 public:
   
-  Interfacer(SpectralModel & model) : interface_law(model.getInterfaceLaw()) {
-
+  Interfacer(SpectralModel & model)  {
+    
     initInterfaceLaw();
-        
+    model.setInterfaceLaw(this->interface_law);
+    
     dx.resize(2);
     dx[0] = model.getElementSize()[0];
     dx[1] = model.getElementSize()[1];
@@ -164,7 +165,7 @@ private:
 private:
 
   // Fracture law object to build
-  InterfaceLaw ** interface_law;
+  std::shared_ptr<InterfaceLaw> interface_law;
   // Number of elements at the interface
   std::vector<UInt> n_ele;
   // Total number of elements

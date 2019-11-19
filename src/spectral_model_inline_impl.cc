@@ -255,6 +255,4 @@ inline SpectralModel::~SpectralModel(){
   delete convo_manager_top;
   delete convo_manager_bot;
 
-  if(interface_law)
-    delete interface_law;
 };

@@ -129,9 +129,9 @@ int main(int argc, char *argv[]){
 
   const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
   const std::vector<Real> * state = model.readData(_state_variable);
-  
-  RateAndStateLaw * r_and_s = dynamic_cast<RateAndStateLaw*>(*(model.getInterfaceLaw()));
-  
+
+  std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(model.getInterfaceLaw());
+
   r_and_s->setVelocityPredictor({v_predictor,0.,0.});
   
   Real v_max=0.;

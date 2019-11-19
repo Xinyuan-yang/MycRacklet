@@ -90,7 +90,7 @@ public:
   // Method used in restart framework but no history-dependant variable within this law
   void restart(bool pausing=false, UInt nele_2d=0);
   // Prevent the overlapping of the two surfaces and associate a ContactLaw
-  void preventSurfaceOverlapping(ContactLaw* contactlaw);
+  void preventSurfaceOverlapping(std::shared_ptr<ContactLaw> contactlaw);
   
 private:
 
@@ -145,7 +145,7 @@ private:
   // Overlapping tolerance (0 = no , 1 = yes)
   bool allow_overlapping;
   // Associated contact law
-  ContactLaw * contact_law;
+  std::shared_ptr<ContactLaw> contact_law;
 
   //Permanent access toward some fields registered in the DataRegister
   //required to compute interface conditions
@@ -158,13 +158,15 @@ private:
 
 
 /* -------------------------------------------------------------------------- */
-/* inline functions                                                           */
+/* inline functions                                       
+
+                    */
 /* -------------------------------------------------------------------------- */
 
 inline CohesiveLaw::~CohesiveLaw(){							  
-  if(contact_law)
-    delete contact_law;										 
-}					
+										 
+}							
+
 
 #include "cohesive_law_inline_impl.cc"
 

@@ -37,6 +37,7 @@
 #include <sstream>
 #include <limits>
 #include <cmath>
+#include <memory>
 /* -------------------------------------------------------------------------- */
 //Generic Types
 typedef unsigned int UInt;

@@ -1,0 +1,204 @@
+/**
+ * @file   2d_homogeneous.cc
+ * @author Thibault Roch <thibault.roch@epfl.ch>
+ * @date   Tue Nov 06 15:23:16 2018
+ * @edited 
+ *
+ * @brief  Dynamic fracture for an imposed constant load, for an homogeneous case (PRL Fabian values for the supershear case)
+ *
+ * @section LICENSE
+ *
+ * cRacklet - A spectral boundary integral method for interface fracture simulation
+ * Copyright (©) 2012 - 2013 Fabian Barras
+ *               2014 EPFL (Ecole Polytechnique Fédérale de Lausanne)
+ * 
+ * cRacklet is the result of a collaboration between the Computational Solid Mechanics 
+ * Laboratory (LSMS) of Ecole Polytechnique Fédérale de Lausanne (EPFL), Switzerland 
+ * and the Department of Aerospace Engineering of the University of Illinois at 
+ * Urbana-Champaign, United States of America.
+ * 
+ * cRacklet is free software: you can redistribute it and/or modify it under the terms 
+ * of the GNU General Public License as published by the Free Software Foundation, 
+ * either version 3 of the License, or (at your option) any later version.
+ * 
+ * cRacklet is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+ * See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program.  
+ * If not, see <http://www.gnu.org/licenses/>.
+
+/* -------------------------------------------------------------------------- */
+#include "spectral_model.hh"
+#include "simulation_driver.hh"
+#include "interfacer.hh"
+#include "cohesive_law.hh"
+#include "coulomb_law.hh"
+#include "regularized_coulomb_law.hh"
+#include "data_dumper.hh"
+#include <vector>
+#include <iostream>
+#include <stdio.h>
+#include <string>
+
+/* -------------------------------------------------------------------------- */
+
+int main(int argc, char *argv[]){
+
+  // Note : Construct the pre-integrated material kernels before running this simulation
+  // Use "invert_serial.f" to construct kernel files
+  // Required command line arguments. [...] delimitates the optional ones
+
+  std::cout << " ./2d_homogeneous [ <output_folder_name>=./ <nb_t_steps>=1000000 <nb_ele>=32768 <loading_angle>=90.0 <load>=1.98 <dom_size>=32 ]" << std::endl;
+
+  std::string sim_name = "Single material homogeneous interface constant loading";
+
+  // Geometry description
+  UInt nb_time_steps = 1000000; 
+  UInt nb_elements = 32768;
+  Real nu =  0.35;
+  Real E = 5.3e9;
+  Real cs = 1263;
+
+  // Cut of the loaded material kernels
+  UInt tcut = 100;
+  
+  // Loading case
+  Real load = 1.98;
+  Real psi = 90.;
+  Real phi = 0;
+  
+  // Output folder
+  std::string output_folder = "./";
+  if(argc > 1)
+    output_folder = argv[1];
+
+  if(argc > 2)
+    nb_time_steps = std::atoi(argv[2]); 
+
+  if(argc > 3)
+    nb_elements = std::atoi(argv[3]);
+
+  if(argc > 4)
+    psi = std::atof(argv[4]);
+
+  if(argc > 5)
+    load = std::atof(argv[5]);
+
+  load *= 1.0e6;
+
+  std::cout << "./2d_homogeneous " 
+	    << "output folder:" << output_folder << " " 
+	    << "nb_time steps:" << nb_time_steps << " " 
+	    << "nb_elements:" << nb_elements << " "
+	    << "loading angle:" << psi << " "
+	    << std::endl;
+  
+  // Cohesive paramters
+  Real crit_n_open = 0.02e-3;
+  Real crit_s_open = 0.02e-3;
+  Real max_s_str = 9e6;
+  Real max_n_str = 9e6;
+  
+  Real G_length;
+  
+  if (psi == 0)
+    G_length = crit_n_open*max_n_str/(load*load*M_PI)*E/(1-nu*nu);
+  
+  else if (psi == 90)
+    G_length = crit_s_open*max_s_str/(load*load*M_PI)*E/(1-nu*nu);
+
+  std::cout << "Griffith length: " << G_length << std::endl; 
+  
+  Real dom_size = 32.;
+  
+  if(argc > 6)
+    dom_size = std::atof(argv[6]);
+  
+  dom_size *= G_length;
+  Real dx = dom_size/double(nb_elements);
+  Real wall_position = 0.95*dom_size;
+  UInt propagation_domain = 2./3.*nb_elements;
+  
+  bool tracking = 0;
+  
+  /* -------------------------------------------------------------------------- */
+  
+  SpectralModel * model;
+
+  model = new SpectralModel({nb_elements,1}, nb_time_steps, {dom_size,0.}, 
+			    nu, nu, E, E, cs, cs, tcut, tcut, sim_name, output_folder); 
+  
+  // SimulationDriver object helping to launch controlled-speed simulation
+  SimulationDriver sim_driver(*model);
+  
+  Interfacer<_linear_coupled_cohesive> interfacer(*model);
+  
+  DataRegister::registerParameter("critical_normal_opening",crit_n_open);
+  DataRegister::registerParameter("critical_shear_opening",crit_s_open);
+  DataRegister::registerParameter("max_normal_strength",max_n_str);
+  DataRegister::registerParameter("max_shear_strength",max_s_str);
+  
+  interfacer.createUniformInterface();
+  // createThroughCrack(0.,dx,2) 2 is the index for the main crack (0 is no info, 1 is wall)
+  interfacer.createThroughCrack(0.,10*dx,2);  
+  
+  interfacer.createThroughWall(wall_position,dom_size);
+  
+  CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model->getInterfaceLaw()));
+  cohesive_law->preventSurfaceOverlapping(NULL);
+  
+  sim_driver.initConstantLoading(load, psi, phi);
+  
+  DataDumper dumper(*model);
+      
+  dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _binary);
+  dumper.initDumper("ST_Diagram_nb.cra", _crack_number, 1.0, 1, 0, _binary);
+  dumper.initDumper("trac_snapshot.cra",_interface_tractions,1.0,1,0,_binary);
+  
+  if (psi == 0){
+    dumper.initDumper("ST_Diagram_normal_strength.cra", _normal_strength, 1., 1, 0, _binary);
+    dumper.initDumper("ST_Diagram_normal_velo_jump.cra", _normal_velocity_jumps, 1.0, 1, 0, _binary);
+  } else if (psi == 90){
+    dumper.initDumper("ST_Diagram_shear_strength.cra", _shear_strength, 1., 1, 0, _binary);
+    dumper.initDumper("ST_Diagram_shear_velo_jump.cra", _shear_velocity_jumps, 1., 1, 0, _binary);
+  }
+    
+  UInt x_tip=0;
+  UInt x_lap = 0.05*nex;
+  
+  sim_driver.launchCrack(0.,2*G_length,0.05);
+
+  UInt t = 0;
+  
+  UInt print_info = 0.05*nb_time_steps;
+
+  while ((x_tip<(propagation_domain))&&(t<nb_time_steps)) {
+    
+    // High level method embedding the resolution of one time step by the SpectralModel
+    sim_driver.solveStep();
+    x_tip = model->getCrackTipPosition(0.,nb_elements);  
+    
+    if(t%25==0){
+      dumper.dumpAll();
+    }
+    
+    if ((x_tip>x_lap)||(t%(UInt)(0.05*nb_time_steps)==0)) {
+      std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " << std::endl;
+      std::cout << "Crack at " << 100*x_tip/(Real)(nex) << "% " << std::endl;
+      if (x_tip>x_lap)
+	x_lap += 0.05*nex;
+    }
+    
+    duration = std::time(NULL) - start;
+    
+    if((duration>0.5*pausing_duration)&&(first_half)) {
+      first_half = false;
+      std::cout << "The simulation just passes half of his planned duration!" << std::endl;	
+    }
+    
+    ++t;
+  }
+    
+  return 0;
+}

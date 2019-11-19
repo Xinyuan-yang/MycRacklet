@@ -183,8 +183,16 @@ public:
   // Return uniform loading vector used to set average interface loading conditions
   std::vector<Real> & getUniformLoading() {return uniform_loading;}
   // Return pointer to the FractureLaw
-  InterfaceLaw ** getInterfaceLaw() {return &interface_law;}
+  std::shared_ptr<InterfaceLaw> getInterfaceLaw() {return interface_law;}
 
+  /* ------------------------------------------------------------------------ */
+  /* Setters                                                                  */
+  /* ------------------------------------------------------------------------ */
+  
+  void setInterfaceLaw(std::shared_ptr<InterfaceLaw> itf_law){ this->interface_law = itf_law;};
+  
+  // 
+  
 public:
  
   /* ------------------------------------------------------------------------ */
@@ -217,7 +225,7 @@ private:
   // Time cut for tob and bottom domains
   std::vector<UInt> t_cut;
   // Associated interface law describing the mechanics between the two semi-infinite half spaces
-  InterfaceLaw * interface_law;
+  std::shared_ptr<InterfaceLaw> interface_law;
   // Dimension of interface
   UInt interface_dim;
   // Space step dx[0] = dx, dx[1] = dz (if 2d then dz is set to 0)

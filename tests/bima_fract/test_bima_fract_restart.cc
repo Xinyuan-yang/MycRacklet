@@ -80,7 +80,7 @@ int main(){
   
   for (UInt step = 0; step < 2; ++step) {
     
-    ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
+    std::shared_ptr<ContactLaw> contactlaw = std::make_shared<RegularizedCoulombLaw>(coef_frict, regularized_time_scale, nb_elements);
     SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, 
 			nu_mtl, nu_poly,E_mtl, E_poly, cs_mtl, cs_poly, 
 			tcut_mtl, tcut_poly, "test_bima_fract");
@@ -91,7 +91,7 @@ int main(){
     Interfacer<_linear_coupled_cohesive> interfacer(model);
     interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
 
-    CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
+    std::shared_ptr<CohesiveLaw> cohesive_law = std::dynamic_pointer_cast<CohesiveLaw>(model.getInterfaceLaw());
     cohesive_law->preventSurfaceOverlapping(contactlaw);
     
     model.updateLoads();

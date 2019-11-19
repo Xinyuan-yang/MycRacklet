@@ -83,8 +83,8 @@
    // Friction parameters
    Real regularized_time_scale = 0.1;
    Real coef_frict = 0.25;
-   ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nex*nez);//CoulombLaw(coef_frict);
-
+   std::shared_ptr<ContactLaw> contactlaw = std::make_shared<RegularizedCoulombLaw>(coef_frict, regularized_time_scale, nex*nez);
+   
    //output parameters
    UInt direction=0; // if x axis 1 if z axis
  
@@ -114,7 +114,7 @@
 						  {0.4*dom_sizex,0.5*dom_sizez}, ratio);
    interfacer.createThroughWall(0.8,1.0);
 
-   CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
+   std::shared_ptr<CohesiveLaw> cohesive_law = std::dynamic_pointer_cast<CohesiveLaw>(model.getInterfaceLaw());
    cohesive_law->preventSurfaceOverlapping(contactlaw);
    
    model.updateLoads();

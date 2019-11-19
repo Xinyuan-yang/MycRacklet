@@ -92,7 +92,7 @@ int main(){
   
   for (UInt step = 0; step < 2; ++step) {
     
-    ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nex*nez);
+    std::shared_ptr<ContactLaw> contactlaw = std::make_shared<RegularizedCoulombLaw>(coef_frict, regularized_time_scale, nex*nez);
     SpectralModel * model;
 
     UInt t_start, t_end;
@@ -122,7 +122,7 @@ int main(){
     Interfacer<_linear_coupled_cohesive> interfacer(*model);
     interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
 
-    CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model->getInterfaceLaw()));
+    std::shared_ptr<CohesiveLaw> cohesive_law = std::dynamic_pointer_cast<CohesiveLaw>(model->getInterfaceLaw());
     cohesive_law->preventSurfaceOverlapping(contactlaw);
     
     driver.initConstantLoading(load, psi, phi);

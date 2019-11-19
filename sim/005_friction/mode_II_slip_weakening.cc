@@ -118,7 +118,8 @@ int main(int argc, char *argv[]){
     
   //  interfacer.createThroughWall(0.95*dom_sizex,dom_sizex);
 
-  CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model->getInterfaceLaw()));
+  std::shared_ptr<CohesiveLaw> cohesive_law = std::dynamic_pointer_cast<CohesiveLaw>(model->getInterfaceLaw());
+  
   cohesive_law->preventSurfaceOverlapping(NULL);
     
   sim_driver.initConstantLoading(load, psi, phi);

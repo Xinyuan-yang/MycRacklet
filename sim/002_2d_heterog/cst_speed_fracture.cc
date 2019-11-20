@@ -156,8 +156,8 @@ int main(int argc, char *argv[]){
   
   interfacer.createThroughWall(wall_position,dom_size);
 
-  std::shared_ptr<CohesiveLaw> cohesive_law = std::dynamic_pointer_cast<CohesiveLaw>(model.getInterfaceLaw());
-  cohesive_law->preventSurfaceOverlapping(contactlaw);
+  CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model.getInterfaceLaw()));  
+  cohesive_law.preventSurfaceOverlapping(contactlaw);
 
   if(write){
     // Init algorithm to tailor constant speed loading conditions

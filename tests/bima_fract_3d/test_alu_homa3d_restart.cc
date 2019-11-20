@@ -122,8 +122,8 @@ int main(){
     Interfacer<_linear_coupled_cohesive> interfacer(*model);
     interfacer.createThroughCenteredCrack(crack_size, crit_n_open, crit_s_open, max_n_str, max_s_str);
 
-    std::shared_ptr<CohesiveLaw> cohesive_law = std::dynamic_pointer_cast<CohesiveLaw>(model->getInterfaceLaw());
-    cohesive_law->preventSurfaceOverlapping(contactlaw);
+    CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model->getInterfaceLaw()));
+    cohesive_law.preventSurfaceOverlapping(contactlaw);
     
     driver.initConstantLoading(load, psi, phi);
   

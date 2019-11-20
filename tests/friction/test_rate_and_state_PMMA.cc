@@ -95,9 +95,9 @@ int main(int argc, char *argv[]){
 
   const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
   
-  std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(model.getInterfaceLaw());
+  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
 
-  r_and_s->setVelocityPredictor({0.,0.,3e-4});
+  r_and_s.setVelocityPredictor({0.,0.,3e-4});
   
   while (t<20001) {
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]){
     model.increaseTimeStep();
 
     if(t==5)
-      r_and_s->perturbState(epsilon,k);
+      r_and_s.perturbState(epsilon,k);
     
       if (t%50==0){
       Real v_max = shear_velo_jump->getMaxValue();

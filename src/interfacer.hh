@@ -57,7 +57,7 @@ public:
   Interfacer(SpectralModel & model)  {
     
     initInterfaceLaw();
-    model.setInterfaceLaw(this->interface_law);
+    model.setInterfaceLaw(interface_law);
     
     dx.resize(2);
     dx[0] = model.getElementSize()[0];

@@ -113,8 +113,8 @@
 						    {0.4*dom_sizex,0.5*dom_sizez}, ratio);
      interfacer.createThroughWall(0.8,1.0);
 
-     std::shared_ptr<CohesiveLaw> cohesive_law = std::dynamic_pointer_cast<CohesiveLaw>(model.getInterfaceLaw());
-     cohesive_law->preventSurfaceOverlapping(contactlaw);
+     CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model.getInterfaceLaw()));
+     cohesive_law.preventSurfaceOverlapping(contactlaw);
      
      model.updateLoads();
      model.initInterfaceFields();

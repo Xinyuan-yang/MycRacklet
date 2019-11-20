@@ -182,8 +182,8 @@ public:
   UInt getDim() {return dim;}
   // Return uniform loading vector used to set average interface loading conditions
   std::vector<Real> & getUniformLoading() {return uniform_loading;}
-  // Return pointer to the FractureLaw
-  std::shared_ptr<InterfaceLaw> getInterfaceLaw() {return interface_law;}
+  // Get reference to the FractureLaw
+  InterfaceLaw& getInterfaceLaw() {return *interface_law;}
 
   /* ------------------------------------------------------------------------ */
   /* Setters                                                                  */

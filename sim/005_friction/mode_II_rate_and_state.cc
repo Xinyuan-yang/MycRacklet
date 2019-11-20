@@ -130,9 +130,9 @@ int main(int argc, char *argv[]){
   const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
   const std::vector<Real> * state = model.readData(_state_variable);
 
-  std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(model.getInterfaceLaw());
+  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
 
-  r_and_s->setVelocityPredictor({v_predictor,0.,0.});
+  r_and_s.setVelocityPredictor({v_predictor,0.,0.});
   
   Real v_max=0.;
   Real v_av,v_25,state_75,state_ss; 
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]){
       }*/
 
     if (t==5)
-      r_and_s->perturbState(epsilon,k);
+      r_and_s.perturbState(epsilon,k);
 
     if ((t%t_char==0)||((dynamic)&&(t%5==0)))
       dumper.dumpAll();

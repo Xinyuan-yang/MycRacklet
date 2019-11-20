@@ -11,7 +11,7 @@ namespace cRacklet {
 /* -------------------------------------------------------------------------- */
     
 void register_reg_coulomb_law(py::module& mod) {
-  py::class_<RegularizedCoulombLaw,ContactLaw>(mod, "RegularizedCoulombLaw")
+  py::class_<RegularizedCoulombLaw,ContactLaw,std::shared_ptr<RegularizedCoulombLaw>>(mod, "RegularizedCoulombLaw")
     .def(py::init<Real,Real,UInt>());
   
 }

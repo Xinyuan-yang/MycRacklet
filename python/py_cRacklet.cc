@@ -6,6 +6,7 @@
 #include "py_contact_law.hh"
 #include "py_coulomb_law.hh"
 #include "py_regularized_coulomb_law.hh"
+#include "py_cohesive_law.hh"
 
 #include <pybind11/pybind11.h>
 
@@ -25,5 +26,7 @@ PYBIND11_MODULE(py_cRacklet, mod){
   cRacklet::register_contact_law(mod);
   cRacklet::register_coulomb_law(mod);
   cRacklet::register_reg_coulomb_law(mod);
+
+  cRacklet::register_cohesive_law(mod);
   
 }    

@@ -56,6 +56,7 @@ void register_integrator_types(py::module& mod) {
 void register_data_register(py::module& mod) {
   py::class_<DataRegister>(mod, "DataRegister")
     .def(py::init<>())
+    .def_readwrite_static("restart_dir",&DataRegister::restart_dir)
     .def("registerParameter",&DataRegister::registerParameter)
     .def("readInputFile",&DataRegister::readInputFile)
     .def("getParameter",&DataRegister::getParameter)
@@ -63,6 +64,7 @@ void register_data_register(py::module& mod) {
     .def("getComputer",&DataRegister::getComputer)
     .def("getCrackTipPosition",&DataRegister::getCrackTipPosition);
 
+  
 }
 
 } // namespace cRacklet

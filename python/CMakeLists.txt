@@ -13,6 +13,7 @@ set(PYCRACKLET_SRCS
   py_contact_law.cc
   py_coulomb_law.cc
   py_regularized_coulomb_law.cc
+  py_cohesive_law.cc
   )
 
 pybind11_add_module(py_cRacklet ${PYCRACKLET_SRCS})

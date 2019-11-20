@@ -12,8 +12,6 @@ namespace cRacklet {
 /* -------------------------------------------------------------------------- */
     
 void register_spectral_model(py::module& mod) {      
-  py::class_<InterfaceLaw>(mod, "InterfaceLaw");
-
   py::class_<SpectralModel,DataRegister>(mod, "SpectralModel")
     .def(py::init<>())
     .def(py::init< std::vector<UInt>, UInt, std::vector<Real>,
@@ -53,7 +51,8 @@ void register_spectral_model(py::module& mod) {
     .def("getNbTimeSteps",&SpectralModel::getNbTimeSteps)
     .def("getDim",&SpectralModel::getDim)
     .def("getUniformLoading",&SpectralModel::getUniformLoading)
-    .def("getInterfaceLaw",&SpectralModel::getInterfaceLaw,py::return_value_policy::copy);
+    .def("getInterfaceLaw",&SpectralModel::getInterfaceLaw,py::return_value_policy::reference)
+    .def("setInterfaceLaw",&SpectralModel::setInterfaceLaw);
 }
 
 } // namespace cRacklet

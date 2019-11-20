@@ -7,6 +7,8 @@ namespace pybind11{
 
 namespace cRacklet{
 
+  void register_data_fields(pybind11::module & mod);
+  void register_integrator_types(pybind11::module & mod);
   void register_data_register(pybind11::module & mod);
 
 }

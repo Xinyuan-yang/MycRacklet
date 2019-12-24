@@ -57,6 +57,7 @@ void register_data_register(py::module& mod) {
   py::class_<DataRegister>(mod, "DataRegister")
     .def(py::init<>())
     .def_readwrite_static("restart_dir",&DataRegister::restart_dir)
+    .def("readData",&DataRegister::readData)
     .def("registerParameter",&DataRegister::registerParameter)
     .def("readInputFile",&DataRegister::readInputFile)
     .def("getParameter",&DataRegister::getParameter)

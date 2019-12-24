@@ -15,6 +15,7 @@ set(PYCRACKLET_SRCS
   py_regularized_coulomb_law.cc
   py_cohesive_law.cc
   py_data_dumper.cc
+  py_crack_profile.cc
   )
 
 pybind11_add_module(py_cRacklet ${PYCRACKLET_SRCS})

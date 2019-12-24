@@ -9,6 +9,7 @@
 #include "py_cohesive_law.hh"
 
 #include "py_data_dumper.hh"
+#include "py_crack_profile.hh"
 
 #include <pybind11/pybind11.h>
 
@@ -35,5 +36,6 @@ PYBIND11_MODULE(py_cRacklet, mod){
 
   cRacklet::register_output_format(mod);
   cRacklet::register_data_dumper(mod);
+  cRacklet::register_crack_profile(mod);
   
 }    

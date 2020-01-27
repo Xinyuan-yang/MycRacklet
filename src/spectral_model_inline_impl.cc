@@ -238,20 +238,22 @@ inline SpectralModel::~SpectralModel(){
   delete displ_jump;
   delete veloc_jump;
 
-  delete[] h11u1;
-  delete[] h22u2;
-  delete[] h33u3;
-  delete[] h12u1;
-  delete[] h12u2;
-  if(interface_dim==2) {
-    delete[] h12u3;
-    delete[] h33u1;
-    delete[] h11u3;
+  if(h11u1){
+    delete[] h11u1;
+    delete[] h22u2;
+    delete[] h33u3;
+    delete[] h12u1;
+    delete[] h12u2;
+    if(interface_dim==2) {
+      delete[] h12u3;
+      delete[] h33u1;
+      delete[] h11u3;
+    }
+    delete[] U_top;
+    delete[] U_bot;
+    delete[] F_k;
   }
-  delete[] U_top;
-  delete[] U_bot;
-  delete[] F_k;
-  
+
   delete convo_manager_top;
   delete convo_manager_bot;
 

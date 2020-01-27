@@ -95,24 +95,25 @@ void SpectralModel::initModel(Real reset_beta, bool blank) {
   eta.resize(2);
 
   loading_ratio.resize(total_n_ele,1.0);
-  
-  for (UInt i = 0; i < 2; ++i) {
-    
-    displacements[i].SetGridSize(n_ele, dim);
-    velocities[i].SetGridSize(n_ele, dim);
-    stresses[i].SetGridSize(n_ele, dim);
-    loads[i].SetGridSize(n_ele, dim);
-    eta[i] = sqrt(2*(1-nu[i])/(1-2*nu[i]));
 
-    displacements[i].initFFT(true,dim);
-    stresses[i].initFFT(false,dim);
+  if(!blank) {
+    for (UInt i = 0; i < 2; ++i) {
+      displacements[i].SetGridSize(n_ele, dim);
+      velocities[i].SetGridSize(n_ele, dim);
+      stresses[i].SetGridSize(n_ele, dim);
+      loads[i].SetGridSize(n_ele, dim);
+      eta[i] = sqrt(2*(1-nu[i])/(1-2*nu[i]));
+
+      displacements[i].initFFT(true,dim);
+      stresses[i].initFFT(false,dim);
+    }
+
+    intfc_trac.SetGridSize(n_ele, dim);
   }
-
+  
   displ_jump = new InterfaceFields(&displacements, dim);
   veloc_jump = new InterfaceFields(&velocities, dim);
-
-  intfc_trac.SetGridSize(n_ele, dim);
-
+  
   /* -------------------------------------------------------------------------- */
   //set the modes q0, k and m
   if(interface_dim==2)
@@ -120,23 +121,28 @@ void SpectralModel::initModel(Real reset_beta, bool blank) {
   else if(interface_dim==1)
     initFrequency<1>();
 
-  h11u1 = new Real[2*(total_nele_fft-1)];
-  h22u2 = new Real[2*(total_nele_fft-1)];
-  h33u3 = new Real[2*(total_nele_fft-1)];
-  h12u1 = new Real[2*(total_nele_fft-1)];
-  h12u2 = new Real[2*(total_nele_fft-1)];
+  if(!blank) {
+    h11u1 = new Real[2*(total_nele_fft-1)];
+    h22u2 = new Real[2*(total_nele_fft-1)];
+    h33u3 = new Real[2*(total_nele_fft-1)];
+    h12u1 = new Real[2*(total_nele_fft-1)];
+    h12u2 = new Real[2*(total_nele_fft-1)];
 
-  U_top = new Real[2*(total_nele_fft-1)*dim];
-  U_bot = new Real[2*(total_nele_fft-1)*dim];
-  F_k = new Real[2*total_nele_fft*dim];
+    U_top = new Real[2*(total_nele_fft-1)*dim];
+    U_bot = new Real[2*(total_nele_fft-1)*dim];
+    F_k = new Real[2*total_nele_fft*dim];
+  }
+  else
+    h11u1 = NULL;
   
   this->nb_kernels = 4;
   
   initConvolutionManagers(blank);
-      
-  registerModelFields();
-  
-  printSelf();
+
+  if(!blank) {
+    registerModelFields();
+    printSelf();
+  }
 }
 
 /* -------------------------------------------------------------------------- */

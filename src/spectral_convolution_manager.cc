@@ -58,9 +58,9 @@ Idx SpectralConvolutionManager::init(Real cut, UInt nb_time, bool blank) {
 	}
       }
     }
+    initK();  
   }
-  
-  initK();
+    
   return total_size+size_per_field*nb_kernels;
 }
 

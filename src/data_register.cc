@@ -139,6 +139,8 @@ void DataRegister::readInputFile(std::string filename) {
     std::string entry_name;
     Real parameter;
     sstr >> entry_name;
+    if((entry_name == "%")||(line.length()==0))
+      continue;
     sstr >> parameter;
     registerParameter(entry_name, parameter);
   }

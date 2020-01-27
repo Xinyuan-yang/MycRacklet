@@ -1,39 +1,45 @@
 % cRacklet Input File
 % (Line starting with "%" won't be parsed)
-%
+
 % Domain size in the x-direction
 dom_size_x 0.5
+
 % Domain size in the z-direction
 dom_size_z 0.25
+
 % Number of elements in the x-direction
 % (Number of element in the z-direction will be scaled accordingly)
 nb_elements 1024
-%
+
 % Elastic properties
 E 5.3e9
 nu 0.35
 c_s 1263.
-%
+
 % Loading conditions
 far_field_load 4e6
 load_angle_psi 90.
 load_angle_phi 0.
+
 % Target constant crack speed
 constant_crack_speed 0.5
+
 % Run simulation until crack reaches max_crack_size*dom_size_x
 max_crack_size 0.1
-%
+
 % Interface properties 
 critical_normal_opening 0.01e-3
 critical_shear_opening 0.01e-3
 max_normal_strength 8e6
 max_shear_strength 8e6
-%
+
 % Asperity properties
 % Toughness ratio: \Delta G_c / G_c
 asperity_toughness_ratio 0.1
+
 % Radius = asperity_radius*dom_size_z
 asperity_radius 0.02
+
 % Position = {asperity_pos_x*dom_size_x,asperity_pos_z*dom_size_z}
 asperity_pos_x 0.3
 asperity_pos_z 0.5

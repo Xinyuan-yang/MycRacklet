@@ -31,9 +31,10 @@
 
 #===============================================================================
 
-option(UIUC_ALU_HOMA "Activate Aluminium-Homalite simulations" ON) 
-option(2D_HETEROG "Activate 2-D heterogenous interface simulations" ON)
-option(3D_ASPERTITY "Activate 3-D interface with asperities simulations" ON)
+option(UIUC_ALU_HOMA "Activate Aluminium-Homalite simulations" OFF) 
+option(2D_HETEROG "Activate 2-D heterogenous interface simulations" OFF)
+option(3D_ASPERTITY "Activate 3-D interface with asperities simulations" OFF)
+option(CRACK_FRONT_WAVES "Activate simulations of the crack front waves study" ON) 
 option(FRICTION "Activate simulation of frictional contact problems" OFF)
 option(PROFILING "Executables to analyze code performance" OFF)
 
@@ -47,6 +48,10 @@ endif()
 
 if(3D_ASPERTITY)
   add_subdirectory(003_3d_asperity)
+endif()
+
+if(CRACK_FRONT_WAVES)
+  add_subdirectory(004_crack_front_waves)
 endif()
 
 if(FRICTION)

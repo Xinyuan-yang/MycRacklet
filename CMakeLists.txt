@@ -99,7 +99,11 @@ function(copy_kernel_files poisson_ratio is_bottom)
     endif()
   endforeach()
 endfunction()
-  
+
+function(copy_input_file filename)
+  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${filename} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+endfunction()
+
 #===============================================================================
 # Library
 #===============================================================================

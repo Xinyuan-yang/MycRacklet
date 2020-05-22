@@ -34,6 +34,10 @@ cmake_minimum_required(VERSION 2.8)
 project(cRacklet)
 enable_language(CXX Fortran)
 
+if (CMAKE_VERSION VERSION_GREATER 3.1.2)
+  cmake_policy(SET CMP0054 NEW)
+endif()
+
 set(cRacklet_CMAKE_DIR "${cRacklet_SOURCE_DIR}/cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${cRacklet_SOURCE_DIR}/cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${cRacklet_SOURCE_DIR}/cmake/Modules")
@@ -110,6 +114,20 @@ endfunction()
 
 add_subdirectory(src)
 
+#===============================================================================
+# Documentation
+#===============================================================================
+
+option(CRACKLET_DOCUMENTATION_DOXYGEN "Build source documentation using Doxygen" OFF)
+
+if(CRACKLET_DOCUMENTATION_DOXYGEN)
+  add_subdirectory(doc)
+endif()
+
+#===============================================================================
+# Release
+#===============================================================================
+
 add_custom_command(
   OUTPUT ${RELEASE_FILE}
   COMMAND ${GET_RELEASE_INFO} ${PROJECT_BINARY_DIR} > ${RELEASE_FILE}
@@ -119,6 +137,10 @@ add_custom_command(
    )
 
 add_custom_target(RELEASE_INFO DEPENDS ${RELEASE_FILE})
+
+#===============================================================================
+# Examples and tests
+#===============================================================================
 
 option(CRACKLET_TESTS "Activate tests" OFF)
 option(CRACKLET_SIMULATIONS "Activate simulations" ON)

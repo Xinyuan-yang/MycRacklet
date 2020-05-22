@@ -106,33 +106,43 @@ public:
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
-
-  // associate a given R&S formulation and state evolution
-  // standard rate and state formulation
+  
+  /** Init a given R&S formulation and state evolution
+      standard rate and state formulation */
   void initStandardFormulation();
   // formulation with a unique velocity-weakening branch
   void initVelocityWeakeningFormulation();
   // rate and state formulation with a regularized stick-to-slip transition
   void initRegularizedFormulation(Real v0, Real theta, Real xi);
-  // define the velocity prediction for each component (used before searching the initial steady state) 
+  /** Define the velocity prediction for each component (used before searching the initial steady state)
+      @param v_0_pred : predictor of the velocity
+   */ 
   void setVelocityPredictor(std::vector<Real> v_0_pred);
-  // initialize interface fields
+  /** initialize interface fields
+   */
   void initInterfaceConditions();
-  // update the strength of the material in function of the opening profile
+  /** update the strength of the material in function of the opening profile
+   */
   void updateInterfaceConditions();
-  // perturbe the state variable by adding epsilon*sin(2pix/X)
+  /** perturbe the state variable by adding \f$ \epsilon sin\left(2\pi k \frac{x}{X}\right) \f$
+      @param epsilon : perturbation amplitude
+      @param k : perturbation spatial frequency
+   */
   void perturbState(Real epsilon, Real k);
-  // insert gaussian perturbation in the velocity field
+  /** insert gaussian perturbation patch in the velocity field
+   */
   void insertPerturbationPatch(std::vector<UInt> patch_limits, Real new_rate);
-  // insert gaussian perturbation in the velocity field
+  /** insert gaussian perturbation in the velocity field 
+   */
   void insertGaussianPerturbation(Real std_dev, Real amplitude);
-  // Method used in restart framework which still need to be implemented for the R&S law
+  /** Method used in restart framework which still need to be implemented for the R&S law
+   */
   void restart(bool pausing=false, UInt nele_2d=0){
     cRacklet::error("RESTART NOT YET IMPLEMENTED FOR THE RATE AND STATE LAW");
   };
     
 private:
-  // initialize interface at an homogeneous the steady-state sliding conditions
+  /** initialize interface at an homogeneous the steady-state sliding conditions */ 
   void computeSteadyStateSliding();
 
 

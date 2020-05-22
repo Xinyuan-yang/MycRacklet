@@ -56,6 +56,15 @@ cRacklet optionally supports the usage of OpenMP API (http://www.openmp.org/) fo
 and LibSurfer to generate fractal interfaces (available on request).
 
 ==================================================================================================
+* DOCUMENTATION
+
+Source code documentation can be generated using doxygen. You first have to activate the option CRACKLET_DOCUMENTATION_DOXYGEN with cmake. Then go inside build/doc/ and run
+
+> doxygen Doxyfile.doxygen-doc
+
+The documentation will be generated in html format and store inside build/doc/html
+
+==================================================================================================
 * USAGE
 
 Exemples of the simulation presented in [3-4] are avaiable in the folder "sim".

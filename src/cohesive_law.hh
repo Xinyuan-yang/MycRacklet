@@ -83,30 +83,30 @@ public:
   /* ------------------------------------------------------------------------ */
 public:
   
-  // initialize interface fields
+  /** Initialize interface fields */
   void initInterfaceConditions();
-  // compute interface tractions and velocities in function of the new strength profile 
+  /** Compute interface tractions and velocities in function of the new strength profile */
   void updateInterfaceConditions();
-  // Method used in restart framework but no history-dependant variable within this law
+  /** Method used in restart framework but no history-dependant variable within this law */
   void restart(bool pausing=false, UInt nele_2d=0);
-  // Prevent the overlapping of the two surfaces and associate a ContactLaw
+  /** Prevent the overlapping of the two surfaces and associate a ContactLaw */
   void preventSurfaceOverlapping(ContactLaw* contactlaw);
   
 private:
 
-  // compute velocities at t=0
+  /** compute velocities at t=0 */
   void computeInitialVelocities();
-  // update interface strength from cohesive law
+  /** update interface strength from cohesive law */
   void updateCohesiveLaw();
-  // Compute velocities
+  /** Compute velocities */
   void computeVelocities();
-  // Compute normal velocities in case of relative slip
+  /** Compute normal velocities in case of relative slip */
   inline void computeIndepNormalVelocities(UInt ix, UInt iz);
-  // Compute shear velocities with a given shear strength
+  /** Compute shear velocities with a given shear strength */
   inline void computeShearVelocities(Real strength, UInt elem);
-  // Compute shear velocities in case of relative slip with a given strength
+  /** Compute shear velocities in case of relative slip with a given strength */
   inline void computeIndepShearVelocities(Real strength, UInt elem);
-  // Compute velocities in the case of contact at crack type
+  /** Compute velocities in the case of contact at crack type */
   inline void computeContactVelocities(UInt ix, UInt iz);
 
   
@@ -120,35 +120,35 @@ public:
   /* ------------------------------------------------------------------------ */
 private:
 
-  // Normal Strength
+  /** Normal Strength */
   std::vector<Real> nor_strength;
-  // Shear Strength
+  /** Shear Strength */
   std::vector<Real> shr_strength;
-  // Frictional strengh (when overlapping is prevented)
+  /** Frictional strengh (when overlapping is prevented) */
   std::vector<Real> fric_strength;
-  // Cracking index just needed to better visualization of fracture process
-  // Standard value: 0 = outside the crack, 1 = in the cohesive zone,
-  // 2 = inside the crack, 3 = inside the contact zone
-  // Other values can be defined arbitrarily at interface creation 
+  /** Cracking index just needed to better visualization of fracture process
+      Standard value: 0 = outside the crack, 1 = in the cohesive zone,
+      2 = inside the crack, 3 = inside the contact zone
+      Other values can be defined arbitrarily at interface creation */
   std::vector<UInt> ind_crack;
 
 
-  // Critical normal opening
+  /** Critical normal opening */
   std::vector<Real> crit_nor_opening;
-  // Critical shear opening
+  /** Critical shear opening */
   std::vector<Real> crit_shr_opening;
-  // Maximum normal strength
+  /** Maximum normal strength */
   std::vector<Real> max_nor_strength;
-  // Maximum shear strength
+  /** Maximum shear strength */
   std::vector<Real> max_shr_strength;
 
-  // Overlapping tolerance (0 = no , 1 = yes)
+  /** Overlapping tolerance (0 = no , 1 = yes) */
   bool allow_overlapping;
-  // Associated contact law
+  /** Associated contact law */
   ContactLaw * contact_law;
 
-  //Permanent access toward some fields registered in the DataRegister
-  //required to compute interface conditions
+  /** Permanent access toward some fields registered in the DataRegister
+      required to compute interface conditions */
   std::vector<Real> mu;
   std::vector<CrackProfile*> stresses;
   std::vector<CrackProfile*> velocities;

@@ -54,10 +54,11 @@ class Interfacer : public DataRegister {
   /* ------------------------------------------------------------------------ */
 public:
   
-  Interfacer(SpectralModel & model) : interface_law(model.getInterfaceLaw()) {
-
+  Interfacer(SpectralModel & model)  {
+    
     initInterfaceLaw();
-        
+    model.setInterfaceLaw(interface_law);
+    
     dx.resize(2);
     dx[0] = model.getElementSize()[0];
     dx[1] = model.getElementSize()[1];
@@ -79,20 +80,39 @@ public:
   //POLAR ASPERITY: designate an asperity made of weaker then stronger interface properties
   // polarity = 0: strong-weak / polarity = 1: weak-strong
 
-  // create a uniform layer on the entire interface. Required parameters should be given through
-  // the simulation paramters
+  /** Create a uniform layer on the entire interface. Required parameters should be given
+      through the simulation paramters */
   void createUniformInterface();
-  // Tune interface properties from a text file starting at a given position
+  /** Tune interface properties from a text file starting at a given position
+   @param filename : name of the input file containing the properties
+   @param origin : X position from where to start setting the interfacial properties */
   void insertPatternfromFile(std::string filename, UInt origin=0);
-  // create an heterogeneous interface following normal distribution of strength
+  /** create an heterogeneous interface following normal distribution of strength
+      @param crit_nor_opening : Reference critical normal opening of the cohesive
+      @param crit_shr_opening : Reference critical normal opening of the cohesive law
+      @param max_nor_opening : Reference maximum normal strength of the cohesive law
+      @param max_nor_opening : Reference maximum shear strength of the cohesive law
+      @param stddev : Standard deviation of the normal distribution
+      @param seed : Seed for the random generator
+  */
   void createNormalDistributedInterface(Real crit_nor_opening, 
 					Real crit_shr_opening, 
 					Real max_nor_strength, 
 					Real max_shr_strength,
 					Real stddev, Real seed);
-  // create an heterogeneous interface with a brownian distribution of strength
-  // rms=root mean square, hurst=hurst exponent, q0=low cut_off, q1=roll_off, q2=high cut_off
-  // !!! Required LibSurfer as an external library
+  /** Create an heterogeneous interface with a brownian distribution of strength.
+      Required LibSurfer as an external library !!!
+      @param crit_nor_opening : Reference critical normal opening of the cohesive
+      @param crit_shr_opening : Reference critical normal opening of the cohesive law
+      @param max_nor_opening : Reference maximum normal strength of the cohesive law
+      @param max_nor_opening : Reference maximum shear strength of the cohesive law
+      @param rms : Root mean square
+      @param seed : Seed for the random generator
+      @param husrt : hurst exponent
+      @param q0 : low cut off
+      @param q : roll off
+      @param q2 : high cut off
+  */
   void createBrownianHeterogInterface(Real crit_nor_opening, 
 				      Real crit_shr_opening, 
 				      Real max_nor_strength, 
@@ -101,10 +121,14 @@ public:
 				      Real hurst=0.8, UInt q0=4,
 				      UInt q1=4, UInt q2=32);
 
-  // create a z-invariant(="through") area between x=start and x=end of given cracking_index and
-  // with properties given by
-  // new_prop = ratio*current_prop, if variation_rather_than_ratio=0
-  // new_prop = ratio+current_prop, if variation_rather_than_ratio=1
+  /** create a z-invariant(="through") area between x=start and x=end of given 
+      cracking_index and with properties given by
+      new_prop = ratio*current_prop, if variation_rather_than_ratio=0,
+      new_prop = ratio+current_prop, if variation_rather_than_ratio=1
+      @param area_start : starting position of the area
+      @param area_end : starting position of the area
+      @param cracking_index : ...
+  */
   void createThroughArea(Real area_start, Real area_end,
 			 UInt cracking_index,
 			 Real ratio_max_nor_strength=1., 
@@ -164,7 +188,7 @@ private:
 private:
 
   // Fracture law object to build
-  InterfaceLaw ** interface_law;
+  std::shared_ptr<InterfaceLaw> interface_law;
   // Number of elements at the interface
   std::vector<UInt> n_ele;
   // Total number of elements

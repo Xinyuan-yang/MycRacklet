@@ -115,8 +115,9 @@ int main(int argc, char *argv[]){
   interfacer.createUniformInterface();
   interfacer.createThroughCrack((dom_sizex-crack_size)/2.,(dom_sizex+crack_size)/2.);
     
-  CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model->getInterfaceLaw()));
-  cohesive_law->preventSurfaceOverlapping(NULL);
+
+  CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model->getInterfaceLaw()));
+  cohesive_law.preventSurfaceOverlapping(NULL);
     
   sim_driver.initConstantLoading(load, psi, phi);
     

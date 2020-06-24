@@ -125,9 +125,10 @@ int main(int argc, char *argv[]){
   UInt t = 0;
 
   const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
+
+  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
   
-  RateAndStateLaw * r_and_s = dynamic_cast<RateAndStateLaw*>(*(model.getInterfaceLaw()));
-  r_and_s->setVelocityPredictor({0.,0.,v_predictor});
+  r_and_s.setVelocityPredictor({0.,0.,v_predictor});
   
   Real v_av,v_5;
   bool dynamic = false;
@@ -147,7 +148,7 @@ int main(int argc, char *argv[]){
     model.increaseTimeStep();
 
     if (t==5)
-      r_and_s->insertGaussianPerturbation(std_dev,vm);
+      r_and_s.insertGaussianPerturbation(std_dev,vm);
       //r_and_s->insertPerturbationPatch(limits,vm);
 
     if ((t%t_char==0)||((dynamic)&&(t%5==0))||(t==5))

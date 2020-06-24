@@ -109,6 +109,15 @@ function(copy_input_file filename)
 endfunction()
 
 #===============================================================================
+# Python interface
+#===============================================================================
+option(CRACKLET_PYTHON_INTERFACE "Activate python binding" OFF)
+
+if(CRACKLET_PYTHON_INTERFACE)
+  add_subdirectory(python)
+endif()
+
+#===============================================================================
 # Library
 #===============================================================================
 

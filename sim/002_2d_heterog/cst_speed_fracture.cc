@@ -39,7 +39,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-
+#include <memory>
 /* -------------------------------------------------------------------------- */
 
 int main(int argc, char *argv[]){
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]){
 	    << "loading angle:" << psi << " "
 	    << std::endl;
   
-  // Cohesive paramters
+  // Cohesiv paramters
   Real crit_n_open = 0.02e-3;
   Real crit_s_open = 0.02e-3;
   Real max_s_str = 9e6;
@@ -126,7 +126,8 @@ int main(int argc, char *argv[]){
   // Friction paramters
   Real regularized_time_scale = 0.1;
   Real coef_frict = 0.25;
-  ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
+
+  std::shared_ptr<ContactLaw> contactlaw = std::make_shared<RegularizedCoulombLaw>(coef_frict, regularized_time_scale, nb_elements);
 
   /* -------------------------------------------------------------------------- */
 
@@ -155,8 +156,8 @@ int main(int argc, char *argv[]){
   
   interfacer.createThroughWall(wall_position,dom_size);
 
-  CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
-  cohesive_law->preventSurfaceOverlapping(contactlaw);
+  CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model.getInterfaceLaw()));  
+  cohesive_law.preventSurfaceOverlapping(contactlaw);
 
   if(write){
     // Init algorithm to tailor constant speed loading conditions

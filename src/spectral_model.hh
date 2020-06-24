@@ -137,13 +137,13 @@ public:
   // Definition of the loading case
   void setLoadingCase(Real load_in, Real psi, Real phi);
   // Set loading case using a pre-computed loading file
-  Real setLoadingCase(std::string loading_file, Real psi, Real phi);
+  // Real setLoadingCase(std::string loading_file, Real psi, Real phi);
   // update loading case
   void updateLoads();
   // Update point-wise loading conidtions using an uniform constant value per dimension  
   void updateLoads(Real * loading_per_dim);
   // update loading case from pre-computed loading condition
-  UInt readUpdateLoads(Real start=0.0);
+  //UInt readUpdateLoads(Real start=0.0);
   // Set the initial values of interface fields (strength,traction,velocities)
   // using the interface conditions given in the associated InterfaceLaw
   void initInterfaceFields();
@@ -182,9 +182,17 @@ public:
   UInt getDim() {return dim;}
   // Return uniform loading vector used to set average interface loading conditions
   std::vector<Real> & getUniformLoading() {return uniform_loading;}
-  // Return pointer to the FractureLaw
-  InterfaceLaw ** getInterfaceLaw() {return &interface_law;}
+  // Get reference to the FractureLaw
+  InterfaceLaw& getInterfaceLaw() {return *interface_law;}
 
+  /* ------------------------------------------------------------------------ */
+  /* Setters                                                                  */
+  /* ------------------------------------------------------------------------ */
+  
+  void setInterfaceLaw(std::shared_ptr<InterfaceLaw> itf_law){ this->interface_law = itf_law;};
+  
+  // 
+  
 public:
  
   /* ------------------------------------------------------------------------ */
@@ -217,7 +225,7 @@ private:
   // Time cut for tob and bottom domains
   std::vector<UInt> t_cut;
   // Associated interface law describing the mechanics between the two semi-infinite half spaces
-  InterfaceLaw * interface_law;
+  std::shared_ptr<InterfaceLaw> interface_law;
   // Dimension of interface
   UInt interface_dim;
   // Space step dx[0] = dx, dx[1] = dz (if 2d then dz is set to 0)

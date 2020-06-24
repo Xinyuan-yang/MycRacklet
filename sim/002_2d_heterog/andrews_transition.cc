@@ -121,8 +121,8 @@ int main(int argc, char *argv[]){
   // Friction paramters
   Real regularized_time_scale = 0.1;
   Real coef_frict = 0.25;
-  ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nb_elements);
-
+  std::shared_ptr<ContactLaw> contactlaw = std::make_shared<RegularizedCoulombLaw>(coef_frict, regularized_time_scale, nb_elements);
+   
   // Output point position
   UInt nb_obs_points = 25;
   UInt start = (UInt)(crk_srt/dom_size*nb_elements);
@@ -163,8 +163,8 @@ int main(int argc, char *argv[]){
   else 
     interfacer.createThroughWall(propagation_domain,dom_size);  
 
-  CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
-  cohesive_law->preventSurfaceOverlapping(contactlaw);
+  CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model.getInterfaceLaw()));
+  cohesive_law.preventSurfaceOverlapping(contactlaw);
 
   sim_driver.initConstantLoading(load,psi,phi);
   

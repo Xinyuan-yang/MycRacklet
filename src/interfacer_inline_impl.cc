@@ -4,25 +4,25 @@
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::initInterfaceLaw() {
-  *interface_law = new CohesiveLaw(); 
+  interface_law = std::make_shared<CohesiveLaw>(); 
 }
 
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_rate_and_state>::initInterfaceLaw() {
-  *interface_law = new RateAndStateLaw();
+  interface_law = std::make_shared<RateAndStateLaw>();
 }
 
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_weakening_rate_and_state>::initInterfaceLaw() {
-  *interface_law = new RateAndStateLaw();
+  interface_law = std::make_shared<RateAndStateLaw>();
 }
 
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_regularized_rate_and_state>::initInterfaceLaw() {
-  *interface_law = new RateAndStateLaw();
+  interface_law = std::make_shared<RateAndStateLaw>();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -30,7 +30,7 @@ template<>
 inline void Interfacer<_rate_and_state>::createUniformInterface() {
 
   createHomogeneousRateandStateIntfc();
-  RateAndStateLaw * r_and_s = dynamic_cast<RateAndStateLaw*>(*interface_law);
+  std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(interface_law);
   r_and_s->initStandardFormulation();
 }
 
@@ -39,7 +39,7 @@ template<>
 inline void Interfacer<_weakening_rate_and_state>::createUniformInterface() {
 
   createHomogeneousRateandStateIntfc();
-  RateAndStateLaw * r_and_s = dynamic_cast<RateAndStateLaw*>(*interface_law);
+  std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(interface_law);
   r_and_s->initVelocityWeakeningFormulation();
   
 }
@@ -53,7 +53,7 @@ inline void Interfacer<_regularized_rate_and_state>::createUniformInterface() {
   Real v0 = DataRegister::getParameter("v0");
    
   createHomogeneousRateandStateIntfc();
-  RateAndStateLaw * r_and_s = dynamic_cast<RateAndStateLaw*>(*interface_law);
+  std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(interface_law);
   r_and_s->initRegularizedFormulation(v0,theta,xi);
   
 }

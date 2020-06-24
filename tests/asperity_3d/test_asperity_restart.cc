@@ -97,7 +97,7 @@
    
    for (UInt step = 0; step < 2; ++step) {
      
-     ContactLaw * contactlaw = new RegularizedCoulombLaw(coef_frict, regularized_time_scale, nex*nez);
+     std::shared_ptr<ContactLaw> contactlaw = std::make_shared<RegularizedCoulombLaw>(coef_frict, regularized_time_scale, nex*nez);
      
      SpectralModel model({nex,nez}, nb_time_steps, {dom_sizex,dom_sizez}, 
 			 nu_mtl, nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
@@ -113,8 +113,8 @@
 						    {0.4*dom_sizex,0.5*dom_sizez}, ratio);
      interfacer.createThroughWall(0.8,1.0);
 
-     CohesiveLaw * cohesive_law = dynamic_cast<CohesiveLaw*>(*(model.getInterfaceLaw()));
-     cohesive_law->preventSurfaceOverlapping(contactlaw);
+     CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model.getInterfaceLaw()));
+     cohesive_law.preventSurfaceOverlapping(contactlaw);
      
      model.updateLoads();
      model.initInterfaceFields();

@@ -14,6 +14,28 @@ namespace cRacklet {
 void register_spectral_model(py::module& mod) {      
   py::class_<SpectralModel,DataRegister>(mod, "SpectralModel")
     .def(py::init<>())
+    .def(py::init<UInt, UInt, Real,
+	 Real, Real, Real, UInt,
+	 const std::string, const std::string>(),
+	 py::arg("nele"), py::arg("nb_time_steps"),
+	 py::arg("dom_size"), py::arg("nu"),
+	 py::arg("E"), py::arg("cs"), py::arg("tcut"),
+	 py::arg("simulation_summary"), py::arg("output_dir")="./" )
+    .def(py::init<UInt, UInt, Real,
+	 Real, Real, Real, Real, Real, Real, UInt, UInt,
+	 const std::string, const std::string>(),
+	 py::arg("nele"), py::arg("nb_time_steps"),
+	 py::arg("dom_size"), py::arg("nu_top"), py::arg("nu_bot"),
+	 py::arg("E_top"), py::arg("E_bot"), py::arg("cs_top"),
+	 py::arg("cs_bot"), py::arg("tcut_top"), py::arg("tcut_bot"),
+	 py::arg("simulation_summary"), py::arg("output_dir")="./" )
+    .def(py::init< std::vector<UInt>, UInt, std::vector<Real>,
+	 Real, Real, Real, UInt,
+	 const std::string, const std::string>(),
+	 py::arg("nele"), py::arg("nb_time_steps"),
+	 py::arg("dom_size"), py::arg("nu"),
+	 py::arg("E"), py::arg("cs"), py::arg("tcut"),
+	 py::arg("simulation_summary"), py::arg("output_dir")="./" )
     .def(py::init< std::vector<UInt>, UInt, std::vector<Real>,
 	 Real, Real, Real, Real, Real, Real, UInt, UInt,
 	 const std::string, const std::string>(),

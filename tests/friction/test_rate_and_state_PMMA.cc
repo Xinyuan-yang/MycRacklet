@@ -71,8 +71,8 @@ int main(int argc, char *argv[]){
     
   /* -------------------------------------------------------------------------- */
 
-  SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, nu, nu, 
-		      E, E, cs, cs, tcut, tcut,
+  SpectralModel model(nb_elements, nb_time_steps, dom_size,
+		      nu, E, cs, tcut,
 		      "Testing rate and state friction along PMMA");
   
   model.initModel();

@@ -91,10 +91,10 @@ int main(int argc, char *argv[]){
 
   for (std::vector<bool>::iterator it = write.begin(); it < write.end(); ++it) {
 
-    SpectralModel * model = new SpectralModel ({nb_elements,1}, 0, {dom_size,0.}, 
-					       nu, nu, E, E, cs, cs, tcut, tcut,
-					       sim_name, output_folder); 
-
+    SpectralModel * model = new SpectralModel (nb_elements, 0, dom_size, 
+					       nu, E, cs, tcut,
+					       sim_name, output_folder);
+    
     // SimulationDriver object helping to launch controlled-speed simulation
     SimulationDriver sim_driver(*model, cr_speed, 0.0);
   

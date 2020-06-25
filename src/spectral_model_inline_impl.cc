@@ -14,6 +14,49 @@ inline SpectralModel::SpectralModel(){
 }
 
 /* -------------------------------------------------------------------------- */
+inline SpectralModel::SpectralModel(UInt nele_x, UInt nb_time_steps,
+				    Real dom_size_x, Real nu,
+				    Real E, Real cs, UInt tcut, 
+				    const std::string & simulation_summary,
+				    const std::string output_dir) :
+  SpectralModel(std::vector<UInt> {nele_x,1},
+		nb_time_steps,std::vector<Real> {dom_size_x,0.},
+		nu,nu,E,E,cs,cs,tcut,tcut,
+		simulation_summary,output_dir){
+}
+
+/* -------------------------------------------------------------------------- */
+inline SpectralModel::SpectralModel(UInt nele_x, UInt nb_time_steps,
+				    Real dom_size_x,
+				    Real nu_top, Real nu_bot, 
+				    Real E_top, Real E_bot,
+				    Real cs_top, Real cs_bot,
+				    UInt tcut_top, UInt tcut_bot, 
+				    const std::string & simulation_summary,
+				    const std::string output_dir) :
+  SpectralModel(std::vector<UInt> {nele_x,1},
+		nb_time_steps,std::vector<Real> {dom_size_x,0.},
+		nu_top,nu_bot,E_top,E_bot,
+		cs_top,cs_bot,tcut_top,tcut_bot,
+		simulation_summary,output_dir){
+  
+}
+
+/* -------------------------------------------------------------------------- */
+
+inline SpectralModel::SpectralModel(std::vector<UInt> nele, UInt nb_time_steps, 
+				    std::vector<Real> dom_size,
+				    Real nu, Real E,
+				    Real cs, UInt tcut, 
+				    const std::string & simulation_summary,
+				    const std::string output_dir) :
+  SpectralModel(nele,nb_time_steps,
+		dom_size,
+		nu,nu,E,E,cs,cs,tcut,tcut,
+		simulation_summary,output_dir){
+}
+
+/* -------------------------------------------------------------------------- */
 inline SpectralModel::SpectralModel(std::vector<UInt> nele, UInt nb_time_steps, 
 				    std::vector<Real> dom_size,
 				    Real nu_top, Real nu_bot, 

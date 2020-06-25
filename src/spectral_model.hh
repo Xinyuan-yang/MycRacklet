@@ -88,8 +88,25 @@ class SpectralModel : public DataRegister {
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
-  
+  // Default constructor
   SpectralModel();
+  // Constructor for 2D, same material on top and bottom
+  SpectralModel(UInt nele_x, UInt nb_time_steps, Real dom_size_x,
+		Real nu, Real E, Real cs, UInt tcut, 
+		const std::string & simulation_summary,
+		const std::string output_dir="./");
+  // Constructor for 2D, different materials on top and bottom
+  SpectralModel(UInt nele_x, UInt nb_time_steps, Real dom_size_x,
+		Real nu_top, Real nu_bot, Real E_top, Real E_bot, 
+		Real cs_top, Real cs_bot, UInt tcut_top, UInt tcut_bot, 
+		const std::string & simulation_summary,
+		const std::string output_dir="./");  
+  // Constructor for 3D, same material on top and bottom
+  SpectralModel(std::vector<UInt> nele, UInt nb_time_steps, std::vector<Real> dom_size, 
+		Real nu, Real E, Real cs, UInt tcut, 
+		const std::string & simulation_summary,
+		const std::string output_dir="./");
+  // Constructor for 3D, different materials on top and bottom  
   SpectralModel(std::vector<UInt> nele, UInt nb_time_steps, std::vector<Real> dom_size, 
 		Real nu_top, Real nu_bot, Real E_top, Real E_bot, 
 		Real cs_top, Real cs_bot, UInt tcut_top, UInt tcut_bot, 

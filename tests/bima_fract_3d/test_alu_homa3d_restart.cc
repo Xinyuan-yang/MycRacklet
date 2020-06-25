@@ -100,7 +100,7 @@ int main(){
   
     if (step==0) {
       nez = 1;
-      model = new SpectralModel({nex,nez}, nb_time_steps, {dom_sizex,0.},
+      model = new SpectralModel(nex, nb_time_steps, dom_sizex,
 				nu_mtl,nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
 				tcut_mtl, tcut_poly, 
 				"test_alu_homa2d","2d_outputs/");

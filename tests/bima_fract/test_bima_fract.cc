@@ -79,7 +79,7 @@ int main(){
 
   /* -------------------------------------------------------------------------- */
 
-  SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, 
+  SpectralModel model(nb_elements, nb_time_steps, dom_size, 
 		      nu_mtl, nu_poly,E_mtl, E_poly, cs_mtl, cs_poly, 
 		      tcut_mtl, tcut_poly, "test_bima_fract");
  

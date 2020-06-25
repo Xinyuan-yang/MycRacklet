@@ -81,7 +81,7 @@ int main(){
   for (UInt step = 0; step < 2; ++step) {
     
     std::shared_ptr<ContactLaw> contactlaw = std::make_shared<RegularizedCoulombLaw>(coef_frict, regularized_time_scale, nb_elements);
-    SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, 
+    SpectralModel model(nb_elements, nb_time_steps, dom_size, 
 			nu_mtl, nu_poly,E_mtl, E_poly, cs_mtl, cs_poly, 
 			tcut_mtl, tcut_poly, "test_bima_fract");
  

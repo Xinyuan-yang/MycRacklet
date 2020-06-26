@@ -90,8 +90,8 @@ public:
   /** create an heterogeneous interface following normal distribution of strength
       @param crit_nor_opening : Reference critical normal opening of the cohesive
       @param crit_shr_opening : Reference critical normal opening of the cohesive law
-      @param max_nor_opening : Reference maximum normal strength of the cohesive law
-      @param max_nor_opening : Reference maximum shear strength of the cohesive law
+      @param max_nor_strength : Reference maximum normal strength of the cohesive law
+      @param max_shr_strength : Reference maximum shear strength of the cohesive law
       @param stddev : Standard deviation of the normal distribution
       @param seed : Seed for the random generator
   */
@@ -104,13 +104,13 @@ public:
       Required LibSurfer as an external library !!!
       @param crit_nor_opening : Reference critical normal opening of the cohesive
       @param crit_shr_opening : Reference critical normal opening of the cohesive law
-      @param max_nor_opening : Reference maximum normal strength of the cohesive law
-      @param max_nor_opening : Reference maximum shear strength of the cohesive law
+      @param max_nor_strength : Reference maximum normal strength of the cohesive law
+      @param max_shr_strength : Reference maximum shear strength of the cohesive law
       @param rms : Root mean square
       @param seed : Seed for the random generator
-      @param husrt : hurst exponent
+      @param hurst : hurst exponent
       @param q0 : low cut off
-      @param q : roll off
+      @param q1 : roll off
       @param q2 : high cut off
   */
   void createBrownianHeterogInterface(Real crit_nor_opening, 
@@ -127,7 +127,12 @@ public:
       new_prop = ratio+current_prop, if variation_rather_than_ratio=1
       @param area_start : starting position of the area
       @param area_end : starting position of the area
-      @param cracking_index : ...
+      @param cracking_index : identification number given to this area
+      @param ratio_max_nor_strength : ratio between the area normal strength and the reference one
+      @param ratio_max_shr_strength : ratio between the area shear strength and the reference one
+      @param ratio_crit_nor_opening : ratio between the area critical normal opening and the reference one
+      @param ratio_crit_shr_opening : ratio between the area critical shear opening and the reference one
+      @param variation_rather_than_ratio : boolean value allowing to switch to variation for the four preceding parameters rather than a ratio
   */
   void createThroughArea(Real area_start, Real area_end,
 			 UInt cracking_index,

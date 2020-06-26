@@ -93,8 +93,6 @@ struct RegularizedRandSFormulation : public RandSFormulation {
    */
   virtual ~RegularizedRandSFormulation(){};
   /** Compute the friction coefficient 
-      @param rate - sliding velocity of a point
-      @param state - state variable of a point
    */
   virtual inline Real operator()(Real rate, Real state, Real a, Real b, Real D,
 				 Real f0, Real rate_st, Real state_st){
@@ -115,8 +113,6 @@ struct RegularizedRandSFormulation : public RandSFormulation {
     return (1+b*log(1+state/state_st))*(theta*v0*v0/(pow(rate*rate+v0*v0,1.5))+xi/(rate+rate_st));
   }
   /** Compute and return the slope of the steady state friction law
-      @param rate - sliding velocity of a point
-      @param state - state variable of a point
    */
   virtual inline Real getSteadyTangent(Real rate, Real state, Real a, Real b, Real D,
 				       Real f0, Real rate_st, Real state_st){
@@ -125,8 +121,6 @@ struct RegularizedRandSFormulation : public RandSFormulation {
       - b*D*rate/(state_st*(pow((rate*rate+v0*v0),1.5))*(1+D/(sqrt(rate*rate+v0*v0)*state_st)))*(theta/(sqrt(1+(v0/rate)*(v0/rate)))+xi*log(1+rate/rate_st));
   }
   /** Compute and return the state value satisfying steady state
-      @param rate - sliding velocity of a point
-      @param state - state variable of a point
    */
   virtual inline Real getStableState(Real interface_traction, Real sigma_0, Real rate,
 				     Real a, Real b, Real D, Real f0, Real rate_st, Real state_st) {

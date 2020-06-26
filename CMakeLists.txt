@@ -46,6 +46,10 @@ set(CMAKE_CXX_FLAGS "-std=c++0x" CACHE STRING "" FORCE)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries.")
 mark_as_advanced(BUILD_SHARED_LIBS)
 
+if(NOT CRACKLET_TARGETS_EXPORT)
+  set(CRACKLET_TARGETS_EXPORT cRackletTargets)
+endif()
+
 #===============================================================================
 # Release file target
 #===============================================================================
@@ -83,30 +87,13 @@ if(CRACKLET_MULTI_THREADED)
 endif()
 
 #===============================================================================
-# Kernels pre-computation
+# Kernels pre-computation, now done in cRackletSimulationMacro
 #===============================================================================
 set(KERNELS_DIR ${PROJECT_SOURCE_DIR}/pre-computed-kernels)
 
 add_subdirectory(${KERNELS_DIR})
 
-set(KERNELS_EXT
-  h11
-  h22
-  k12
- )
-
-function(copy_kernel_files poisson_ratio is_bottom)
-  foreach(_ext ${KERNELS_EXT})
-    file(COPY ${KERNELS_DIR}/nu_.${poisson_ratio}_${_ext}.dat DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    if(is_bottom)
-      file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/nu_.${poisson_ratio}_${_ext}.dat ${CMAKE_CURRENT_BINARY_DIR}/nu_.${poisson_ratio}_${_ext}b.dat)
-    endif()
-  endforeach()
-endfunction()
-
-function(copy_input_file filename)
-  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${filename} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-endfunction()
+include(cRackletSimulationMacros)
 
 #===============================================================================
 # Python interface
@@ -165,3 +152,9 @@ endif()
 if(CRACKLET_SIMULATIONS)
   add_subdirectory(sim)
 endif()
+
+#===============================================================================
+# Install
+#===============================================================================
+
+include(cRackletInstall)

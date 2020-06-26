@@ -1,11 +1,12 @@
 #===============================================================================
-# @file   CMakeLists.txt
+# @file   cRackletInstall.txt
 #
-# @author Fabian Barras <fabian.barras@epfl.ch>
+# @author Thibault Roch <thibault.roch@epfl.ch>
 #
-# @date   Mon Sept 1 9:12:20 2014
+# @date   Wed June 24 15:18:20 2020
 #
-# @brief  configuration file for UIUC simulations folder
+# @brief Create the files that allows users to link with cRacklet in an other
+# cmake project
 #
 # @section LICENSE
 #
@@ -31,6 +32,9 @@
 
 #===============================================================================
 
-add_cracklet_simulation(alu_homa alu_homa.cc
-  NU_TOP 33
-  NU_BOT 35)
+configure_file(cmake/cRackletBuildTreeSettings.cmake.in
+  "${PROJECT_BINARY_DIR}/cRackletBuildTreeSettings.cmake" @ONLY)
+
+# Create the cRackletConfig.cmake and cRackletConfigVersion files
+get_filename_component(CONF_REL_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}" ABSOLUTE)
+configure_file(cmake/cRackletConfig.cmake.in "${PROJECT_BINARY_DIR}/cRackletConfig.cmake" @ONLY)

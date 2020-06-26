@@ -1,6 +1,3 @@
-include_directories (${cRacklet_SOURCE_DIR}/src)
-include_directories (${cRacklet_SOURCE_DIR}/python)
-
 find_package(pybind11 REQUIRED)
 
 set(PYCRACKLET_SRCS

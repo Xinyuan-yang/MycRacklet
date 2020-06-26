@@ -1,11 +1,11 @@
 #===============================================================================
-# @file   CMakeLists.txt
+# @file   cRackletBuildTreeSettings.cmake.in
 #
-# @author Fabian Barras <fabian.barras@epfl.ch>
+# @author Thibault Roch <thibault.roch@epfl.ch>
 #
-# @date   Mon Sept 1 9:12:20 2014
+# @date   Wed June 24 15:18:20 2020
 #
-# @brief  configuration file for UIUC simulations folder
+# @brief Configuration for link with build tree
 #
 # @section LICENSE
 #
@@ -31,6 +31,9 @@
 
 #===============================================================================
 
-add_cracklet_simulation(alu_homa alu_homa.cc
-  NU_TOP 33
-  NU_BOT 35)
+set(CRACKLET_INCLUDE_DIRS
+  "@CRACKLET_INCLUDE_DIRS@"
+  )
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "@CMAKE_SOURCE_DIR@/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "@CMAKE_SOURCE_DIR@/cmake/Modules")

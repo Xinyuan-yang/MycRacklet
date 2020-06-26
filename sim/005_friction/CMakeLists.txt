@@ -33,20 +33,14 @@
 
 include_directories (${cRacklet_SOURCE_DIR}/src)
 
-add_executable(mode_II_rate_and_state mode_II_rate_and_state.cc)
-target_link_libraries(mode_II_rate_and_state cRacklet)
+add_cracklet_simulation(mode_II_rate_and_state mode_II_rate_and_state.cc
+  NU_TOP 33
+  NU_BOT 33)
 
-add_executable(mode_III_rate_and_state mode_III_rate_and_state.cc)
-target_link_libraries(mode_III_rate_and_state cRacklet)
+add_cracklet_simulation(mode_III_rate_and_state mode_III_rate_and_state.cc)
 
-add_executable(travelling_pulse travelling_pulse.cc)
-target_link_libraries(travelling_pulse cRacklet)
+add_cracklet_simulation(travelling_pulse travelling_pulse.cc)
 
-add_executable(mode_II_slip_weakening mode_II_slip_weakening.cc)
-target_link_libraries(mode_II_slip_weakening cRacklet)
+add_cracklet_simulation(mode_II_slip_weakening mode_II_slip_weakening.cc)
 
-add_executable(mode_III_slip_weakening mode_III_slip_weakening.cc)
-target_link_libraries(mode_III_slip_weakening cRacklet)
-
-copy_kernel_files(33 TRUE)
-copy_kernel_files(33 FALSE)
+add_cracklet_simulation(mode_III_slip_weakening mode_III_slip_weakening.cc)

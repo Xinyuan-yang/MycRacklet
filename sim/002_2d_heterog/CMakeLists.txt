@@ -31,16 +31,9 @@
 
 #===============================================================================
 
-include_directories (${cRacklet_SOURCE_DIR}/src)
+add_cracklet_simulation(cst_speed_fracture cst_speed_fracture.cc
+  NU_TOP 35
+  NU_BOT 35)
 
-add_executable(cst_speed_fracture cst_speed_fracture.cc)
-target_link_libraries (cst_speed_fracture cRacklet)
-
-add_executable(andrews_transition andrews_transition.cc)
-target_link_libraries (andrews_transition cRacklet)
-
-
-copy_kernel_files(33 FALSE)
-copy_kernel_files(35 TRUE)
-copy_kernel_files(35 FALSE)
-
+add_cracklet_simulation(andrews_transition andrews_transition.cc
+  )

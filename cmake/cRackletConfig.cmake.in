@@ -1,0 +1,80 @@
+#===============================================================================
+# @file   cRackletConfig.cmake.in
+#
+# @author Thibault Roch <thibault.roch@epfl.ch>
+#
+# @date   Wed June 24 15:18:20 2020
+#
+# @brief CMake file for the library
+#
+# @section LICENSE
+#
+# cRacklet - A spectral boundary integral method for interface fracture simulation
+# Copyright (©) 2012 - 2013 Fabian Barras
+#               2014 EPFL (Ecole Polytechnique Fédérale de Lausanne)
+# 
+# cRacklet is the result of a collaboration between the Computational Solid Mechanics 
+# Laboratory (LSMS) of Ecole Polytechnique Fédérale de Lausanne (EPFL), Switzerland 
+# and the Department of Aerospace Engineering of the University of Illinois at 
+# Urbana-Champaign, United States of America.
+# 
+# cRacklet is free software: you can redistribute it and/or modify it under the terms 
+# of the GNU General Public License as published by the Free Software Foundation, 
+# either version 3 of the License, or (at your option) any later version.
+# 
+# cRacklet is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+# See the GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along with this program.  
+# If not, see <http://www.gnu.org/licenses/>.
+
+#===============================================================================
+
+@PACKAGE_INIT@
+
+# Compute paths
+get_filename_component(CRACKLET_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+get_filename_component(TEST_PATH "${CMAKE_SOURCE_DIR}" PATH)
+
+#set(CRACKLET_USE_FILE "${CRACKLET_CMAKE_DIR}/cRackletUse.cmake")
+#include(${CRACKLET_USE_FILE})
+
+  
+if(EXISTS "${CRACKLET_CMAKE_DIR}/CMakeCache.txt")
+  # In build tree
+  include("${CRACKLET_CMAKE_DIR}/cRackletBuildTreeSettings.cmake")
+
+  # Define the path to the pre-computed kernel directory
+  
+  get_filename_component(PAR "${CMAKE_MODULE_PATH}" DIRECTORY)
+  get_filename_component(PAR_PAR "${PAR}" DIRECTORY)
+  set(KERNELS_DIR ${PAR_PAR}/pre-computed-kernels)
+  include(cRackletSimulationMacros)
+
+else()
+  # In install tree
+  message("${CRACKLET_CMAKE_DIR}/../../include/cRacklet")
+  set(CRACKLET_INCLUDE_DIRS "${CRACKLET_CMAKE_DIR}/../../include/cRacklet")
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CRACKLET_CMAKE_DIR}")
+  message(${CMAKE_MODULE_PATH})
+  include(cRackletSimulationMacros)
+endif()
+
+include("${CRACKLET_CMAKE_DIR}/cRackletTargets.cmake")
+
+# Dependencies
+#include("${CRACKLET_CMAKE_DIR}/cRackletConfigInclude.cmake")
+
+set(CRACKLET_BUILD_TYPE @CMAKE_BUILD_TYPE@)
+
+# find_cracklet_dependencies()
+set(CRACKLET_LIBRARY cRacklet)
+
+list(APPEND CRACKLET_LIBRARIES ${CRACKLET_LIBRARY} ${CRACKLET_EXTRA_LIBRARIES})
+list(APPEND CRACKLET_INCLUDE_DIRS ${CRACKLET_EXTRA_INCLUDE_DIR})
+
+# set(CRACKLET_VERSION @CRACKLET_VERSION@)
+# set_and_check(CRACKLET_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+#check_required_components(cRacklet)

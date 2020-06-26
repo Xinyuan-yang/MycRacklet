@@ -31,6 +31,11 @@
 
 #===============================================================================
 
+list(APPEND CRACKLET_LIBRARY_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
+set(CRACKLET_INCLUDE_DIRS
+  ${CMAKE_CURRENT_SOURCE_DIR} ${CRACKLET_LIBRARY_INCLUDE_DIRS}
+  CACHE INTERNAL "Internal include directories to link with cRacklet as a subproject")
+
 set(cRacklet_SRC
   data_register.cc
   spectral_model.cc
@@ -46,6 +51,7 @@ set(cRacklet_SRC
   simulation_driver.cc
   )
 
+
 set_source_files_properties(${RELEASE_FILE} PROPERTIES GENERATED 1)
 
 add_library(cRacklet ${cRacklet_SRC} ${RELEASE_FILE})
@@ -60,4 +66,43 @@ endif()
 if(CRACKLET_MULTI_THREADED)
   add_definitions(${OpenMP_CXX_FLAGS})
   target_link_libraries(cRacklet ${FFTW_OPENMP_LIBRARY} ${OpenMP_CXX_FLAGS})
+endif()
+
+#target_include_directories(cRacklet
+#  PUBLIC ${CRACKLET_INCLUDE_DIRS}
+#  )
+
+target_include_directories(cRacklet
+  PRIVATE   $<BUILD_INTERFACE:${CRACKLET_INCLUDE_DIRS}>
+  INTERFACE $<INSTALL_INTERFACE:include>
+  )
+
+# small trick for build includes in public
+set_property(TARGET cRacklet APPEND PROPERTY
+  INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${CRACKLET_INCLUDE_DIRS}>)
+
+
+set_target_properties(cRacklet
+  PROPERTIES
+  INTERFACE_CXX_STANDARD 14
+  )
+
+include(GNUInstallDirs)
+install(TARGETS cRacklet
+  EXPORT ${CRACKLET_TARGETS_EXPORT}
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+if("${CRACKLET_TARGETS_EXPORT}" STREQUAL "cRackletTargets")
+
+  install(EXPORT cRackletTargets
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
+    COMPONENT dev)
+
+  #Export for build tree
+  export(EXPORT cRackletTargets
+    FILE "${CMAKE_BINARY_DIR}/cRackletTargets.cmake")
+  export(PACKAGE cRacklet)
 endif()

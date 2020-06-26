@@ -31,14 +31,15 @@
 
 #===============================================================================
 
-include_directories (${cRacklet_SOURCE_DIR}/src) #Include cRacklet sources for the compilation
-add_executable(cst_speed_fracture_2d_3d cst_speed_fracture_2d_3d.cc) #Compile the executable
-target_link_libraries(cst_speed_fracture_2d_3d cRacklet) #Link it with cRacklet library
+add_cracklet_simulation(cst_speed_fracture_2d_3d cst_speed_fracture_2d_3d.cc
+  NU_TOP 35
+  NU_BOT 35)
+
+#Copy the given kernel files in the build directory
+#For the bottom material with \nu=0.35
+#For the top material with \nu=0.35
+#The kernel file need to be available in the folder {cRacklet_SOURCE_DIR}/pre-computed-kernels
+#Otherwise new kernel files can be generated with {cRacklet_SOURCE_DIR}/pre-computed-kernels/invert_serial.f
 
 copy_input_file(input_file.cra) #Copy the given input file in the build directory
 
-#Copy the given kernel files in the build directory
-copy_kernel_files(35 TRUE)  #For the bottom material with \nu=0.35
-copy_kernel_files(35 FALSE) #For the top material with \nu=0.35
-#The kernel file need to be available in the folder {cRacklet_SOURCE_DIR}/pre-computed-kernels
-#Otherwise new kernel files can be generated with {cRacklet_SOURCE_DIR}/pre-computed-kernels/invert_serial.f

@@ -68,6 +68,19 @@ The documentation will be generated in html format and store inside build/doc/ht
 * USAGE
 
 Exemples of the simulation presented in [3-4] are avaiable in the folder "sim".
+
+You can create your own CMake project and link it to cRacklet by adding
+
+find_package(cRacklet REQUIRED)
+
+to your CMakeLists. After doing so, you can create an executable with the command
+
+add_cracklet_simulation(executable source_file
+NU_TOP nu_t
+NU_BOT nu_b)
+
+with NU_TOP and NU_BOT optional arguments that, if provided, will copy the corresponding kernels to your simulation folder.
+
 Basically, the cRacklet engine is composed of seven major types of object:
 
 *SpectralModel:   
@@ -107,6 +120,7 @@ of the surrounding solids (as function of Poisson's ratio) shall be pre-computed
 - David Kammer
 - Guillaume Anciaux
 - Nicolas Richart
+- Thibault Roch <thibault.roch@epfl.ch>
 
 ==================================================================================================
 * RELATED PUBLICATIONS

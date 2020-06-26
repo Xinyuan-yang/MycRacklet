@@ -31,10 +31,6 @@
 
 #===============================================================================
 
-include_directories (${cRacklet_SOURCE_DIR}/src)
-
-add_executable(single_asp_3d single_asp_3d.cc)
-target_link_libraries(single_asp_3d cRacklet)
-
-copy_kernel_files(35 TRUE)
-copy_kernel_files(35 FALSE)
+add_cracklet_simulation(single_asp_3d single_asp_3d.cc
+  NU_TOP 35
+  NU_BOT 35)

@@ -97,8 +97,6 @@ if (CMAKE_VERSION VERSION_GREATER 3.9.5)
     )
 
 else()
-  #string(REGEX REPLACE ";" " " AKANTU_DOXYGEN_DEFINTIONS "${AKANTU_DEFINITIONS};DOXYGEN")
-  #string(REGEX REPLACE ";" " " AKANTU_DOXYGEN_INCLUDE_DIRS "${_akantu_include_dirs}")
 
   message(${PROJECT_BINARY_DIR})
   

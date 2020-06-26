@@ -4,20 +4,20 @@
 #include <algorithm>
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::initStandardFormulation() {
-  state_evol = new StateEvolution();
-  formulation = new RandSFormulation();
+  state_evol = std::make_shared<StateEvolution>();
+  formulation = std::make_shared<RandSFormulation>();
 }
 
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::initVelocityWeakeningFormulation() {
-  state_evol = new StateEvolution();
-  formulation = new WeakeningRandSFormulation();
+  state_evol = std::make_shared<StateEvolution>();
+  formulation = std::make_shared<WeakeningRandSFormulation>();
 }
 
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::initRegularizedFormulation(Real v0, Real theta, Real xi) {
-  state_evol = new RegularizedStateEvolution(v0);
-  formulation = new RegularizedRandSFormulation(v0,theta,xi);
+  state_evol = std::make_shared<RegularizedStateEvolution>(v0);
+  formulation = std::make_shared<RegularizedRandSFormulation>(v0,theta,xi);
 }
 
 /* -------------------------------------------------------------------------- */

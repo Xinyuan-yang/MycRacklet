@@ -168,9 +168,9 @@ private:
   // Friction coefficient
   std::vector<Real> cf;
   // Absract object respresenting the associated time evolution of the state variable
-  StateEvolution * state_evol;
+  std::shared_ptr<StateEvolution> state_evol;
   // Abstract object representing the associated rate and state formulation
-  RandSFormulation * formulation;
+  std::shared_ptr<RandSFormulation> formulation;
   // Frictional strengh
   std::vector<Real> fric_strength;
   // Vector of the initial steady-state sliding velocity
@@ -194,6 +194,6 @@ private:
 /* -------------------------------------------------------------------------- */
 
 inline RateAndStateLaw::~RateAndStateLaw(){
-  delete state_evol; delete formulation;}
+  }
 
 #endif /* __RATE_AND_STATE_LAW__ */

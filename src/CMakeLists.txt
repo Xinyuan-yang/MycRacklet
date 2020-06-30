@@ -51,21 +51,24 @@ set(cRacklet_SRC
   simulation_driver.cc
   )
 
-
 set_source_files_properties(${RELEASE_FILE} PROPERTIES GENERATED 1)
 
 add_library(cRacklet ${cRacklet_SRC} ${RELEASE_FILE})
 add_dependencies(cRacklet RELEASE_INFO)
 
-target_link_libraries(cRacklet ${FFTW_LIBRARIES} ${GSL_LIBRARIES})
+target_link_libraries(cRacklet PUBLIC ${FFTW_LIBRARIES} ${GSL_LIBRARIES})
+
+target_include_directories(cRacklet PUBLIC ${FFTW_INCLUDE_PATH})
+
+target_include_directories(cRacklet PUBLIC ${GSL_INCLUDE_PATH})
 
 if(CRACKLET_USE_LIBSURFER)
-  target_link_libraries(cRacklet ${LIBSURFER_LIBRARIES})
+  target_link_libraries(cRacklet PUBLIC ${LIBSURFER_LIBRARIES})
 endif()
 
 if(CRACKLET_MULTI_THREADED)
   add_definitions(${OpenMP_CXX_FLAGS})
-  target_link_libraries(cRacklet ${FFTW_OPENMP_LIBRARY} ${OpenMP_CXX_FLAGS})
+  target_link_libraries(cRacklet PUBLIC ${FFTW_OPENMP_LIBRARY} ${OpenMP_CXX_FLAGS})
 endif()
 
 #target_include_directories(cRacklet
@@ -103,6 +106,6 @@ if("${CRACKLET_TARGETS_EXPORT}" STREQUAL "cRackletTargets")
 
   #Export for build tree
   export(EXPORT cRackletTargets
-    FILE "${CMAKE_BINARY_DIR}/cRackletTargets.cmake")
+  FILE "${CMAKE_BINARY_DIR}/cRackletTargets.cmake")
   export(PACKAGE cRacklet)
 endif()

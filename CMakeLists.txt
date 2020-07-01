@@ -140,7 +140,7 @@ add_custom_target(RELEASE_INFO DEPENDS ${RELEASE_FILE})
 #===============================================================================
 
 option(CRACKLET_TESTS "Activate tests" OFF)
-option(CRACKLET_SIMULATIONS "Activate simulations" ON)
+option(CRACKLET_EXAMPLES "Activate examples" ON)
 
 if(CRACKLET_TESTS)
   enable_testing()
@@ -150,8 +150,8 @@ if(CRACKLET_TESTS)
   add_subdirectory(tests)
 endif()
 
-if(CRACKLET_SIMULATIONS)
-  add_subdirectory(sim)
+if(CRACKLET_EXAMPLES)
+  add_subdirectory(examples)
 endif()
 
 #===============================================================================

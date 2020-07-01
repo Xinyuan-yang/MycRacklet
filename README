@@ -64,6 +64,7 @@ Source code documentation can be generated using doxygen. You first have to acti
 
 The documentation will be generated in html format and store inside build/doc/html
 
+
 ==================================================================================================
 * USAGE
 
@@ -111,6 +112,17 @@ This class is used to generate various types of output file during simulation.
 IMPORTANT NOTE: Before running cRacklet, the convolution kernels describing the elastodynamic response
 of the surrounding solids (as function of Poisson's ratio) shall be pre-computed using the Fortran routine
 "inverse_serial.f" provided in the folder pre-computed-kernels/
+
+==================================================================================================
+* PYTHON INTERFACE
+
+In order to use the python interface build for cRacklet, you need pybind11.
+
+During configuration, activate CRACKLET_PYTHON_INTERFACE. The make comment will create a python library in the build/python/ folder. Please add this path to your python path.
+
+You can activate the python example with the option CRACKLET_EXAMPLES_PYTHON
+
+An example of the use of the python interface is provided in build/examples/python/001-bimaterial/bimaterial.py
 
 ==================================================================================================
 * AUTHORS

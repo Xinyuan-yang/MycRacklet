@@ -1,11 +1,11 @@
 #===============================================================================
 # @file   CMakeLists.txt
 #
-# @author Fabian Barras <fabian.barras@epfl.ch>
+# @author Thibault Roch <thibault.roch@epfl.ch>
 #
 # @date   Mon Sept 1 9:12:20 2014
 #
-# @brief  configuration file of cRacklet simulations folder
+# @brief configuration file for bimaterial simulation using the python interface 
 #
 # @section LICENSE
 #
@@ -31,33 +31,7 @@
 
 #===============================================================================
 
-option(UIUC_ALU_HOMA "Activate Aluminium-Homalite simulations" OFF) 
-option(2D_HETEROG "Activate 2-D heterogenous interface simulations" OFF)
-option(3D_ASPERTITY "Activate 3-D interface with asperities simulations" OFF)
-option(CRACK_FRONT_WAVES "Activate simulations of the crack front waves study" ON) 
-option(FRICTION "Activate simulation of frictional contact problems" OFF)
-option(PROFILING "Executables to analyze code performance" OFF)
+copy_kernel_files(33 FALSE)
+copy_kernel_files(35 TRUE)
 
-if(UIUC_ALU_HOMA)
-  add_subdirectory(001_UIUC_AluHoma)
-endif()
-
-if(2D_HETEROG)
-  add_subdirectory(002_2d_heterog)
-endif()
-
-if(3D_ASPERTITY)
-  add_subdirectory(003_3d_asperity)
-endif()
-
-if(CRACK_FRONT_WAVES)
-  add_subdirectory(004_crack_front_waves)
-endif()
-
-if(FRICTION)
-  add_subdirectory(005_friction)
-endif()
-
-if(PROFILING)
-  add_subdirectory(profiling)
-endif()
+configure_file(bimaterial.py bimaterial.py COPYONLY)

@@ -34,8 +34,9 @@ cmake_minimum_required(VERSION 3.1.3)
 project(cRacklet)
 enable_language(CXX Fortran)
 
-if (CMAKE_VERSION VERSION_GREATER 3.1.2)
-  cmake_policy(SET CMP0054 NEW)
+cmake_policy(SET CMP0054 NEW)
+
+if (CMAKE_VERSION VERSION_GREATER 3.12)
   cmake_policy(SET CMP0074 NEW)
 endif()
 

@@ -33,13 +33,11 @@
 
 add_cracklet_simulation(cst_speed_fracture_2d_3d cst_speed_fracture_2d_3d.cc
   NU_TOP 35
-  NU_BOT 35)
+  NU_BOT 35
+  FILES_TO_COPY input_file.cra)
 
-#Copy the given kernel files in the build directory
+#The options NU_TOP and NU_BOT copy the given kernel files in the build directory
 #For the bottom material with \nu=0.35
 #For the top material with \nu=0.35
 #The kernel file need to be available in the folder {cRacklet_SOURCE_DIR}/pre-computed-kernels
 #Otherwise new kernel files can be generated with {cRacklet_SOURCE_DIR}/pre-computed-kernels/invert_serial.f
-
-copy_input_file(input_file.cra) #Copy the given input file in the build directory
-

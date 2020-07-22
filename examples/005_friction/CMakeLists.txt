@@ -31,8 +31,6 @@
 
 #===============================================================================
 
-include_directories (${cRacklet_SOURCE_DIR}/src)
-
 add_cracklet_simulation(mode_II_rate_and_state mode_II_rate_and_state.cc
   NU_TOP 33
   NU_BOT 33)

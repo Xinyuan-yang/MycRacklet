@@ -91,7 +91,7 @@ endif()
 #===============================================================================
 # Kernels pre-computation, now done in cRackletSimulationMacro
 #===============================================================================
-set(KERNELS_DIR ${PROJECT_SOURCE_DIR}/pre-computed-kernels)
+SET(KERNELS_DIR ${PROJECT_SOURCE_DIR}/pre-computed-kernels)
 
 add_subdirectory(${KERNELS_DIR})
 

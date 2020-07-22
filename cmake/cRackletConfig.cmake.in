@@ -41,18 +41,11 @@ get_filename_component(TEST_PATH "${CMAKE_SOURCE_DIR}" PATH)
 #set(CRACKLET_USE_FILE "${CRACKLET_CMAKE_DIR}/cRackletUse.cmake")
 #include(${CRACKLET_USE_FILE})
 
-  
 if(EXISTS "${CRACKLET_CMAKE_DIR}/CMakeCache.txt")
   # In build tree
   include("${CRACKLET_CMAKE_DIR}/cRackletBuildTreeSettings.cmake")
-
-  # Define the path to the pre-computed kernel directory
-  
-  get_filename_component(PAR "${CMAKE_MODULE_PATH}" DIRECTORY)
-  get_filename_component(PAR_PAR "${PAR}" DIRECTORY)
-  set(KERNELS_DIR ${PAR_PAR}/pre-computed-kernels)
+  SET(KERNELS_DIR "@CMAKE_SOURCE_DIR@/pre-computed-kernels")
   include(cRackletSimulationMacros)
-
 else()
   # In install tree
   set(CRACKLET_INCLUDE_DIRS "${CRACKLET_CMAKE_DIR}/../../include/cRacklet")

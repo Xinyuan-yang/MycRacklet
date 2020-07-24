@@ -152,7 +152,7 @@ public:
   // !!! Required LibSurfer as an external library
   void brownianHeterogLoading(Real rms, long int seed, Real hurst, UInt q0,UInt q1, UInt q2);
   // Definition of the loading case
-  void setLoadingCase(Real load_in, Real psi, Real phi);
+  void setLoadingCase(Real load_in, Real psi, Real phi, bool write=true);
   // Set loading case using a pre-computed loading file
   // Real setLoadingCase(std::string loading_file, Real psi, Real phi);
   // update loading case

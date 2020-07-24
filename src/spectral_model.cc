@@ -291,9 +291,10 @@ void SpectralModel::pauseModel() {
   convo_manager_bot->restart(1,true);
 }
 /* -------------------------------------------------------------------------- */
-void SpectralModel::setLoadingCase(Real load, Real psi, Real phi) {
+void SpectralModel::setLoadingCase(Real load, Real psi, Real phi, bool write) {
 
-  printSelfLoad(load, psi, phi);
+  if(write==true)
+    printSelfLoad(load, psi, phi);
   
   uniform_loading.resize(dim);
   

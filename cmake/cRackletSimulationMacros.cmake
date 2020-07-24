@@ -48,9 +48,9 @@ set(KERNELS_EXT
 function(copy_kernel_files poisson_ratio is_bottom)
   foreach(_ext ${KERNELS_EXT})
     if(is_bottom)
-      configure_file(${KERNELS_DIR}/nu_.${poisson_ratio}_${_ext}.dat ${CMAKE_CURRENT_BINARY_DIR}/nu_.${poisson_ratio}_${_ext}b.dat)
+      configure_file(${KERNELS_DIR}/nu_.${poisson_ratio}_${_ext}.dat ${CMAKE_CURRENT_BINARY_DIR}/nu_.${poisson_ratio}_${_ext}b.dat COPYONLY)
     else()
-      configure_file(${KERNELS_DIR}/nu_.${poisson_ratio}_${_ext}.dat ${CMAKE_CURRENT_BINARY_DIR}/nu_.${poisson_ratio}_${_ext}.dat)
+      configure_file(${KERNELS_DIR}/nu_.${poisson_ratio}_${_ext}.dat ${CMAKE_CURRENT_BINARY_DIR}/nu_.${poisson_ratio}_${_ext}.dat COPYONLY)
     endif()
   
   endforeach()

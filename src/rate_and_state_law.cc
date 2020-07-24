@@ -2,6 +2,8 @@
 #include "rate_and_state_law.hh"
 #include <fstream>
 #include <algorithm>
+#include <random>
+#include <iomanip>
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::initStandardFormulation() {
   state_evol = std::make_shared<StateEvolution>();
@@ -32,6 +34,20 @@ void RateAndStateLaw::setVelocityPredictor(std::vector<Real> v_0_pred) {
       }
     }
   }
+}
+/* -------------------------------------------------------------------------- */
+void RateAndStateLaw::setV0(std::vector<Real> v_0) {
+
+  std::cout << "SETTING V0" << std::endl;
+
+  for (UInt dir=0; dir < dim; ++dir) {
+    V_0[dir] = v_0[dir];
+  }
+
+  Real V_norm = sqrt(V_0[0]*V_0[0]+V_0[1]*V_0[1]);
+  std::cout << "Steady-state initial velocity V="<< V_norm<< std::endl;
+  DataRegister::out_parameters << std::setprecision(15) << "V0 " << V_norm << std::endl;
+
 }
 
 /* -------------------------------------------------------------------------- */
@@ -96,6 +112,98 @@ void RateAndStateLaw::computeSteadyStateSliding() {
   std::cout << "Steady-state initial velocity V="<<V_norm<<" [m/s] with friction coefficient cf="
 	    << cf[0] << std::endl;
   DataRegister::out_parameters << "V0 " << V_norm << std::endl;
+}
+
+/* -------------------------------------------------------------------------- */
+std::vector<Real> RateAndStateLaw::computeNextAverageVelocity() {
+  
+  std::vector<Real> av_vel;
+  av_vel.resize(2);
+  
+  UInt n_ele = D.size();
+  
+  CrackProfile tau_x = stresses->getStridedPart(3,0);
+  CrackProfile tau_z = stresses->getStridedPart(3,2);
+  
+  CrackProfile shear_stress = tau_x*tau_x + tau_z*tau_z;
+  shear_stress.squareRoot();
+
+  Real V0 = sqrt(V_0[0]*V_0[0]+V_0[1]*V_0[1]);
+  
+  for (UInt i = 0; i < n_ele; ++i) {     
+
+    Real delta_cf,K;
+    Real gamma = 0.1;
+    UInt nb_t_stp = 1;
+    bool is_good = false;
+    Real stress, rate;
+    std::vector<Real> shear_ratio = {tau_x[i]/shear_stress[i],tau_z[i]/shear_stress[i]};
+    
+    while(!is_good) {
+    
+      stress = shear_stress[i];    
+      rate = (*shear_velo_jump)[i]*c_s + V0;
+      Real new_phi = phi[i];
+      
+      for (UInt t = 0; t < nb_t_stp; ++t) {
+
+	Real converg_v = 1.0;
+	Real converg_cf = 1.0;
+	Real delta_v = 0.0;
+	UInt n=0;
+
+	while ((!cRacklet::has_converged(converg_v))&&(!cRacklet::has_converged(converg_cf))) { //&&(is_good)) {
+	
+	  rate += delta_v;
+     
+	  cf[i] = (*formulation)(rate,new_phi,a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]); 
+	  delta_cf = stress/sigma_0 - cf[i] - accoust*(rate-V0)/(2*sigma_0);
+	  K = accoust/(2*sigma_0) + formulation->getTangent(rate,new_phi,a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);
+	  delta_v = delta_cf/K;
+	  if ((delta_v > 0))
+	    delta_v = std::min(std::abs(delta_v),gamma*std::abs(rate));
+	  else
+	    delta_v = -std::min(std::abs(delta_v),gamma*std::abs(rate));
+	  converg_v = delta_v/rate;
+	  converg_cf = delta_cf;
+	  n += 1;
+	}
+	new_phi += (*state_evol)(rate, new_phi, D[i], delta_t/(Real)(nb_t_stp));
+      }
+           
+      if(new_phi<0) {
+	nb_t_stp *= 2;
+	is_good = false;
+      }
+      else {
+	is_good = true;
+	//phi[i]=new_phi;
+      }
+
+      if(nb_t_stp>1) {
+	std::cerr << "WARNING ! Negative Phi values have been observed ! " 
+		  << "Internal time step is locally refined, leading to potential instabilities. " 
+		  << std::endl;
+      }
+    }
+    
+    if(phi[i]<0) {
+      std::cout << "Phi: " << phi[i] << " V: " << rate
+		<< std::endl;
+      abort();
+    } 
+    
+    for (UInt s = 0; s < 2; ++s) {
+      av_vel[s] += 0.5*(rate*shear_ratio[s]-V_0[s]);
+    }
+  }      
+  
+  for (UInt s=0; s < 2; ++s){
+    av_vel[s] /= n_ele;
+  }
+  
+  return av_vel;
+  
 }
 
 /* -------------------------------------------------------------------------- */
@@ -238,3 +346,29 @@ void RateAndStateLaw::insertGaussianPerturbation(Real std_dev, Real amplitude) {
       cRacklet::error("The amplitude of the gaussian perturbation implies negative value of phi !");
   }
 }
+
+/* -------------------------------------------------------------------------- */
+void RateAndStateLaw::addGaussianNoiseToStateField(Real std_dev) {
+  
+  UInt n_ele = D.size();
+
+  Real mean = 0.0;
+  std::default_random_engine generator;
+  std::normal_distribution<Real> dist(mean,std_dev);
+
+  for (UInt i = 0; i < n_ele; ++i) {     
+    phi[i] += dist(generator)*phi[i];
+  }
+  
+}
+
+/* -------------------------------------------------------------------------- */
+
+void RateAndStateLaw::restart(bool pausing, UInt nele_2d) {
+  
+  std::vector<Real> * state = datas[_state_variable];
+  DataRegister::restartData(*state,"restart_state.cra",pausing, nele_2d);
+  
+}
+
+/* -------------------------------------------------------------------------- */

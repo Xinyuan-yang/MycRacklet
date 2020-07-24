@@ -110,17 +110,25 @@ public:
   /** Init a given R&S formulation and state evolution
       standard rate and state formulation */
   void initStandardFormulation();
-  // formulation with a unique velocity-weakening branch
+  /** formulation with a unique velocity-weakening branch
+   */
   void initVelocityWeakeningFormulation();
-  // rate and state formulation with a regularized stick-to-slip transition
+  /** rate and state formulation with a regularized stick-to-slip transition
+   */
   void initRegularizedFormulation(Real v0, Real theta, Real xi);
   /** Define the velocity prediction for each component (used before searching the initial steady state)
       @param v_0_pred : predictor of the velocity
    */ 
   void setVelocityPredictor(std::vector<Real> v_0_pred);
+  /** Set the initial steady state velocity, if know a priori, for example in case of a restart. 
+   */
+  void setV0(std::vector<Real> v_0);
   /** initialize interface fields
    */
   void initInterfaceConditions();
+  /** Compute the interface conditions but do not update it!
+   */
+  std::vector<Real> computeNextAverageVelocity();
   /** update the strength of the material in function of the opening profile
    */
   void updateInterfaceConditions();
@@ -135,11 +143,12 @@ public:
   /** insert gaussian perturbation in the velocity field 
    */
   void insertGaussianPerturbation(Real std_dev, Real amplitude);
+  /** insert gaussian noise in the state field
+   */
+  void addGaussianNoiseToStateField(Real std_dev);
   /** Method used in restart framework which still need to be implemented for the R&S law
    */
-  void restart(bool pausing=false, UInt nele_2d=0){
-    cRacklet::error("RESTART NOT YET IMPLEMENTED FOR THE RATE AND STATE LAW");
-  };
+  void restart(bool pausing=false, UInt nele_2d=0);
     
 private:
   /** initialize interface at an homogeneous the steady-state sliding conditions */ 

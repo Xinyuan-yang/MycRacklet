@@ -363,6 +363,22 @@ void RateAndStateLaw::addGaussianNoiseToStateField(Real std_dev) {
 }
 
 /* -------------------------------------------------------------------------- */
+void RateAndStateLaw::insertPerturbationFromFile(std::string input_file) {
+  
+  UInt n_ele = D.size();
+
+  std::ifstream fin(input_file); //opening the perturbation file
+
+  Real pert;
+
+  for (UInt i = 0; i < n_ele; ++i) {     
+    fin >> pert;
+    phi[i] += pert*phi[i];
+  }
+  
+}
+
+/* -------------------------------------------------------------------------- */
 
 void RateAndStateLaw::restart(bool pausing, UInt nele_2d) {
   

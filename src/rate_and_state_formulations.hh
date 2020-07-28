@@ -139,3 +139,61 @@ public:
    */
   Real xi;
 };
+
+/* -------------------------------------------------------------------------- */
+struct RegularizedWeakeningRandSFormulation : public RandSFormulation {
+  /** Constructor. Assign the frictional parameters v0 theta and xi
+   */
+  RegularizedWeakeningRandSFormulation(Real v0, Real theta, Real xi){
+    this->v0=v0; this->theta=theta; this->xi=xi;}
+
+  /** Standard destructor
+   */
+  virtual ~RegularizedWeakeningRandSFormulation(){};
+  /** Compute the friction coefficient 
+   */
+  virtual inline Real operator()(Real rate, Real state, Real a, Real b, Real D,
+				 Real f0, Real rate_st, Real state_st){
+    return (1+b*log(state/state_st))*(theta/sqrt(1+v0*v0/(rate*rate))+xi*log(1+rate/rate_st));
+  }
+  /** Compute and return the slope of the friction law
+      @param rate - sliding velocity of a point
+      @param state - state variable of a point
+      @param a - R&S parameter 
+      @param b - R&S parameter 
+      @param D - R&S parameter 
+      @param f0 - R&S parameter 
+      @param rate_st - R&S parameter 
+      @param state_st - R&S parameter 
+   */
+  virtual inline Real getTangent(Real rate, Real state, Real a, Real b, Real D,
+				 Real f0, Real rate_st, Real state_st){
+    return (1+b*log(state/state_st))*(theta*v0*v0/(pow(rate*rate+v0*v0,1.5))+xi/(rate+rate_st));
+  }
+  /** Compute and return the slope of the steady state friction law
+   */
+  virtual inline Real getSteadyTangent(Real rate, Real state, Real a, Real b, Real D,
+				       Real f0, Real rate_st, Real state_st){
+
+    return (1+b*log(D/(sqrt(rate*rate+v0*v0)*state_st)))*(theta*v0*v0/(pow((rate*rate+v0*v0),1.5))+xi/(rate+rate_st))
+ - b*D*rate/(state_st*(pow((rate*rate+v0*v0),1.5))*(D/(sqrt(rate*rate+v0*v0)*state_st)))*(theta/(sqrt(1+(v0/rate)*(v0/rate)))+xi*log(1+rate/rate_st));
+  }
+  /** Compute and return the state value satisfying steady state
+   */
+  virtual inline Real getStableState(Real interface_traction, Real sigma_0, Real rate,
+				     Real a, Real b, Real D, Real f0, Real rate_st, Real state_st) {
+    Real ln = interface_traction/(b*sigma_0*(theta/sqrt(1+v0*v0/(rate*rate))+xi*log(1+rate/rate_st)))-1/b;
+    return state_st*exp(ln);
+  }
+  
+public:
+  /** Velocity that regularize the friction value at low velocity.
+   */
+  Real v0;
+  /** TBD
+   */
+  Real theta;
+  /** TBD
+   */
+  Real xi;
+};

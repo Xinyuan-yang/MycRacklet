@@ -27,6 +27,12 @@ inline void Interfacer<_regularized_rate_and_state>::initInterfaceLaw() {
 
 /* -------------------------------------------------------------------------- */
 template<>
+inline void Interfacer<_regularized_weakening_rate_and_state>::initInterfaceLaw() {
+  interface_law = std::make_shared<RateAndStateLaw>();
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
 inline void Interfacer<_rate_and_state>::createUniformInterface() {
 
   createHomogeneousRateandStateIntfc();

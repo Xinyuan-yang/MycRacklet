@@ -43,8 +43,9 @@
 enum FractureLawType {
   _linear_coupled_cohesive,
   _rate_and_state,
-  _regularized_rate_and_state,
   _weakening_rate_and_state,
+  _regularized_rate_and_state,
+  _regularized_weakening_rate_and_state,
 };
 
 template<FractureLawType>

@@ -4,6 +4,7 @@
 template void Interfacer<_rate_and_state>::createHomogeneousRateandStateIntfc();
 template void Interfacer<_weakening_rate_and_state>::createHomogeneousRateandStateIntfc();
 template void Interfacer<_regularized_rate_and_state>::createHomogeneousRateandStateIntfc();
+template void Interfacer<_regularized_weakening_rate_and_state>::createHomogeneousRateandStateIntfc();
 
 template<FractureLawType F>
 void Interfacer<F>::createHomogeneousRateandStateIntfc() {

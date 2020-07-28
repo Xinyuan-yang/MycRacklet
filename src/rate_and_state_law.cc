@@ -5,20 +5,27 @@
 #include <random>
 #include <iomanip>
 /* -------------------------------------------------------------------------- */
-void RateAndStateLaw::initStandardFormulation() {
+void RateAndStateLaw::initStateEvolution() {
   state_evol = std::make_shared<StateEvolution>();
+}
+
+/* -------------------------------------------------------------------------- */
+void RateAndStateLaw::initRegularizedStateEvolution(Real v0) {
+  state_evol = std::make_shared<RegularizedStateEvolution>(v0);
+}
+
+/* -------------------------------------------------------------------------- */
+void RateAndStateLaw::initStandardFormulation() {
   formulation = std::make_shared<RandSFormulation>();
 }
 
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::initVelocityWeakeningFormulation() {
-  state_evol = std::make_shared<StateEvolution>();
   formulation = std::make_shared<WeakeningRandSFormulation>();
 }
 
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::initRegularizedFormulation(Real v0, Real theta, Real xi) {
-  state_evol = std::make_shared<RegularizedStateEvolution>(v0);
   formulation = std::make_shared<RegularizedRandSFormulation>(v0,theta,xi);
 }
 

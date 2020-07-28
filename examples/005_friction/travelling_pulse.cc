@@ -110,6 +110,10 @@ int main(int argc, char *argv[]){
 	    << "Patch velocity vm : " << vm << std::endl;
 
   Interfacer<_regularized_rate_and_state> interfacer(model);
+
+  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
+
+  r_and_s.initRegularizedStateEvolution(DataRegister::getParameter("v0"));
   interfacer.createUniformInterface();
 
   model.setLoadingCase(load, psi, phi);
@@ -125,8 +129,6 @@ int main(int argc, char *argv[]){
   UInt t = 0;
 
   const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
-
-  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
   
   r_and_s.setVelocityPredictor({0.,0.,v_predictor});
   

@@ -112,6 +112,10 @@ int main(int argc, char *argv[]){
   DataRegister::out_parameters << "epsilon " << epsilon << std::endl;
 
   Interfacer<_rate_and_state> interfacer(model);
+
+  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
+  
+  r_and_s.initStateEvolution();
   interfacer.createUniformInterface();
   
   model.setLoadingCase(load, psi, phi);
@@ -129,8 +133,6 @@ int main(int argc, char *argv[]){
 
   const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
   const std::vector<Real> * state = model.readData(_state_variable);
-
-  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
 
   r_and_s.setVelocityPredictor({v_predictor,0.,0.});
   

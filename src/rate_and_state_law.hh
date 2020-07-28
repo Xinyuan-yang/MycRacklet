@@ -107,6 +107,12 @@ public:
   /* ------------------------------------------------------------------------ */
 public:
   
+  /** Init a given state evolution law
+      Standard evolution law */
+  void initStateEvolution();
+  /** Regularized state evolution
+   */
+  void initRegularizedStateEvolution(Real v0);
   /** Init a given R&S formulation and state evolution
       standard rate and state formulation */
   void initStandardFormulation();

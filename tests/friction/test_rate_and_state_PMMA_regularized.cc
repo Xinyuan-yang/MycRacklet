@@ -89,9 +89,10 @@ int main(int argc, char *argv[]){
   DataRegister::registerParameter("theta",theta);
   DataRegister::registerParameter("xi",xi);
   DataRegister::registerParameter("v0",v0);
-
   
   Interfacer<_regularized_rate_and_state> interfacer(model);
+  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
+  r_and_s.initRegularizedStateEvolution(DataRegister::getParameter("v0"));
   interfacer.createUniformInterface();
 
   model.setLoadingCase(load, psi, phi);
@@ -102,7 +103,6 @@ int main(int argc, char *argv[]){
   const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
   const std::vector<Real> * state = model.readData(_state_variable);
     
-  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
   
   r_and_s.setVelocityPredictor({0.,0.,3e-4});
   

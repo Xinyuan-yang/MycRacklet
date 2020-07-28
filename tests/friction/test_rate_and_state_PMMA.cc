@@ -86,6 +86,9 @@ int main(int argc, char *argv[]){
   DataRegister::registerParameter("sigma_0",sigma_0);
   
   Interfacer<_rate_and_state> interfacer(model);
+
+  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
+  r_and_s.initStateEvolution();
   interfacer.createUniformInterface();
 
   model.setLoadingCase(load, psi, phi);
@@ -95,7 +98,6 @@ int main(int argc, char *argv[]){
 
   const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
   
-  RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
 
   r_and_s.setVelocityPredictor({0.,0.,3e-4});
   

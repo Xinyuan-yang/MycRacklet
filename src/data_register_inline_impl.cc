@@ -3,6 +3,18 @@ inline const DataTypes DataRegister::readData(DataFields my_field) {
 }
 
 /* -------------------------------------------------------------------------- */
+inline bool DataRegister::hasParameter(std::string name) {
+
+  std::map<std::string,Real>::iterator it = variables.find(name);
+
+  if(it != variables.end())
+    return true;
+  else {
+    return false;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
 inline Real DataRegister::getParameter(std::string name) {
 
   std::map<std::string,Real>::iterator it = variables.find(name);

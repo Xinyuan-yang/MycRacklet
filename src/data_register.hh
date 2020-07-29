@@ -184,6 +184,8 @@ public:
   static void registerParameter(std::string name, Real value);
   //Register a set of global parameters from input file
   static void readInputFile(std::string input_file);
+  // Check if a parameter is present before accessing it
+  static inline bool hasParameter(std::string name);
   // Access a global simulation parameter
   static inline Real getParameter(std::string name);
   //Register a computer object with a given name

@@ -20,6 +20,11 @@ void CohesiveLaw::preventSurfaceOverlapping(std::shared_ptr<ContactLaw> contactl
 
 /* -------------------------------------------------------------------------- */
 void CohesiveLaw::restart(bool pausing, UInt nele_2d) {
+
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  DataRegister::restartData(*nor_strength,"restart_normal_strength.cra",pausing, nele_2d);
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  DataRegister::restartData(*shr_strength,"restart_shear_strength.cra",pausing, nele_2d);
   
   if(contact_law)
     contact_law->restart(pausing,nele_2d);

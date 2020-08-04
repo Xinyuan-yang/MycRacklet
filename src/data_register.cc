@@ -208,11 +208,6 @@ void DataRegister::restartComputer(bool pausing,UInt nele_2d) {
 void DataRegister::restart(bool pausing, UInt nele_2d) {
 
   restartComputer(pausing,nele_2d);
-
-  std::vector<Real> * nor_strength = datas[_normal_strength];
-  DataRegister::restartData(*nor_strength,"restart_normal_strength.cra",pausing, nele_2d);
-  std::vector<Real> * shr_strength = datas[_shear_strength];
-  DataRegister::restartData(*shr_strength,"restart_shear_strength.cra",pausing, nele_2d);
   
   CrackProfile * top_displacements = datas[_top_displacements];
   DataRegister::restartData(top_displacements->getValues(),"restart_top_displacements.cra",pausing, 3*nele_2d);

@@ -91,7 +91,7 @@ def main():
     model.setLoadingCase(load,psi,phi)
 
     interfacer = InterfacerLinearCoupledCohesive(model)
-    interfacer.createThroughCenteredCrack(crack_size,crit_it_n_open,crit_s_open,max_n_str,max_s_str)
+    interfacer.createThroughCenteredCrack(crack_size,crit_n_open,crit_s_open,max_n_str,max_s_str)
 
     cohesive_law = model.getInterfaceLaw()
     cohesive_law.preventSurfaceOverlapping(contact_law)
@@ -103,9 +103,9 @@ def main():
     
     dumper = DataDumper(model)
     
-    std_diag_id = 'ST_Diagram_id.cra'
-    std_diag_nor_trac = 'ST_Diagram_normal_tractions.cra'
-    std_diag_shear_velo = 'ST_Diagram_shear_velocitiy_jumps.cra'
+    st_diag_id = 'ST_Diagram_id.cra'
+    st_diag_nor_trac = 'ST_Diagram_normal_tractions.cra'
+    st_diag_shear_velo = 'ST_Diagram_shear_velocitiy_jumps.cra'
     top_u = 'top_displ_snapshot.cra'
     bot_u = 'bot_displ_snapshot.cra'
     tractions = 'trac_snapshots.cra'
@@ -121,12 +121,30 @@ def main():
     dumper.initDumper(bot_u,DataFields._bottom_displacements)  
     dumper.initDumper(tractions,DataFields._interface_tractions)  
     dumper.initPointsDumper(point_his,points_int)  
-    dumper.initIntegratorDumper(energy)  
+    dumper.initIntegratorsDumper(energy)  
 
     print_freq = 0.1 * nb_time_steps
 
-    print('GOOD')
-    
+    for t in np.arange(0,nb_time_steps):
+        model.updateDisplacements()
+        model.fftOnDisplacements()
+        model.computeStress()
+        model.computeInterfaceFields()
+        model.increaseTimeStep()
+
+        dumper.dump(st_diag_id)
+        dumper.dump(st_diag_nor_trac)
+        dumper.dump(st_diag_shear_velo)
+        dumper.dump(point_his)
+        dumper.dump(energy)        
+
+        if ((t%print_freq)==0):
+            print("Process at " + str(t/nb_time_steps*100) + " %")
+
+            dumper.dump(top_u)
+            dumper.dump(bot_u)
+            dumper.dump(tractions)
+            
 if __name__ == '__main__':
 
     main()

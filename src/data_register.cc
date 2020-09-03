@@ -136,6 +136,9 @@ void DataRegister::registerParameter(std::string name, UInt value);
 template
 void DataRegister::registerParameter(std::string name, std::string value);
 
+template
+void DataRegister::registerParameter(std::string name, bool value);
+
 /* -------------------------------------------------------------------------- */
 void DataRegister::readInputFile(std::string filename) {
   

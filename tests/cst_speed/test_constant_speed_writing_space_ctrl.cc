@@ -124,7 +124,7 @@ int main(int argc, char *argv[]){
 
     UInt t = 0;
 
-    UInt max_t_step = 1.5*propagation_domain/(model->getParameter("beta")*cr_speed);
+    UInt max_t_step = 1.5*propagation_domain/(model->getParameter<Real>("beta")*cr_speed);
 
     UInt print_info = 0.05*max_t_step;
 

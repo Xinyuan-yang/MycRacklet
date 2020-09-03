@@ -99,8 +99,8 @@ int main(int argc, char *argv[]){
   model.initModel(0.1);
   model.readInputFile("input_pulse_PMMA.dat");
 
-  Real v_predictor = DataRegister::getParameter("v0_predictor");
-  UInt t_char = (UInt)(DataRegister::getParameter("dumping_every_t"));
+  Real v_predictor = DataRegister::getParameter<Real>("v0_predictor");
+  UInt t_char = DataRegister::getParameter<UInt>("dumping_every_t");
 
   std::cout << "Input parameters summary : "<< std::endl
 	    << "Output directory : " << output_folder << std::endl
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]){
 
   RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
 
-  r_and_s.initRegularizedStateEvolution(DataRegister::getParameter("v0"));
+  r_and_s.initRegularizedStateEvolution(DataRegister::getParameter<Real>("v0"));
   interfacer.createUniformInterface();
 
   model.setLoadingCase(load, psi, phi);

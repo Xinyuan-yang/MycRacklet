@@ -76,8 +76,8 @@ int main(int argc, char *argv[]){
 		      "Testing rate and state friction along PMMA");
   
   model.initModel();
-
-  DataRegister::registerParameter("D_hom",D);
+    
+  DataRegister::registerParameter<Real>("D_hom",D);
   DataRegister::registerParameter("f_0_hom",f_0);
   DataRegister::registerParameter("a_hom",a);
   DataRegister::registerParameter("b_hom",b);

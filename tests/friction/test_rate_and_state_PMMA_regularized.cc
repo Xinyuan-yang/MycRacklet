@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
   
   Interfacer<_regularized_rate_and_state> interfacer(model);
   RateAndStateLaw& r_and_s = dynamic_cast<RateAndStateLaw&>((model.getInterfaceLaw()));
-  r_and_s.initRegularizedStateEvolution(DataRegister::getParameter("v0"));
+  r_and_s.initRegularizedStateEvolution(DataRegister::getParameter<Real>("v0"));
   interfacer.createUniformInterface();
 
   model.setLoadingCase(load, psi, phi);

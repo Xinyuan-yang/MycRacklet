@@ -9,12 +9,12 @@ template void Interfacer<_regularized_weakening_rate_and_state>::createHomogeneo
 template<FractureLawType F>
 void Interfacer<F>::createHomogeneousRateandStateIntfc() {
   
-  Real D_value = DataRegister::getParameter("D_hom");
-  Real f_0_value = DataRegister::getParameter("f_0_hom");
-  Real a_value = DataRegister::getParameter("a_hom");
-  Real b_value = DataRegister::getParameter("b_hom");
-  Real v_star_value = DataRegister::getParameter("v_star_hom");
-  Real phi_star_value = DataRegister::getParameter("phi_star_hom");
+  Real D_value = DataRegister::getParameter<Real>("D_hom");
+  Real f_0_value = DataRegister::getParameter<Real>("f_0_hom");
+  Real a_value = DataRegister::getParameter<Real>("a_hom");
+  Real b_value = DataRegister::getParameter<Real>("b_hom");
+  Real v_star_value = DataRegister::getParameter<Real>("v_star_hom");
+  Real phi_star_value = DataRegister::getParameter<Real>("phi_star_hom");
   
   std::vector<Real> * D = datas[_rands_D];
   std::vector<Real> * f_0 = datas[_rands_f_0];
@@ -30,7 +30,7 @@ void Interfacer<F>::createHomogeneousRateandStateIntfc() {
   std::fill(v_star->begin(),v_star->end(), v_star_value);
   std::fill(phi_star->begin(),phi_star->end(), phi_star_value);
 
-  Real sigma_0 = DataRegister::getParameter("sigma_0");
+  Real sigma_0 = DataRegister::getParameter<Real>("sigma_0");
   
   out_summary << "/* -------------------------------------------------------------------------- */ "
 	      << std::endl

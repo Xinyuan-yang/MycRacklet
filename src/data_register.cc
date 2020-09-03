@@ -1,4 +1,5 @@
 #include "data_register.hh"
+#include <iomanip>
 #if defined (_OPENMP)
 #include <omp.h>
 #endif
@@ -10,7 +11,7 @@ std::ofstream DataRegister::out_summary;
 std::ofstream DataRegister::out_parameters;
 std::map<DataFields,DataTypes> DataRegister::datas;
 std::map<std::string,Computer*> DataRegister::computers;
-std::map<std::string,Real> DataRegister::variables;
+std::map<std::string,std::string> DataRegister::variables;
 UInt DataRegister::dim;
 UInt DataRegister::it;
 std::vector<UInt> DataRegister::n_ele;
@@ -105,18 +106,35 @@ void DataRegister::registerComputer(std::string computer_name, Computer * comput
 }
 
 /* -------------------------------------------------------------------------- */
-void DataRegister::registerParameter(std::string name, Real value) {
+template<typename T>
+void DataRegister::registerParameter(std::string name, T value) {
 
-  std::map<std::string,Real>::iterator it = variables.find(name);
+  std::map<std::string,std::string>::iterator it = variables.find(name);
 
+  std::string string_val;
+  std::stringstream stream;
+  stream << std::fixed;
+  stream << std::setprecision(12);
+  stream << value;
+  stream >> string_val;
+  
   if(it == variables.end())
-    variables[name] = value;
+    variables[name] = string_val;
   else {
     std::stringstream err;
     err << "Parameter named " << name << " already registered !";
     cRacklet::error(err);
   }
 }
+
+template
+void DataRegister::registerParameter(std::string name, Real value);
+
+template
+void DataRegister::registerParameter(std::string name, UInt value);
+
+template
+void DataRegister::registerParameter(std::string name, std::string value);
 
 /* -------------------------------------------------------------------------- */
 void DataRegister::readInputFile(std::string filename) {
@@ -137,11 +155,12 @@ void DataRegister::readInputFile(std::string filename) {
     std::getline(file,line);
     std::stringstream sstr(line);
     std::string entry_name;
-    Real parameter;
+    std::string parameter;
     sstr >> entry_name;
     if((entry_name == "%")||(line.length()==0))
       continue;
     sstr >> parameter;
+    std::cout << entry_name << "has a value of " << parameter << std::endl;
     registerParameter(entry_name, parameter);
   }
 }

@@ -79,27 +79,27 @@ int main(int argc, char *argv[]) {
     memory_test = argv[4];
   
   // Geometry description
-  UInt nb_elements = DataRegister::getParameter("nb_elements");
-  Real nu = DataRegister::getParameter("nu");
-  Real E = DataRegister::getParameter("E");
-  Real cs = DataRegister::getParameter("c_s");
+  UInt nb_elements = DataRegister::getParameter<UInt>("nb_elements");
+  Real nu = DataRegister::getParameter<Real>("nu");
+  Real E = DataRegister::getParameter<Real>("E");
+  Real cs = DataRegister::getParameter<Real>("c_s");
 
   // Loading case
-  Real load = DataRegister::getParameter("far_field_load");
-  Real psi = DataRegister::getParameter("load_angle_psi");
-  Real phi = DataRegister::getParameter("load_angle_phi");
+  Real load = DataRegister::getParameter<Real>("far_field_load");
+  Real psi = DataRegister::getParameter<Real>("load_angle_psi");
+  Real phi = DataRegister::getParameter<Real>("load_angle_phi");
 
   // Target crack speed v=cr_speed*c_s
-  Real cr_speed = DataRegister::getParameter("constant_crack_speed");
+  Real cr_speed = DataRegister::getParameter<Real>("constant_crack_speed");
 
   //ratio asperity strength/surrounding material strength
-  Real ratio = DataRegister::getParameter("asperity_toughness_ratio");
+  Real ratio = DataRegister::getParameter<Real>("asperity_toughness_ratio");
   
   // Cohesive paramters
-  Real crit_n_open  = DataRegister::getParameter("critical_normal_opening");
-  Real crit_s_open = DataRegister::getParameter("critical_shear_opening");
-  Real max_s_str = DataRegister::getParameter("max_shear_strength");
-  Real max_n_str = DataRegister::getParameter("max_normal_strength");
+  Real crit_n_open  = DataRegister::getParameter<Real>("critical_normal_opening");
+  Real crit_s_open = DataRegister::getParameter<Real>("critical_shear_opening");
+  Real max_s_str = DataRegister::getParameter<Real>("max_shear_strength");
+  Real max_n_str = DataRegister::getParameter<Real>("max_normal_strength");
     
   // Associated griffith length
   Real G_length ;
@@ -113,17 +113,17 @@ int main(int argc, char *argv[]) {
       crit_s_open * max_s_str / (load * load * M_PI) * E / (1 - nu * nu);
   }
   
-  Real dom_sizex = DataRegister::getParameter("dom_size_x");
-  Real dom_sizez = DataRegister::getParameter("dom_size_z");
+  Real dom_sizex = DataRegister::getParameter<Real>("dom_size_x");
+  Real dom_sizez = DataRegister::getParameter<Real>("dom_size_z");
   Real dx = dom_sizex / double(nb_elements);
   UInt  nb_elementsZ = nb_elements * dom_sizez/dom_sizex;
   Real dz = dx ;
-  UInt propagation_domain = DataRegister::getParameter("max_crack_size") *nb_elements;
+  UInt propagation_domain = DataRegister::getParameter<Real>("max_crack_size") *nb_elements;
   
   //asperity parameters
-  Real asper_radius= DataRegister::getParameter("asperity_radius") * dom_sizez ;
-  Real asperx = DataRegister::getParameter("asperity_pos_x") * dom_sizex;
-  Real asperz = DataRegister::getParameter("asperity_pos_z") *dom_sizez;
+  Real asper_radius= DataRegister::getParameter<Real>("asperity_radius") * dom_sizez ;
+  Real asperx = DataRegister::getParameter<Real>("asperity_pos_x") * dom_sizex;
+  Real asperz = DataRegister::getParameter<Real>("asperity_pos_z") *dom_sizez;
 
   // Cut off time of the elastodynamic kernels
   UInt tcut = 100;

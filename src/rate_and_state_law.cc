@@ -97,7 +97,6 @@ void RateAndStateLaw::computeSteadyStateSliding() {
 	phi[i] = 0.;
       else
 	phi[i] = state_evol->getSteadyState(rate,D[i]);
-      
       cf[i] = (*formulation)(rate,phi[i],a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);
       delta_cf = stress/sigma_0 - cf[i];
       K = formulation->getSteadyTangent(rate,phi[i],a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);

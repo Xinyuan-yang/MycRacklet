@@ -54,9 +54,9 @@ inline void Interfacer<_weakening_rate_and_state>::createUniformInterface() {
 template<>
 inline void Interfacer<_regularized_rate_and_state>::createUniformInterface() {
 
-  Real theta = DataRegister::getParameter("theta");
-  Real xi = DataRegister::getParameter("xi");
-  Real v0 = DataRegister::getParameter("v0");
+  Real theta = DataRegister::getParameter<Real>("theta");
+  Real xi = DataRegister::getParameter<Real>("xi");
+  Real v0 = DataRegister::getParameter<Real>("v0");
    
   createHomogeneousRateandStateIntfc();
   std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(interface_law);
@@ -68,10 +68,10 @@ inline void Interfacer<_regularized_rate_and_state>::createUniformInterface() {
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::createUniformInterface() {
 
-  Real crit_nor_opening = DataRegister::getParameter("critical_normal_opening");
-  Real crit_shr_opening = DataRegister::getParameter("critical_shear_opening");
-  Real max_nor_strength = DataRegister::getParameter("max_normal_strength");
-  Real max_shr_strength = DataRegister::getParameter("max_shear_strength");
+  Real crit_nor_opening = DataRegister::getParameter<Real>("critical_normal_opening");
+  Real crit_shr_opening = DataRegister::getParameter<Real>("critical_shear_opening");
+  Real max_nor_strength = DataRegister::getParameter<Real>("max_normal_strength");
+  Real max_shr_strength = DataRegister::getParameter<Real>("max_shear_strength");
 
   std::vector<Real> * nor_strength = datas[_normal_strength];
   std::vector<Real> * shr_strength = datas[_shear_strength];

@@ -66,7 +66,7 @@ public:
     this->registerData(_critical_normal_opening, &crit_nor_opening);
     this->registerData(_critical_shear_opening, &crit_shr_opening); 
     
-    mu = {getParameter("shear modulus top"),getParameter("shear modulus bottom")};
+    mu = {getParameter<Real>("shear modulus top"),getParameter<Real>("shear modulus bottom")};
     stresses = {datas[_top_dynamic_stress],datas[_bottom_dynamic_stress]};
     velocities = {datas[_top_velocities],datas[_bottom_velocities]};
     displacements = {datas[_top_displacements],datas[_bottom_displacements]};

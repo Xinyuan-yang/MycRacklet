@@ -181,13 +181,15 @@ public:
   //Access to a given field returned in the type DataTypes
   static inline const DataTypes readData(DataFields my_field);
   // Register a global simulation parameter
-  static void registerParameter(std::string name, Real value);
+  template<typename T>
+  static void registerParameter(std::string name, T value);
   //Register a set of global parameters from input file
   static void readInputFile(std::string input_file);
   // Check if a parameter is present before accessing it
   static inline bool hasParameter(std::string name);
   // Access a global simulation parameter
-  static inline Real getParameter(std::string name);
+  template<typename T>
+  static inline T getParameter(std::string name);
   //Register a computer object with a given name
   static void registerComputer(std::string computer_name, Computer * computer);
   //Access a registered computer object
@@ -250,7 +252,7 @@ protected:
   // Map of registered computers
   static std::map<std::string,Computer*> computers;
   // Map to share global simulation variables
-  static std::map<std::string,Real> variables;
+  static std::map<std::string,std::string> variables;
   // Dimension of fields vectors (=3)
   static UInt dim; 
   // Current time step

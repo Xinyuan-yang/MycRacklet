@@ -74,7 +74,7 @@ public:
     this->registerData(_rands_v_star, &v_star);
     this->registerData(_rands_phi_star, &phi_star);
     
-    sigma_0 = DataRegister::getParameter("sigma_0");
+    sigma_0 = DataRegister::getParameter<Real>("sigma_0");
 
     shear_velo_jump = datas[_shear_velocity_jumps];
     dot_u_top = datas[_top_velocities];
@@ -82,12 +82,12 @@ public:
     stresses = datas[_top_dynamic_stress];
     intfc_trac = datas[_interface_tractions];
     
-    Real mu_top = this->getParameter("shear modulus top");
-    Real mu_bot = this->getParameter("shear modulus bottom");
-    Real cs_top = this->getParameter("shear wave speed top");
-    Real cs_bot = this->getParameter("shear wave speed bottom");
-    Real beta = this->getParameter("beta");
-    Real dxmin = this->getParameter("delta min");
+    Real mu_top = this->getParameter<Real>("shear modulus top");
+    Real mu_bot = this->getParameter<Real>("shear modulus bottom");
+    Real cs_top = this->getParameter<Real>("shear wave speed top");
+    Real cs_bot = this->getParameter<Real>("shear wave speed bottom");
+    Real beta = this->getParameter<Real>("beta");
+    Real dxmin = this->getParameter<Real>("delta min");
     
     if ((mu_top==mu_bot)&&(cs_top==cs_bot)) {
       c_s = cs_top;

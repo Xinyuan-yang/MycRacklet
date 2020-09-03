@@ -5,7 +5,7 @@ inline const DataTypes DataRegister::readData(DataFields my_field) {
 /* -------------------------------------------------------------------------- */
 inline bool DataRegister::hasParameter(std::string name) {
 
-  std::map<std::string,Real>::iterator it = variables.find(name);
+  std::map<std::string,std::string>::iterator it = variables.find(name);
 
   if(it != variables.end())
     return true;
@@ -15,17 +15,23 @@ inline bool DataRegister::hasParameter(std::string name) {
 }
 
 /* -------------------------------------------------------------------------- */
-inline Real DataRegister::getParameter(std::string name) {
+template<typename T>
+inline T DataRegister::getParameter(std::string name) {
 
-  std::map<std::string,Real>::iterator it = variables.find(name);
+  std::map<std::string,std::string>::iterator it = variables.find(name);
 
-  if(it != variables.end())
-    return variables[name];
+  T val;
+
+  if(it != variables.end()){
+    std::stringstream stream(variables[name]);
+    stream >> val;
+    return val;
+  }
   else {
     std::stringstream err;
     err << "No registered parameter named " << name << " !";
     cRacklet::error(err);
-    return 0.;
+    return val;
   }
 }
 

@@ -101,11 +101,11 @@ int main(int argc, char *argv[]){
   Real theta = 5./18.;
   DataRegister::registerParameter("theta",theta);
   
-  Real k = DataRegister::getParameter("k");
+  Real k = DataRegister::getParameter<Real>("k");
   //Real epsilon = DataRegister::getParameter("epsilon");
-  Real v_min_fric = DataRegister::getParameter("min_ss_v");
-  Real v_predictor = DataRegister::getParameter("v0_predictor");
-  UInt t_char = (UInt)(DataRegister::getParameter("dumping_every_t"));
+  Real v_min_fric = DataRegister::getParameter<Real>("min_ss_v");
+  Real v_predictor = DataRegister::getParameter<Real>("v0_predictor");
+  UInt t_char = DataRegister::getParameter<UInt>("dumping_every_t");
 
   std::cout << "Input parameters summary : "<< std::endl
 	    << "Output directory : " << output_folder << std::endl

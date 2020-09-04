@@ -164,6 +164,15 @@ public:
 				     Real delta_crit_shr_opening, 
 				     bool polarity);
 
+  // The asperity is inserted between x=start_x and x = end_x, and z=start_z and z=end_z
+  // Return effective z_end position (accounting that Real end is rounded to match discretization)
+  UInt createOneXStripe(Real start_x, Real end_x,
+			Real start_z, Real end_z,
+			Real delta_max_nor_strength, 
+			Real delta_max_shr_strength,
+			Real delta_crit_nor_opening, 
+			Real delta_crit_shr_opening);
+  
   // create an interface with a centered crack.
   void createThroughCenteredCrack(Real initial_crack_size, Real crit_nor_opening, Real crit_shr_opening, 
 				  Real max_nor_strength, Real max_shr_strength);

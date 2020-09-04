@@ -419,6 +419,68 @@ inline UInt Interfacer<_linear_coupled_cohesive>::createThroughMultiPolAsperity(
 
 /* -------------------------------------------------------------------------- */
 template<>
+inline UInt Interfacer<_linear_coupled_cohesive>::createOneXStripe(Real start_x, Real end_x,
+								   Real start_z, Real end_z,
+								   Real delta_max_nor_strength, 
+								   Real delta_max_shr_strength,
+								   Real delta_crit_nor_opening, 
+								   Real delta_crit_shr_opening) {
+
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+  
+  UInt ix_start = (UInt)(start_x/dx[0]);
+  UInt ix_end = (UInt)(end_x/dx[0]);
+  
+  UInt iz_start = (UInt)(start_z/dx[1]);
+  UInt iz_end = (UInt)(end_z/dx[1]);
+    
+  if((iz_end-iz_start) < 1) {
+    iz_end = iz_start + 1;
+    std::cout << "! Asperity width in z was to small and is currently set to grid size !" << std::endl;
+  }
+  
+  Real tough_ratio = (1.+abs(delta_max_shr_strength))/(1.-abs(delta_max_shr_strength));
+  tough_ratio = tough_ratio * tough_ratio;
+  Real asperity_size_z = (iz_end-iz_start)*dx[1];
+
+  std::cout << "Asperity width = " << asperity_size_z << std::endl;
+  std::cout << "This Asperity has a toughness ratio of = " << tough_ratio << std::endl;
+  
+  for (UInt ix = ix_start; ix < ix_end; ++ix) {
+    for (UInt iz = iz_start; iz < iz_end; ++iz) {
+      
+      UInt index = ix+iz*n_ele[0];
+      
+      (*nor_strength)[index] *= (1+delta_max_nor_strength);      
+      (*shr_strength)[index] *= (1+delta_max_shr_strength);
+      (*crit_n_open)[index] *= (1+delta_crit_nor_opening);
+      (*crit_s_open)[index] *= (1+delta_crit_shr_opening);
+    }
+  }
+  
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " HETEROGENEOUS INTERFACE " << std::endl
+	      << "* Delta critical normal opening: " << delta_crit_nor_opening << std::endl
+	      << "* Delta critical shear opening: " << delta_crit_shr_opening << std::endl
+	      << "* Delta maximal normal strength: " << delta_max_nor_strength << std::endl
+	      << "* Delta maximal shear strength: " << delta_max_shr_strength << std::endl
+	      << std::endl;
+  
+  //out_parameters << "toughness_ratio " << tough_ratio << std::endl
+  out_parameters << "asperity_paired_size " << asperity_size_z << std::endl
+		 << "delta_delta_c_nor " << delta_crit_nor_opening << std::endl
+		 << "delta_delta_c_shr " << delta_crit_shr_opening << std::endl
+		 << "delta_tau_max_nor " << delta_max_nor_strength << std::endl
+		 << "delta_tau_max_shr " << delta_max_shr_strength << std::endl;
+  return iz_end;
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
 inline void Interfacer<_linear_coupled_cohesive>::createThroughCenteredCrack(Real initial_crack_size,
 									     Real crit_nor_opening, 
 									     Real crit_shr_opening, 

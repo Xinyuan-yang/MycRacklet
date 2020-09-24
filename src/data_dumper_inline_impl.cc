@@ -11,6 +11,8 @@ inline void Dumper::dump() {
   case _normal_velocity_jumps:
   case _shear_velocity_jumps:
   case _interface_tractions:
+  case _top_dynamic_stress:
+  case _bottom_dynamic_stress:
   case _top_loading:
   case _bottom_loading:
     dump<CrackProfile>();

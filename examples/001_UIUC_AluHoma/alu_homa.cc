@@ -87,11 +87,11 @@
 		 (UInt)(nb_elements*0.8), (UInt)(nb_elements*0.85), (UInt)(nb_elements*0.9) };
 
    /* -------------------------------------------------------------------------- */
-   SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, nu_mtl, 
+   SpectralModel model(nb_elements, nb_time_steps, dom_size, nu_mtl, 
 		       nu_poly, E_mtl, E_poly, cs_mtl, cs_poly, 
 		       tcut_mtl, tcut_poly, 
 		       "Mixed-mode debonding at Aluminium-Homalite interface");
-
+   
    Real beta=0.4; //Stable time step coefficient
    
    model.initModel(beta);

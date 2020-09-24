@@ -136,9 +136,9 @@ int main(int argc, char *argv[]){
 	    << "Toughness ratio : " << toughness_ratio << std::endl;
 
   /* -------------------------------------------------------------------------- */
-
-  SpectralModel model({nb_elements,1}, nb_time_steps, {dom_size,0.}, nu, nu, 
-		      E, E, cs, cs, tcut, tcut, sim_name, output_folder);
+  
+  SpectralModel model(nb_elements, nb_time_steps, dom_size, nu,
+		      E, cs, tcut, sim_name, output_folder);
   
   SimulationDriver sim_driver(model);
 

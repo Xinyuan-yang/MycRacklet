@@ -72,7 +72,7 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   SpectralModel model({nex,nez}, nb_time_steps, {dom_sizex,dom_sizez},
-		      nu, nu, E, E, cs, cs, tcut, tcut,
+		      nu, E, cs, tcut,
 		      "Blank simulation used to estimate the required memory");
 
   model.initModel(beta,true);

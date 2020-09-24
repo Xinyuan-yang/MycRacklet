@@ -100,8 +100,8 @@ int main(int argc, char *argv[]){
 
   SpectralModel * model;
     
-  model = new SpectralModel({nex,1}, 0, {dom_sizex,0.},
-				nu, nu, E, E, cs, cs, tcut, tcut,
+  model = new SpectralModel(nex, 0, dom_sizex,
+				nu, E, cs, tcut,
 				sim_name, output_folder);      
   
   SimulationDriver sim_driver(*model);

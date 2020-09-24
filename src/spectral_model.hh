@@ -147,6 +147,8 @@ public:
   void restartModel(bool from_2dto3d=false);
   // Set a sinusoidal load distribution
   void sinusoidalLoading(Real min);
+  // Read a spatial loading from file
+  void readSpatialLoadingFromFile(std::string loading_file);
   // Set a brownian distributed loading
   // rms=root mean square, hurst=hurst exponent, q0=low cut_off, q1=roll_off, q2=high cut_off
   // !!! Required LibSurfer as an external library

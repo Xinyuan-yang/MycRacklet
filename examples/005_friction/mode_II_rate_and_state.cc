@@ -85,8 +85,8 @@ int main(int argc, char *argv[]){
       
   /* -------------------------------------------------------------------------- */
 
-  SpectralModel model({nb_elements,1}, 0, {dom_size,0.}, nu, nu, 
-		      E, E, cs, cs, tcut, tcut, sim_name, output_folder);
+  SpectralModel model(nb_elements, 0, dom_size, nu, 
+		      E, cs, tcut, sim_name, output_folder);
   
   model.initModel();
   model.readInputFile("input_PMMA.dat");

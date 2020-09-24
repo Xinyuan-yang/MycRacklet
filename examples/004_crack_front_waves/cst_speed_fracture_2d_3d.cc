@@ -167,13 +167,13 @@ int main(int argc, char *argv[]) {
       outfolder = output_folder + "2d_outputs/";
       mkdir(outfolder.c_str(),0777);
 
-      model = new  SpectralModel({nb_elements, 1}, nb_time_steps, {dom_sizex, 0}, nu, nu,
-				 E, E, cs, cs, tcut, tcut, sim_name, outfolder);
+      model = new  SpectralModel(nb_elements, nb_time_steps, dom_sizex, nu, 
+				 E, cs, tcut, sim_name, outfolder);
     }
     else {
       // Create 3d model
-      model = new SpectralModel({nb_elements, nb_elementsZ}, nb_time_steps, {dom_sizex, dom_sizez}, nu, nu,
-                                E, E, cs, cs, tcut, tcut, sim_name, output_folder);
+      model = new SpectralModel({nb_elements, nb_elementsZ}, nb_time_steps, {dom_sizex, dom_sizez}, nu,
+                                E, cs, tcut, sim_name, output_folder);
     }
 
     // Blank model initialiasation to predict the required memory size

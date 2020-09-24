@@ -342,6 +342,18 @@ void SpectralModel::sinusoidalLoading(Real min) {
 }
 
 /* -------------------------------------------------------------------------- */
+void SpectralModel::readSpatialLoadingFromFile(std::string loading_file) {
+
+  std::ifstream fin(loading_file);
+  
+  for (UInt x = 0; x < n_ele[0]; ++x) {
+    for (UInt z = 0; z < n_ele[1]; ++z) {
+      fin >> loading_ratio[x+z*n_ele[0]];
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
 #ifdef CRACKLET_USE_LIBSURFER 
 void SpectralModel::brownianHeterogLoading(Real rms, long int seed,
 					   Real hurst, UInt q0,

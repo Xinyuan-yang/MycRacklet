@@ -144,8 +144,8 @@ int main(int argc, char *argv[]){
       max_num_threads = omp_get_max_threads();
       omp_set_num_threads(1);
 #endif
-      model = new SpectralModel({nex,1}, 0, {dom_sizex,0.},
-				nu, nu, E, E, cs, cs, tcut, tcut,
+      model = new SpectralModel(nex, 0, dom_sizex,
+				nu, E, cs, tcut,
 				sim_name, outfolder);      
     } else {
       outfolder = output_folder;
@@ -155,7 +155,7 @@ int main(int argc, char *argv[]){
       omp_set_num_threads(max_num_threads);
 #endif
       model = new SpectralModel({nex,nez}, 0, {dom_sizex,dom_sizez},
-				nu, nu, E, E, cs, cs, tcut, tcut,
+				nu, E, cs, tcut,
 				sim_name, outfolder);
     }
     
@@ -276,17 +276,17 @@ int main(int argc, char *argv[]){
       ++t;
 
       duration = std::time(NULL) - start;
-     
+      
       if((duration>0.5*pausing_duration)&&(first_half)) {
 	first_half=false;
 	std::cout << "The simulation just passes half of his planned duration !" <<std::endl;
-     }
-    
-      /*      if ((phase==0)&&(asperity_trac>0.5*max_n_str)&&(ratio!=1.)) {
-	model->pauseModel();
-	std::cout << "End of pseudo 2d" << std::endl;
-	break;
       }
+      
+      /*      if ((phase==0)&&(asperity_trac>0.5*max_n_str)&&(ratio!=1.)) {
+	      model->pauseModel();
+	      std::cout << "End of pseudo 2d" << std::endl;
+	      break;
+	}
       */	
     }
     delete model;

@@ -204,7 +204,7 @@ public:
 			  bool pausing, UInt nele_2d=0);  
 protected:
  
-  //Initialize the resgister providing the output folder of simulation as well as its description
+  //Initialize the register providing the output folder of simulation as well as its description
   void data_initialize(const std::string output_folder,const std::string description);
   //Finalize data register
   void data_finalize();

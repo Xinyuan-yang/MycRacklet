@@ -192,6 +192,13 @@ void SpectralModel::initConvolutionManagers(bool blank){
   std::string name1 = "nu_.";
   std::vector<std::string> name3((nb_kernels-1)*2);;
   name3 = {"_h11.dat","_h11b.dat","_h22.dat","_h22b.dat","_k12.dat","_k12b.dat",};
+
+  // Check if the materials are the same on top and bottom, and if so only one occurence of the kernel is required
+  
+  if((nu[0] == nu[1])&&(mu[0]==mu[1])){
+      name3 = {"_h11.dat","_h11.dat","_h22.dat","_h22.dat","_k12.dat","_k12.dat",};
+    }
+
   std::string name2;
  
   std::vector<Real> kside = {1, ksi};

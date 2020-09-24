@@ -3,9 +3,9 @@ Griffith length: 0.0378643
 Convolution kernel correctly loaded from nu_.33_h11.dat
 Convolution kernel correctly loaded from nu_.33_h22.dat
 Convolution kernel correctly loaded from nu_.33_k12.dat
-Convolution kernel correctly loaded from nu_.33_h11b.dat
-Convolution kernel correctly loaded from nu_.33_h22b.dat
-Convolution kernel correctly loaded from nu_.33_k12b.dat
+Convolution kernel correctly loaded from nu_.33_h11.dat
+Convolution kernel correctly loaded from nu_.33_h22.dat
+Convolution kernel correctly loaded from nu_.33_k12.dat
 Rupture is currently artificially triggered with speed 0.05*c_s
  Crack position is now at 0.00369768
  Crack position is now at 0.00443722
@@ -71,9 +71,9 @@ Crack tip at 71.4844%  and far-field loading               0     1.12206e+06    
 Convolution kernel correctly loaded from nu_.33_h11.dat
 Convolution kernel correctly loaded from nu_.33_h22.dat
 Convolution kernel correctly loaded from nu_.33_k12.dat
-Convolution kernel correctly loaded from nu_.33_h11b.dat
-Convolution kernel correctly loaded from nu_.33_h22b.dat
-Convolution kernel correctly loaded from nu_.33_k12b.dat
+Convolution kernel correctly loaded from nu_.33_h11.dat
+Convolution kernel correctly loaded from nu_.33_h22.dat
+Convolution kernel correctly loaded from nu_.33_k12.dat
 Loading tailored to fix crack speed at 0.5c_s has just been read.
 Rupture is currently artificially triggered with speed 0.05*c_s
  Crack position is now at 0.00369768

@@ -1,9 +1,9 @@
 Convolution kernel correctly loaded from nu_.33_h11.dat
 Convolution kernel correctly loaded from nu_.33_h22.dat
 Convolution kernel correctly loaded from nu_.33_k12.dat
-Convolution kernel correctly loaded from nu_.33_h11b.dat
-Convolution kernel correctly loaded from nu_.33_h22b.dat
-Convolution kernel correctly loaded from nu_.33_k12b.dat
+Convolution kernel correctly loaded from nu_.33_h11.dat
+Convolution kernel correctly loaded from nu_.33_h22.dat
+Convolution kernel correctly loaded from nu_.33_k12.dat
 Steady-state initial velocity V=0.000398213 [m/s] with friction coefficient cf=0.36
 Simulation at t 0 = 7.8125e-07 [sec]
 -> v_max-v_av = 0

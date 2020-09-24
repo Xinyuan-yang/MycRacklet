@@ -39,8 +39,6 @@ register_cRacklet_test(test_constant_speed_writing_time_ctrl
 register_cRacklet_test(test_constant_speed_writing_space_ctrl
   "Test tailoring fracture at constant speed with space-dependant loading")
 
-copy_kernel_files(35 TRUE)
 copy_kernel_files(35 FALSE)
 
-copy_kernel_files(33 TRUE)
 copy_kernel_files(33 FALSE)

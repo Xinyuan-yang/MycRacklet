@@ -36,5 +36,4 @@ include_directories (${cRacklet_SOURCE_DIR}/src)
 register_cRacklet_test(test_rate_and_state_PMMA "Rate and state instability along PMMA")
 register_cRacklet_test(test_rate_and_state_PMMA_regularized "Regularized Rate and state formulation")
 
-copy_kernel_files(33 TRUE)
 copy_kernel_files(33 FALSE)

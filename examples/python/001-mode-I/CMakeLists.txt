@@ -5,7 +5,7 @@
 #
 # @date   Mon Sept 1 9:12:20 2014
 #
-# @brief  configuration file of cRacklet python interface examples folder
+# @brief configuration file for pure mode I simulation with the python interface, including visualisation of the results.
 #
 # @section LICENSE
 #
@@ -31,5 +31,6 @@
 
 #===============================================================================
 
-add_subdirectory(001-mode-I)
-add_subdirectory(002-bimaterial)
+copy_kernel_files(35 FALSE)
+
+configure_file(modeI.py modeI.py COPYONLY)

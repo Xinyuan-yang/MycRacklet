@@ -30,6 +30,7 @@
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from py_cRacklet import SpectralModel
 from py_cRacklet import InterfacerLinearCoupledCohesive
@@ -47,7 +48,7 @@ def main():
     nb_elements = 2048
     dom_size = 0.3
     dx = dom_size / nb_elements
-    initial_crack_size = 50 * dx
+    initial_crack_size = 200 * dx
     propagation_domain = 0.9 * dom_size
 
     nu = 0.35
@@ -116,7 +117,7 @@ def main():
     dumper.initDumper(st_diag_id,DataFields._id_crack)
     dumper.initDumper(top_u,DataFields._top_displacements)
 
-    print_freq = 0.02 * nb_time_steps
+    print_freq = 0.001 * nb_time_steps
 
     # Launch the crack up to dynamic propagation
 
@@ -142,9 +143,32 @@ def main():
 
 
 def plotEvolution():
+    
+    timer = np.loadtxt("Timer_ST_Diagram_id.cra")
+    timer = timer - timer[0]
+    
+    state = np.loadtxt("ST_Diagram_id.cra")
+    
+    dt = timer[1] - timer[0]
+    
+    nb_elements = state.shape[1]
+    dom_size = 0.3
+    
+    dx = dom_size / nb_elements
+    
+    py,px = np.mgrid[0:timer[-1]+dt:dt,0:1:dx/dom_size]
+    
+    fig,axe = plt.subplots(nrows=1, ncols=1,figsize=(3.5,3.5),dpi=300)
+    
+    axe.pcolormesh(px,py,state)
 
-    print("To be implemented")
-        
+    axe.set_ylabel(r"$t c_s / W $")
+    axe.set_xlabel(r"$x / W $")
+    axe.set_xlim([0,0.9])
+    
+    fig.tight_layout()
+    fig.savefig("state_evolution.png")
+               
 if __name__ == '__main__':
 
     main()

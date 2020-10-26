@@ -19,7 +19,7 @@ void register_simulation_driver(py::module& mod) {
     .def("initConstantSpeed",&SimulationDriver::initConstantSpeed)
     .def("solveStep",&SimulationDriver::solveStep)
     .def("writeLoading",&SimulationDriver::writeLoading)
-    .def("launchCrack",&SimulationDriver::launchCrack);
+    .def("launchCrack",&SimulationDriver::launchCrack,py::arg("crack_start"),py::arg("launched_size"),py::arg("v_init"),py::arg("one_side_propagation")=true);
 }
   
 } // namespace cRacklet

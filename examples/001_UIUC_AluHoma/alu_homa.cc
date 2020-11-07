@@ -116,7 +116,7 @@
    std::string point_his = "Points_history.cra";
    std::string energy = "Energy.cra";
    dumper.initDumper(st_diag_shear_velo, _shear_velocity_jumps);
-   dumper.initVectorDumper(st_diag_nor_trac, _interface_tractions,1);
+   dumper.initVectorDumper(st_diag_nor_trac, _interface_tractions,_y);
    dumper.initDumper(st_diag_id, _id_crack);   
    dumper.initDumper(top_u, _top_displacements);
    dumper.initDumper(bot_u, _bottom_displacements);

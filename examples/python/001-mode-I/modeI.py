@@ -48,7 +48,7 @@ def main():
     nb_elements = 2048
     dom_size = 0.3
     dx = dom_size / nb_elements
-    initial_crack_size = 200 * dx
+    initial_crack_size = 50 * dx
     propagation_domain = 0.9 * dom_size
 
     nu = 0.35
@@ -160,11 +160,22 @@ def plotEvolution():
     
     fig,axe = plt.subplots(nrows=1, ncols=1,figsize=(3.5,3.5),dpi=300)
     
-    axe.pcolormesh(px,py,state)
 
     axe.set_ylabel(r"$t c_s / W $")
     axe.set_xlabel(r"$x / W $")
     axe.set_xlim([0,0.9])
+
+    vmax = 2
+    vmin = 0
+    ticks = ['Intact','Process zone','Cracked']
+    ticks_pos = [0.33,1,1.66]        
+    colorsList = [(0,0,1),(0,1,0),(1,0,0)]
+    colormap = matplotlib.colors.ListedColormap(colorsList)
+    
+    axe.pcolormesh(px,py,state,vmin=vmin,vmax=vmax,cmap=colormap)
+    cax = divider.append_axes("right",size="5%",pad = 0.05)
+    cbar = plt.colorbar(mesh,ticks=ticks_pos,cax = cax)
+    cbar.ax.set_yticklabels(ticks)
     
     fig.tight_layout()
     fig.savefig("state_evolution.png")

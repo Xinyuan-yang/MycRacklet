@@ -44,7 +44,7 @@ void register_spectral_model(py::module& mod) {
 	 py::arg("E_top"), py::arg("E_bot"), py::arg("cs_top"),
 	 py::arg("cs_bot"), py::arg("tcut_top"), py::arg("tcut_bot"),
 	 py::arg("simulation_summary"), py::arg("output_dir")="./" )
-    .def("initModel",&SpectralModel::initModel,py::arg("beta"),py::arg("blank")=false)
+    .def("initModel",&SpectralModel::initModel,py::arg("beta")=0,py::arg("blank")=false)
     .def("pauseModel",&SpectralModel::pauseModel)
     .def("restartModel",&SpectralModel::restartModel)
     .def("sinusoidalLoading",&SpectralModel::sinusoidalLoading)

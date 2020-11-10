@@ -61,7 +61,8 @@ void wrap_interfacer_cohesive(py::module& mod) {
     .def(py::init<SpectralModel&>())
     .def("createUniformInterface",&Interfacer<F>::createUniformInterface)
   
-    .def("insertPatternfromFile",&Interfacer<F>::insertPatternfromFile)
+    .def("insertPatternfromFile",py::overload_cast<std::string, UInt>(&Interfacer<F>::insertPatternfromFile))
+    .def("insertPatternfromFile",py::overload_cast<std::string, std::string>(&Interfacer<F>::insertPatternfromFile)) // Create an interface based on two files: one for the strength, the other for the opening
     .def("createNormalDistributedInterface",&Interfacer<F>::createNormalDistributedInterface)
 #ifdef CRACKLET_USE_LIBSURFER
     .def("createBrownianHeterogInterface",&Interfacer<F>::createBrownianHeterogInterface)

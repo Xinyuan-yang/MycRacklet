@@ -88,6 +88,11 @@ public:
    @param filename : name of the input file containing the properties
    @param origin : X position from where to start setting the interfacial properties */
   void insertPatternfromFile(std::string filename, UInt origin=0);
+  /** Create an interface from two text files, one for the critical stress the other for the critical opening
+   @param file_strength : name of the input file containing the strength properties
+   @param file_opening : name of the input file containing the critical opening properties
+  */
+  void insertPatternfromFile(std::string file_strength, std::string file_opening);
   /** create an heterogeneous interface following normal distribution of strength
       @param crit_nor_opening : Reference critical normal opening of the cohesive
       @param crit_shr_opening : Reference critical normal opening of the cohesive law

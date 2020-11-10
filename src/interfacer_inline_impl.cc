@@ -142,6 +142,62 @@ inline void Interfacer<_linear_coupled_cohesive>::insertPatternfromFile(std::str
 }
 
 /* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_linear_coupled_cohesive>::insertPatternfromFile(std::string file_strength, std::string file_opening) {
+
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+
+  std::ifstream file_str;
+  std::string line_str;
+  file_str.open(file_strength);
+  Real strength;
+
+  std::ifstream file_op;
+  std::string line_op;
+  file_op.open(file_opening);
+  Real opening;
+  
+  for (UInt x = 0; x < n_ele[0]; ++x) {
+    if(file_str.eof()||file_op.eof())
+      break;
+
+    // Read from the strength file
+    std::getline(file_str,line_str);
+    std::stringstream sstr_str(line_str);
+
+    // Read from the opening file
+    std::getline(file_op,line_op);
+    std::stringstream sstr_op(line_op);
+
+    for (UInt z = 0; z < n_ele[1]; ++z ) {
+
+      sstr_str >> strength;
+      sstr_op >> opening;
+      
+      (*shr_strength)[x+z*n_ele[0]] = strength;
+      (*nor_strength)[x+z*n_ele[0]] = strength;
+      (*crit_s_open)[x+z*n_ele[0]] = opening;
+      (*crit_n_open)[x+z*n_ele[0]] = opening;
+      
+      if(strength==0) {
+	(*ind_crack)[x+z*n_ele[0]] = 0;
+      }
+    }
+  }
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " STRENGTH PATTERN INSERTED FROM FILE " << std::endl
+	      << "* Filename: " << file_strength << std::endl
+	      << " OPENING PATTERN INSERTED FROM FILE " << std::endl
+	      << "* Filename: " << file_opening << std::endl
+	      << std::endl;	
+}
+
+/* -------------------------------------------------------------------------- */
 #ifdef CRACKLET_USE_LIBSURFER
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::createBrownianHeterogInterface(Real crit_nor_opening, 

@@ -34,3 +34,4 @@
 copy_kernel_files(35 FALSE)
 
 configure_file(modeI.py modeI.py COPYONLY)
+configure_file(modeI_increasing_load.py modeI_increasing_load.py COPYONLY)

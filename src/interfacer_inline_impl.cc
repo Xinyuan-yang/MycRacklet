@@ -1,10 +1,17 @@
 #include "cohesive_law.hh"
+#include "cohesive_law_viscoelastic.hh"
 #include <random>
 #include <chrono>
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::initInterfaceLaw() {
   interface_law = std::make_shared<CohesiveLaw>(); 
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_viscoelastic_coupled_cohesive>::initInterfaceLaw() {
+  interface_law = std::make_shared<CohesiveLawViscoelastic>(); 
 }
 
 /* -------------------------------------------------------------------------- */
@@ -96,6 +103,46 @@ inline void Interfacer<_linear_coupled_cohesive>::createUniformInterface() {
 		 << "delta_c_shr " << crit_shr_opening << std::endl
 		 << "tau_max_nor " << max_nor_strength << std::endl
 		 << "tau_max_shr " << max_shr_strength << std::endl;  
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_viscoelastic_coupled_cohesive>::createUniformInterface() {
+
+  Real crit_nor_opening = DataRegister::getParameter<Real>("critical_normal_opening");
+  Real crit_shr_opening = DataRegister::getParameter<Real>("critical_shear_opening");
+  Real max_nor_strength = DataRegister::getParameter<Real>("max_normal_strength");
+  Real max_shr_strength = DataRegister::getParameter<Real>("max_shear_strength");
+  Real lim_velocity = DataRegister::getParameter<Real>("lim_velocity");
+
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+  std::vector<Real> * lim_vel = datas[_lim_velocity];
+  
+  std::fill(nor_strength->begin(), nor_strength->end(), max_nor_strength);
+  std::fill(shr_strength->begin(), shr_strength->end(), max_shr_strength);
+  std::fill(crit_n_open->begin(), crit_n_open->end(), crit_nor_opening);
+  std::fill(crit_s_open->begin(), crit_s_open->end(), crit_shr_opening);
+  std::fill(lim_vel->begin(), lim_vel->end(), lim_velocity);
+  
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " VISCOELASTIC COHESIVE LAW " << std::endl
+	      << " UNIFORM INTERFACE " << std::endl
+	      << "* Critical normal opening: " << crit_nor_opening << std::endl
+	      << "* Critical shear opening: " << crit_shr_opening << std::endl
+	      << "* Maximal normal strength: " << max_nor_strength << std::endl
+	      << "* Maximal shear strength: " << max_shr_strength << std::endl
+	      << "* Limit velocity: " << lim_velocity << std::endl
+	      << std::endl;	
+
+  out_parameters << "delta_c_nor " << crit_nor_opening << std::endl
+		 << "delta_c_shr " << crit_shr_opening << std::endl
+		 << "tau_max_nor " << max_nor_strength << std::endl
+		 << "tau_max_shr " << max_shr_strength << std::endl
+		 << "lim_vel " << lim_velocity << std::endl;  
 }
 
 /* -------------------------------------------------------------------------- */

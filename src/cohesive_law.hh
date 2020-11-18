@@ -92,7 +92,7 @@ public:
   // Prevent the overlapping of the two surfaces and associate a ContactLaw
   void preventSurfaceOverlapping(std::shared_ptr<ContactLaw> contactlaw);
   
-private:
+protected:
 
   /** compute velocities at t=0 */
   void computeInitialVelocities();
@@ -118,7 +118,7 @@ public:
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */
   /* ------------------------------------------------------------------------ */
-private:
+protected:
 
   /** Normal Strength */
   std::vector<Real> nor_strength;

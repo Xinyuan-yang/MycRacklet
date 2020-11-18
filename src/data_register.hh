@@ -62,6 +62,9 @@ enum DataFields {
   _critical_normal_opening, //n_ele
   _critical_shear_opening, //n_ele
 
+  // For viscoelastic law
+  _lim_velocity, //n_ele
+  
   _state_variable, //n_ele
   _friction_coefficient, //n_ele
   _rands_D, //n_ele
@@ -94,6 +97,9 @@ static std::map<DataFields, std::string> datafields_name = {
   {_id_crack, "Crack index"},
   {_critical_normal_opening, "Critical normal opening displacement"},
   {_critical_shear_opening, "Critical shear opening displacement"},
+
+  {_lim_velocity, "Limiting velocity for viscoelastic law"},
+
   {_state_variable, "State variable for R&S friction law"},
   {_friction_coefficient, "Coefficient of friction"},
   {_rands_D, "D coefficient of R&S friction law"},

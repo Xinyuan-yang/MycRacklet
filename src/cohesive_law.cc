@@ -50,23 +50,23 @@ void CohesiveLaw::computeInitialVelocities() {
   for (UInt h = 0; h < n_ele[0]; ++h) {
     for (UInt j = 0; j < n_ele[1]; ++j) {
       i=h+j*n_ele[0];
-    
+      
       if((nor_strength[i]==0)&&((*loads[0])[i*dim+1] < 0.0)) { 
-      
+	
 	contact_law->computeFricStrength((*loads[0])[i*dim+1], strength, i, it); 
-      
+	
 	for (UInt side = 0; side < 2; ++side) {
 	  (*velocities[side])[i*dim+1] = 0.0;
 	}
       }
       else{//velocities u2
-	strength = shr_strength[i];
 	(*velocities[0])[i*dim+1] = std::max(((*loads[0])[i*dim+1]-nor_strength[i])/(mu[0]*eta[0]),0.0);
 	(*velocities[1])[i*dim+1] = std::min((zeta/ksi)*(nor_strength[i]-(*loads[1])[i*dim+1])/(mu[0]*eta[1]),0.0);
       }
-
+      
       //velocities u1 & u3
       for (UInt side = 0; side < 2; ++side) {
+	strength = shr_strength[i];
   
 	for (UInt k = 0; k < 2; ++k) {
 	  temp_f[k] = (*loads[side])[i*dim+2*k];

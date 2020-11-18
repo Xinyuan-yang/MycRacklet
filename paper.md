@@ -1,3 +1,4 @@
+---
 title: 'cRacklet: a spectral boundary integral method library for interfacial rupture simulation'
 tags:
   - interfaces
@@ -10,7 +11,7 @@ authors:
     affiliation: 1
   - name: Fabian Barras
     orcid: 0000-0003-1109-0200
-    affiliation: "1,2"
+    affiliation: "1, 2"
   - name: Philippe H Geubelle
     orcid: 0000-0002-4670-5474
     affiliation: 3
@@ -27,7 +28,13 @@ affiliations:
 date: 17 November 2020
 bibliography: paper.bib
 
+---
+
 # Summary
+
+The study of dynamically propagating rupture along faults is of prime importance in fields ranging from engineering to geosciences. Numerical simulations of these phenomena are computationally costly and challenging: a really fine discretisation in time and space is required to accurately represent singularity and discontinuity, but at the same time the domain of study may be several order of magnitude larger. In addition, the behavior of such interfaces is often highly non-linear thus increasing the problem complexity.
+
+Boundary integral methods are commonly used to solve 
 
 Boundary integral methods.
 
@@ -44,14 +51,28 @@ cRacklet is aimed at researchers studying rupture dynamics ...
 # Features
 
 cRacklet allows for planar rupture interface simulations loaded in any directions. cRacklet handle the simulation of interfaces bonded between dissimilar elastic solids. Any stress or material heterogeneity along the fracture plane can be resolved using cRacklet. Several interfacial behavior are included in the library, such as:
-    - slip-weakening [ref] with the possibility to coupled with standard Coulomb
-    - several formulation of the rate and state dependant friction laws [Ruina & Dieterich + regularized?]. 
+
+- slip-weakening [ref] with the possibility to coupled with standard Coulomb
+
+- several formulation of the rate and state dependant friction laws [Ruina & Dieterich + regularized?]. 
 
 We are not aware of any public software package including the implementation of the so-called spectral formulation of the elastodynamics boundary integral equations.
 
 # Publications
 
 The following publications have been made possible with cRacklet:
+
+- @barras_study_2014
+
+- @barras_interplay_2017
+
+- @brener_unstable_2018
+
+- @barras_emergence_2019
+
+- @barras_emergence_2020
+
+- @fekak_crack_2020
 
 # Acknowledgements
 

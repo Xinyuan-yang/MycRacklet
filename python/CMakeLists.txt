@@ -11,6 +11,7 @@ set(PYCRACKLET_SRCS
   py_coulomb_law.cc
   py_regularized_coulomb_law.cc
   py_cohesive_law.cc
+  py_cohesive_law_viscoelastic.cc
   py_rate_and_state_law.cc
   py_data_dumper.cc
   py_crack_profile.cc

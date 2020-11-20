@@ -7,6 +7,7 @@
 #include "py_coulomb_law.hh"
 #include "py_regularized_coulomb_law.hh"
 #include "py_cohesive_law.hh"
+#include "py_cohesive_law_viscoelastic.hh"
 #include "py_rate_and_state_law.hh"
 
 #include "py_data_dumper.hh"
@@ -34,6 +35,7 @@ PYBIND11_MODULE(py_cRacklet, mod){
   cRacklet::register_coulomb_law(mod);
   cRacklet::register_reg_coulomb_law(mod);
   cRacklet::register_cohesive_law(mod);
+  cRacklet::register_cohesive_law_viscoelastic(mod);
   cRacklet::register_rate_and_state_law(mod);
 
   cRacklet::register_output_format(mod);

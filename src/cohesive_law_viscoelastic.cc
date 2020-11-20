@@ -147,6 +147,8 @@ void CohesiveLawViscoelastic::computeInitialVelocities() {
 	// There is no opening at the first time step
 
 	Real op_eq = 0;
+
+	Real strength_v0 = max_nor_strength[n] * (1-op_eq);
 	
 	// If op_eq is larger than 1, the material is completely broken!
 	  
@@ -191,9 +193,7 @@ void CohesiveLawViscoelastic::computeInitialVelocities() {
 	    rate += delta_v;
 	    
 	    // Compute the strength
-	    
-	    Real strength_v0 = max_nor_strength[n] * (1-op_eq);
-	    
+	    	    
 	    local_strength = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
 	    
 	    Real tangent = formulation->getTangent(strength_v0,rate,lim_velocity[n]);
@@ -219,8 +219,8 @@ void CohesiveLawViscoelastic::computeInitialVelocities() {
 	  // Set to be in the cohesive zone and reduce the strength!
 	  
 	  ind_crack[n] = 1;
-	  nor_strength[n] = max_nor_strength[n] * (1-op_eq);
-	  shr_strength[n] = max_shr_strength[n] * (1-op_eq);
+	  nor_strength[n] = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
+	  shr_strength[n] = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
 	}
 
 	// Distribute the stresses and the velocities based on the stress ratio
@@ -349,6 +349,8 @@ void CohesiveLawViscoelastic::updateInterfaceConditions() {
 	Real op_eq = sqrt(((*nor_opening)[n]/crit_nor_opening[n])*((*nor_opening)[n]/crit_nor_opening[n])+	   
 			  ((*shr_opening)[n]/crit_shr_opening[n])*((*shr_opening)[n]/crit_shr_opening[n]));
 
+	Real strength_v0 = max_nor_strength[n] * (1-op_eq);
+	
 	// If op_eq is larger than 1, the material is completely broken!
 	  
 	if ((op_eq>=1)||(nor_strength[n] * shr_strength[n] == 0)) {
@@ -386,8 +388,6 @@ void CohesiveLawViscoelastic::updateInterfaceConditions() {
 	  Real delta_s,K;
 	  Real m=0;
 	  Real local_strength;
-
-	  Real strength_v0 = max_nor_strength[n] * (1-op_eq);
 	  
 	  while ((!cRacklet::has_converged(converg_v))&&(!cRacklet::has_converged(converg_s))) { //&&(is_good)) {
 	  
@@ -415,28 +415,16 @@ void CohesiveLawViscoelastic::updateInterfaceConditions() {
 	    converg_s = delta_s/stress;
 	    m += 1;
 
-	    if(m > 100){
-	      std::cout<< "Iterations " << m << std::endl;
-	      std::cout<< "Tangent " << tangent << std::endl;
-	      std::cout<< " K" << K << std::endl;
-	      std::cout<< "delta_v : " << delta_v << std::endl;
-	      std::cout<< "delta_s :" << delta_s << std::endl;
-	      std::cout<< "converg_v:  " << converg_v << std::endl;
-	      std::cout<< "converg_s: " << converg_s << std::endl;
-	    
-	    }
-
-	    if(m>20){
+	    if(m>10){
 	      cRacklet::error("Solution has not been found");
-	      break;
 	    }
 	  }
 	  
 	  // Set to be in the cohesive zone and reduce the strength!
 	  
 	  ind_crack[n] = 1;
-	  nor_strength[n] = max_nor_strength[n] * (1-op_eq);
-	  shr_strength[n] = max_shr_strength[n] * (1-op_eq);
+	  nor_strength[n] = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
+	  shr_strength[n] = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
 	}
 
 	// Distribute the stresses and the velocities based on the stress ratio

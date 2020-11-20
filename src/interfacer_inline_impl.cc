@@ -801,3 +801,78 @@ void Interfacer<_linear_coupled_cohesive>::createIncohIntfc() {
 	      << std::endl
 	      << " INTERFACE WITHOUT INITIAL COHESION" << std::endl;
 }
+
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+/* ------------------TEMPLATES FOR VISCOELASTIC INTERFACES       ------------ */
+/* ------------------SHOULD BE REPLACED BY A GENERAL TEMPLATE WITH SWITCH---- */
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_viscoelastic_coupled_cohesive>::createThroughArea(Real area_start, Real area_end,
+									  UInt cracking_index,
+									  Real ratio_max_nor_strength, 
+									  Real ratio_max_shr_strength,
+									  Real ratio_crit_nor_opening, 
+									  Real ratio_crit_shr_opening,
+									  bool vrtr) {
+  
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+
+  UInt i_start = (UInt)(area_start/dx[0]);
+  UInt i_end = (UInt)(area_end/dx[0]);
+
+  for (UInt ix = i_start; ix < i_end; ++ix) {
+    for (UInt iz = 0; iz < n_ele[1]; ++iz) {
+
+      UInt index = ix+iz*n_ele[0];
+
+      (*nor_strength)[index] *= (vrtr+ratio_max_nor_strength);      
+      (*shr_strength)[index] *= (vrtr+ratio_max_shr_strength);
+      (*crit_n_open)[index] *= (vrtr+ratio_crit_nor_opening);
+      (*crit_s_open)[index] *= (vrtr+ratio_crit_shr_opening);
+      (*ind_crack)[index] = cracking_index;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+
+template<>
+inline void Interfacer<_viscoelastic_coupled_cohesive>::createThroughCrack(Real crack_start, Real crack_end) {
+  
+  createThroughArea(crack_start, crack_end, 2, 0., 0.);
+  Real initial_crack_size = crack_end-crack_start;
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " THROUGH CRACK " << std::endl
+	      << "* Initial crack size: " << initial_crack_size << std::endl
+	      << "* Crack starts at: " << crack_start << std::endl
+	      << "* Crack ends at: " << crack_end << std::endl
+	      << std::endl;	
+
+  out_parameters << "a0 " << initial_crack_size << std::endl
+		 << "a_l " << crack_start << std::endl
+		 << "a_r " << crack_end << std::endl;
+}
+
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_viscoelastic_coupled_cohesive>::createThroughWall(Real wall_start, Real wall_end) {
+  
+  createThroughArea(wall_start, wall_end, 6, 1000., 1000.);
+
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " THROUGH WALL " << std::endl
+	      << "* Wall starts at: " << wall_start << std::endl
+	      << "* Wall ends at: " << wall_end << std::endl
+	      << std::endl;	
+}

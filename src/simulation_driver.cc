@@ -313,9 +313,9 @@ void SimulationDriver::launchCrack(Real crack_start, Real launched_size,
   l_end /= growth_factor;
 
   while ((x_tip-x_start)<l_end) {
-   
+    
     x_tip = model.getCrackTipPosition(x_start,model.getNbElements()[0]);
-
+    
     if (model.getCurrentTimeStep()%every_t==0) {
 
       if (((x_tip-x_tip_prev)>2)&&(x_tip_prev!=0.)) {

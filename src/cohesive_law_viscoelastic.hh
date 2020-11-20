@@ -35,6 +35,9 @@
 /* -------------------------------------------------------------------------- */
 
 class CohesiveLawViscoelastic : public CohesiveLaw {
+
+  #include "cohesive_law_viscoelastic_formulations.hh"
+
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
@@ -69,6 +72,11 @@ public:
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
+
+  /** formulation with linear strenghtening */
+  void initLinearFormulation();
+  /** formulation with power law strenghtening */
+  void initPowerLawFormulation();
   
   /** Initialize interface fields */
   void initInterfaceConditions();
@@ -79,6 +87,9 @@ public:
   
 protected:
   
+  /** compute velocities at t=0 */
+  void computeInitialVelocities();
+
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */
@@ -96,6 +107,9 @@ private:
   /** Limiting velocity */
   std::vector<Real> lim_velocity;
 
+  // Abstract object representing the associated viscoelastic formulation
+  std::shared_ptr<ViscoelasticFormulation> formulation;
+  
 };
 
 

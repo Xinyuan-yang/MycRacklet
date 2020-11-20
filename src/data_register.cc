@@ -173,7 +173,7 @@ void DataRegister::readInputFile(std::string filename) {
     if((entry_name == "%")||(line.length()==0))
       continue;
     sstr >> parameter;
-    std::cout << entry_name << "has a value of " << parameter << std::endl;
+    std::cout << entry_name << " has a value of " << parameter << std::endl;
     registerParameter(entry_name, parameter);
   }
 }

@@ -1,0 +1,34 @@
+% cRacklet Input File
+% Line starting with % are not parsed
+
+% Name of the simulation
+output_folder run/2d_mI_4096_6Gl_06cs/
+
+% Number of elements in the x-direction
+nb_elements 128
+
+% Domain size in the direction x (Times Gl)
+dom_size 0.2
+
+% Elastic properties
+E 5.3e9
+nu 0.35
+cs 1263
+
+%Loading conditions
+load 1e4
+psi 0
+phi 0
+
+% Interface properties
+critical_normal_opening 0.02e-3
+critical_shear_opening 0.02e-3
+max_normal_strength 9e6
+max_shear_strength 9e6
+lim_velocity 100000
+
+% Maximum numbers of time step
+nb_time_steps 0
+
+% Cut of the convolution kernels
+tcut 100

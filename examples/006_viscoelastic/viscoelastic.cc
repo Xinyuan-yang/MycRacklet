@@ -105,19 +105,24 @@ int main(int argc, char *argv[]){
   SpectralModel model(nb_elements, nb_time_steps, dom_size, nu,
 		      E, cs, tcut, sim_name, output_folder);
   
-  Real beta=0.4; //Stable time step coefficient
+  Real beta=0.1; //Stable time step coefficient
    
   model.initModel(beta);
   model.setLoadingCase(0, psi, phi);  
 
   Interfacer<_viscoelastic_coupled_cohesive> interfacer(model);
+  //Interfacer<_linear_coupled_cohesive> interfacer(model);
 
   interfacer.createUniformInterface();
 
   CohesiveLawViscoelastic& cohesive_law = dynamic_cast<CohesiveLawViscoelastic&>((model.getInterfaceLaw()));
+  //CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model.getInterfaceLaw()));
   cohesive_law.preventSurfaceOverlapping(contactlaw);
 
   cohesive_law.initLinearFormulation();
+
+  interfacer.createThroughCrack(0, 150*dx);
+  interfacer.createThroughWall(propagation_domain, dom_size);
   
   model.updateLoads();
   model.initInterfaceFields();
@@ -136,34 +141,30 @@ int main(int argc, char *argv[]){
   UInt x_tip = 0;
   UInt t = 0;
 
-  //sim_driver.launchCrack(0.,0.2*G_length,0.05);
-
-  UInt t_max = 1000;
-
-  //interfacer.createThroughCrack(0, 50*dx);
-  
-  while (t < t_max) {
-
-    std::cout << t << std::endl;
+  UInt t_max = 20000;
     
-    UInt top = 1000;
+  while (t < t_max) {
+    
+    UInt top = 8000;
     
     UInt load_factor = std::min(t,top);
     
     model.setLoadingCase(load_factor*load, psi, phi);
     model.updateLoads();
-
+    
     model.updateDisplacements();
     model.fftOnDisplacements();
     model.computeStress();
     model.computeInterfaceFields();
     model.increaseTimeStep();  
     
-    if(t>890){
+    if(t%100==0){
+      std::cout << t << std::endl;
       dumper.dumpAll();
     }
     
     x_tip = model.getCrackTipPosition(0.,nb_elements);
+
     if (x_tip%((UInt)(0.05*nb_elements))==0){
       std::cout << "Crack position at " << x_tip*(Real)(dx) << " over " << propagation_domain<< std::endl;
     }

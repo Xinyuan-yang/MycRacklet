@@ -49,9 +49,12 @@ public:
     UInt total_n_ele = n_ele[0]*n_ele[1];
     
     lim_velocity.resize(total_n_ele);
+    op_eq.resize(total_n_ele);
+    prev_nor_vel.resize(total_n_ele);
+    prev_shr_vel.resize(total_n_ele);
     
     this->registerData(_lim_velocity, &lim_velocity);
-
+    
     Real mu_top = this->getParameter<Real>("shear modulus top");
     Real mu_bot = this->getParameter<Real>("shear modulus bottom");
     Real cs_top = this->getParameter<Real>("shear wave speed top");
@@ -59,7 +62,6 @@ public:
     
     if ((mu_top==mu_bot)&&(cs_top==cs_bot)) {
       c_s = cs_top;
-      accoust = mu_top/c_s;
     }
     else
       cRacklet::error("Viscoelastic is only implemented for homogeneous properties");
@@ -89,6 +91,16 @@ protected:
   
   /** compute velocities at t=0 */
   void computeInitialVelocities();
+  /** update interface strength from cohesive law */
+  void updateCohesiveLaw();
+  /** Compute velocities */
+  void computeVelocities();
+  /** Compute normal velocities in case of relative slip */
+  inline void computeIndepNormalVelocities(UInt ix, UInt iz);
+  /** Compute shear velocities with a given shear strength */
+  inline void computeShearVelocities(Real strength, UInt elem);
+  /** Compute velocities in the case of contact at crack type */
+  inline void computeContactVelocities(UInt ix, UInt iz);
 
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
@@ -102,11 +114,17 @@ private:
 
   /** Parameters */
   Real c_s;
-  Real accoust;
   
   /** Limiting velocity */
   std::vector<Real> lim_velocity;
 
+  /** Previous velocity used in computing the following one! */
+  std::vector<Real> prev_nor_vel;
+  std::vector<Real> prev_shr_vel;
+  
+  /** Equivalent opening */
+  std::vector<Real> op_eq;
+  
   // Abstract object representing the associated viscoelastic formulation
   std::shared_ptr<ViscoelasticFormulation> formulation;
   
@@ -124,6 +142,6 @@ inline CohesiveLawViscoelastic::~CohesiveLawViscoelastic(){
 }							
 
 
-//#include "cohesive_law_viscoelastic_inline_impl.cc"
+#include "cohesive_law_viscoelastic_inline_impl.cc"
 
 #endif /* __COHESIVE_LAW_VISCOELASTIC__ */

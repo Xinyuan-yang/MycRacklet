@@ -24,6 +24,12 @@ void CohesiveLawViscoelastic::initInterfaceConditions() {
 }
 
 /* -------------------------------------------------------------------------- */
+void CohesiveLawViscoelastic::updateInterfaceConditions() {
+  this->updateCohesiveLaw();
+  this->computeVelocities();
+}
+
+/* -------------------------------------------------------------------------- */
 void CohesiveLawViscoelastic::restart(bool pausing, UInt nele_2d) {
 
   std::vector<Real> * nor_strength = datas[_normal_strength];
@@ -37,409 +43,105 @@ void CohesiveLawViscoelastic::restart(bool pausing, UInt nele_2d) {
 
 /* -------------------------------------------------------------------------- */
 void CohesiveLawViscoelastic::computeInitialVelocities() {
-
-  Real strength;
-  Real shr_trac;
-  Real shr_velo;
   
   // Get the stresses
 
   std::vector<CrackProfile*> loads = {datas[_top_loading],datas[_bottom_loading]};
-  
-  CrackProfile load_x_top = loads[0]->getStridedPart(3,0);
-  CrackProfile load_y_top = loads[0]->getStridedPart(3,1);
-  CrackProfile load_z_top = loads[0]->getStridedPart(3,2);
 
-  CrackProfile tau_x = load_x_top;
-  CrackProfile tau_y = load_y_top;
-  CrackProfile tau_z = load_z_top;
-
-  
-  CrackProfile v_x_top = velocities[0]->getStridedPart(3,0);
-  CrackProfile v_y_top = velocities[0]->getStridedPart(3,1);
-  CrackProfile v_z_top = velocities[0]->getStridedPart(3,2);
-
-  CrackProfile v_x_bot = velocities[1]->getStridedPart(3,0);
-  CrackProfile v_y_bot = velocities[1]->getStridedPart(3,1);
-  CrackProfile v_z_bot = velocities[1]->getStridedPart(3,2);
-    
-  CrackProfile shear_stress = tau_x*tau_x + tau_z*tau_z;
-  shear_stress.squareRoot();
-  
-  CrackProfile total_stress = tau_y * tau_y + shear_stress * shear_stress;;
-  total_stress.squareRoot();
-  
-  UInt n=0;
-  for (UInt x = 0; x < n_ele[0]; ++x) {
-    for (UInt z = 0; z < n_ele[1]; ++z) {
-      n=x+z*n_ele[0];
-
-      bool broken_nor = false;  
-      bool broken_shr = false;  
-      
-      // Check if the element is broken AND in compression.
-      if((this->nor_strength[n]==0)&&(tau_y[n] < 0.0)) { 
+  for (UInt side = 0; side < 2; ++side) {
+    for (UInt i = 0; i < n_ele[0]; ++i) {
+      for (UInt j = 0; j < n_ele[1]; ++j) {
 	
-	// If so, compute the frictional strength
-	contact_law->computeFricStrength(tau_y[n], strength, n, it); 
-	
-	// Set 0 velocity in the normal direction
-	for (UInt side = 0; side < 2; ++side) {
-	  (*velocities[side])[n*dim+1] = 0.0;
-	}
-      }
-      else{
-
-	// Test if stresses are initially higher than initial strength
-	
-	// Direction X
-	
-	strength = nor_strength[n];
-	
-	if (tau_y[n] < strength){
-	  (*velocities[0])[n*dim+1] = 0;
-	  (*velocities[1])[n*dim+1] = 0;
-	  (*intfc_trac)[n*dim+1] = tau_y[n];
-	}
-
-	else{
-	  broken_nor = true; // Set the normal direction as being overshooted
-	}
-	
-      }
-      
-      //velocities u_x & u_z (Mode II and III)
-      for (UInt side = 0; side < 2; ++side) {
-
-	strength = shr_strength[n];
-	
-	if (shear_stress[n] < strength) {
-	  
-	  for (UInt k = 0; k < 2; ++k) {
-	    (*velocities[side])[n*dim+2*k] = 0.0;
-	  }
-
-	  // Set the tractions as the resistance
-	  
-	  (*intfc_trac)[n*dim+0] = tau_x[n];
-	  (*intfc_trac)[n*dim+2] = tau_z[n];
-
-	}
-	
-	else{
-	  broken_shr = true; // Set the shear strength as being overshooted
-	}
-      }
-      
-      if ((broken_shr == true)||(broken_nor == true)){
-
-	Real stress = total_stress[n];
-	std::vector<Real> stress_ratio;
-	if (stress > 0)
-	  stress_ratio = {tau_x[n]/stress,tau_y[n]/stress,tau_z[n]/stress};
-	else
-	  stress_ratio = {0,0,0};	  
-
-	Real radiation_damping = accoust / 2 * sqrt( (stress_ratio[0] * stress_ratio[0] + stress_ratio[2]*stress_ratio[2] + stress_ratio[1] * stress_ratio[1] * eta[0] * eta[0]) );
-	
-	Real rate = 0;
-	
-	// There is no opening at the first time step
-
-	Real op_eq = 0;
-
-	Real strength_v0 = max_nor_strength[n] * (1-op_eq);
-	
-	// If op_eq is larger than 1, the material is completely broken!
-	  
-	if ((op_eq>=1)||(nor_strength[n] * shr_strength[n] == 0)) {
-	    
-	  bool in_contact = ((nor_strength[n] == 0)&&(cRacklet::is_negative(0)));
-	  // the case of contact is handled by the associated ContactLaw
-	    
-	  if (!in_contact) { 
-	      
-	    ind_crack[n] = 2;
-	    nor_strength[n] = 0.0;
-	    shr_strength[n] = 0.0;
-	  }
-	  
-	  rate = stress / radiation_damping;
-
-	  for (UInt k = 0; k < 3; ++k) {
-	    (*intfc_trac)[n*dim+k] = 0;
-	  }
-	  
-	}
-	
-	else{
-
-	  // We need to compute the velocity for which we have equilibrium along the fault
-	  
-	  rate = (v_x_top[n] - v_x_bot[n]) * (v_x_top[n] - v_x_bot[n]) + (v_y_top[n] - v_y_bot[n]) * (v_y_top[n] - v_y_bot[n]) + (v_z_top[n] - v_z_bot[n])*(v_z_top[n] - v_z_bot[n]);
-	  rate = sqrt(rate);
-	  rate *= c_s;
-	  
-	  Real converg_v=1.0;
-	  Real converg_s=1.0;
-	  Real gamma = 0.1;
-	  Real delta_v = 0.0;
-	  Real delta_s,K;
-	  Real m=0;
-	  Real local_strength;
-	  
-	  while ((!cRacklet::has_converged(converg_v))&&(!cRacklet::has_converged(converg_s))) { //&&(is_good)) {
-	    
-	    rate += delta_v;
-	    
-	    // Compute the strength
-	    	    
-	    local_strength = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
-	    
-	    Real tangent = formulation->getTangent(strength_v0,rate,lim_velocity[n]);
-	    
-	    // The radiation damping slope is an effective one that depends on the direction of the solicitation. For shear the slope is mu / 2 cs while for normal opening it is mu eta / 2 cs
-
-	    delta_s = stress - local_strength - radiation_damping*rate;
-	    
-	    K = radiation_damping + tangent; 
-
-	    delta_v = delta_s / K;
-	    
-	    /*if ((delta_v > 0))
-	      delta_v = std::min(std::abs(delta_v),gamma*std::abs(rate));
-	      else
-	      delta_v = -std::min(std::abs(delta_v),gamma*std::abs(rate));
-	    */	    
-	    converg_v = delta_v/rate;
-	    converg_s = delta_s;
-	    m += 1;
-	  }
-	  
-	  // Set to be in the cohesive zone and reduce the strength!
-	  
-	  ind_crack[n] = 1;
-	  nor_strength[n] = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
-	  shr_strength[n] = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
-	}
-
-	// Distribute the stresses and the velocities based on the stress ratio
-
-	for (UInt s = 0; s < 3; ++s) {
-	
-	  (*velocities[0])[n*dim+s] = 0.5*(rate*stress_ratio[s])/c_s;
-	  (*velocities[1])[n*dim+s] = -0.5*(rate*stress_ratio[s])/c_s;
-	
-	}
-	(*intfc_trac)[n*dim+0] = stress*stress_ratio[0] - accoust*(rate*stress_ratio[0])/2;
-	(*intfc_trac)[n*dim+2] = stress*stress_ratio[2] - accoust*(rate*stress_ratio[2])/2;
-	(*intfc_trac)[n*dim+1] = stress*stress_ratio[1] - eta[0]*accoust*(rate*stress_ratio[1])/2;
-	
+	(*stresses[side])[(i*dim+1)+j*n_ele[0]*dim] = (*loads[side])[(i*dim+1)+j*n_ele[0]*dim];
       }
     }
   }
+
+  this->computeVelocities();
+  
 }
 
 /* -------------------------------------------------------------------------- */
-void CohesiveLawViscoelastic::updateInterfaceConditions() {
+void CohesiveLawViscoelastic::updateCohesiveLaw() {
 
-  Real strength;
-  Real shr_trac;
-  Real shr_velo;
-  
-  // Get the stresses
-  
-  CrackProfile tau_x = stresses[0]->getStridedPart(3,0);
-  CrackProfile tau_y = stresses[0]->getStridedPart(3,1);
-  CrackProfile tau_z = stresses[0]->getStridedPart(3,2);
-
-  CrackProfile v_x_top = velocities[0]->getStridedPart(3,0);
-  CrackProfile v_y_top = velocities[0]->getStridedPart(3,1);
-  CrackProfile v_z_top = velocities[0]->getStridedPart(3,2);
-
-  CrackProfile v_x_bot = velocities[1]->getStridedPart(3,0);
-  CrackProfile v_y_bot = velocities[1]->getStridedPart(3,1);
-  CrackProfile v_z_bot = velocities[1]->getStridedPart(3,2);
-  
   CrackProfile * shr_opening = datas[_shear_displacement_jumps];
   CrackProfile * nor_opening = datas[_normal_displacement_jumps];
   
-  CrackProfile shear_stress = tau_x*tau_x + tau_z*tau_z;
-  shear_stress.squareRoot();
-
-  CrackProfile total_stress = tau_y * tau_y + shear_stress * shear_stress;;
-  total_stress.squareRoot();
+  UInt n_ele = max_nor_strength.size();
   
-  UInt n=0;
-  for (UInt x = 0; x < n_ele[0]; ++x) {
-    for (UInt z = 0; z < n_ele[1]; ++z) {
-      n=x+z*n_ele[0];
+  for (UInt i = 0; i < n_ele; ++i) {     
+    
+    if (((*nor_opening)[i]==0)&&((*shr_opening)[i]==0)&&(ind_crack[i]!=2)){
       
-      bool broken_nor = false;  
-      bool broken_shr = false;  
+      nor_strength[i] = max_nor_strength[i];
+      shr_strength[i] = max_shr_strength[i];
       
-      // Check if the element is broken AND in compression.
-      if((this->nor_strength[n]==0)&&(tau_y[n] < 0.0)) { 
-	
-	// If so, compute the frictional strength
-	contact_law->computeFricStrength(tau_y[n], strength, n, it); 
-	
-	// Set 0 velocity in the normal direction
-	for (UInt side = 0; side < 2; ++side) {
-	  (*velocities[side])[n*dim+1] = 0.0;
-	}
-      }
-      else{
-
-	// Test if stresses are initially higher than initial strength
-	
-	// Direction X
-	
-	strength = nor_strength[n];
-	
-	if (tau_y[n] <= strength){
-	  (*velocities[0])[n*dim+1] = 0;
-	  (*velocities[1])[n*dim+1] = 0;
-	  (*intfc_trac)[n*dim+1] = tau_y[n];
-
-	}
-
-	else{
-	  broken_nor = true; // Set the normal direction as being overshooted
-	}
-	
-      }
+    }
+    
+    else {
       
-      //velocities u_x & u_z (Mode II and III)
-      for (UInt side = 0; side < 2; ++side) {
+      this->op_eq[i] = std::min(sqrt(((*nor_opening)[i]/crit_nor_opening[i])*((*nor_opening)[i]/crit_nor_opening[i])+
+				     ((*shr_opening)[i]/crit_shr_opening[i])*((*shr_opening)[i]/crit_shr_opening[i])),1.);
+      
+      
+      
+      if ((this->op_eq[i]>=1)||(nor_strength[i] * shr_strength[i] == 0)) {
 
-	strength = shr_strength[n];
+	bool in_contact = ((nor_strength[i] == 0)&&(cRacklet::is_negative((*nor_opening)[i])));
+	// the case of contact is handled by the associated ContactLaw
 	
-	if (shear_stress[n] <= strength) {
-	  
-	  for (UInt k = 0; k < 2; ++k) {
-	    (*velocities[side])[n*dim+2*k] = 0.0;
-	  }
+	if (!in_contact) { 
 
-	  (*intfc_trac)[n*dim+0] = tau_x[n];
-	  (*intfc_trac)[n*dim+2] = tau_z[n];
-
-	}
-	
-	else{
-	  broken_shr = true; // Set the shear strength as being overshooted
+	  ind_crack[i] = 2;
+	  nor_strength[i] = 0.0;
+	  shr_strength[i] = 0.0;
 	}
       }
       
-      if ((broken_shr == true)||(broken_nor == true)){
-
-	Real stress = total_stress[n];
-	std::vector<Real> stress_ratio;
-	if (stress > 0)
-	  stress_ratio = {tau_x[n]/stress,tau_y[n]/stress,tau_z[n]/stress};
-	else
-	  stress_ratio = {0,0,0};	  
-
-	    Real radiation_damping = accoust / 2 * sqrt( (stress_ratio[0] * stress_ratio[0] + stress_ratio[2]*stress_ratio[2] + stress_ratio[1] * stress_ratio[1] * eta[0] * eta[0])) ;
+      else {
 	
-	Real rate = 0;
+	ind_crack[i] = 1;
 	
-	// Compute the equivalent opening
-	    
-	Real op_eq = sqrt(((*nor_opening)[n]/crit_nor_opening[n])*((*nor_opening)[n]/crit_nor_opening[n])+	   
-			  ((*shr_opening)[n]/crit_shr_opening[n])*((*shr_opening)[n]/crit_shr_opening[n]));
-
-	Real strength_v0 = max_nor_strength[n] * (1-op_eq);
+	Real rate_nor = ((*velocities[0])[i*dim+1]-(*velocities[1])[i*dim+1])*c_s;
+	Real rate_shr = c_s*sqrt( ( (*velocities[0])[i*dim+0]-(*velocities[1])[i*dim+0])*( (*velocities[0])[i*dim+0]-(*velocities[1])[i*dim+0]) + ( (*velocities[0])[i*dim+2]-(*velocities[1])[i*dim+2]) * ( (*velocities[0])[i*dim+2]-(*velocities[1])[i*dim+2]));
 	
-	// If op_eq is larger than 1, the material is completely broken!
-	  
-	if ((op_eq>=1)||(nor_strength[n] * shr_strength[n] == 0)) {
-	    
-	  bool in_contact = ((nor_strength[n] == 0)&&(cRacklet::is_negative((*nor_opening)[n])));
-	  // the case of contact is handled by the associated ContactLaw
-	    
-	  if (!in_contact) { 
-	      
-	    ind_crack[n] = 2;
-	    nor_strength[n] = 0.0;
-	    shr_strength[n] = 0.0;
-	  }
-	  
-	  rate = stress / radiation_damping;
+	nor_strength[i] = formulation->getStrength(max_nor_strength[i] * (1-this->op_eq[i]),rate_nor,lim_velocity[i]);
+	shr_strength[i] = formulation->getStrength(max_shr_strength[i] * (1-this->op_eq[i]),rate_shr,lim_velocity[i]);;
+      }
+    }
+  }    
+}
 
-	  for (UInt k = 0; k < 3; ++k) {
-	    (*intfc_trac)[n*dim+k] = 0;
-	  }
-	  
-	}
-	
-	else{
+/* -------------------------------------------------------------------------- */
+void CohesiveLawViscoelastic::computeVelocities(){
 
-	  // We need to compute the velocity for which we have equilibrium along the fault
-	  
-	  rate = (v_x_top[n] - v_x_bot[n]) * (v_x_top[n] - v_x_bot[n]) + (v_y_top[n] - v_y_bot[n]) * (v_y_top[n] - v_y_bot[n]) + (v_z_top[n] - v_z_bot[n])*(v_z_top[n] - v_z_bot[n]);
-	  rate = sqrt(rate);
-	  rate *= c_s;
-	  
-	  Real converg_v=1.0;
-	  Real converg_s=1.0;
-	  Real gamma = 0.1;
-	  Real delta_v = 0.0;
-	  Real delta_s,K;
-	  Real m=0;
-	  Real local_strength;
-	  
-	  while ((!cRacklet::has_converged(converg_v))&&(!cRacklet::has_converged(converg_s))) { //&&(is_good)) {
-	  
-	    rate += delta_v;
-	    
-	    // Exponent that depends on the particle velocity (rate)
+  CrackProfile deltaStresses(n_ele,dim);
+  std::vector<Real> temp_veloc(dim);
+  Real trac;
+   
+  deltaStresses = (*stresses[0]) - (*stresses[1]);
+   
+  Real cste = 1/(mu[0]*(1+ksi/zeta)); 
 
-	    local_strength = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
-	    
-	    Real tangent = formulation->getTangent(strength_v0,rate,lim_velocity[n]);
-	    
-	    K = radiation_damping + tangent; 
+  (*velocities[0]) =  deltaStresses * cste;
 
-	    delta_s = stress - local_strength - radiation_damping*rate;
-	    
-	    delta_v = delta_s / K;
-	    
-	    if ((delta_v > 0))
-	      delta_v = std::min(std::abs(delta_v),gamma*std::abs(lim_velocity[n]));
-	    /*
-	      else
-	      delta_v = -std::min(std::abs(delta_v),gamma*std::abs(lim_velocity[n]));
-	    */
-	    converg_v = delta_v/rate;
-	    converg_s = delta_s/stress;
-	    m += 1;
-
-	    if(m>10){
-	      cRacklet::error("Solution has not been found");
-	    }
-	  }
-	  
-	  // Set to be in the cohesive zone and reduce the strength!
-	  
-	  ind_crack[n] = 1;
-	  nor_strength[n] = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
-	  shr_strength[n] = formulation->getStrength(strength_v0,rate,lim_velocity[n]);
-	}
-
-	// Distribute the stresses and the velocities based on the stress ratio
-
-	for (UInt s = 0; s < 3; ++s) {
-	
-	  (*velocities[0])[n*dim+s] = 0.5*(rate*stress_ratio[s])/c_s;
-	  (*velocities[1])[n*dim+s] = -0.5*(rate*stress_ratio[s])/c_s;
-	}
-
-	(*intfc_trac)[n*dim+0] = stress*stress_ratio[0] - accoust*(rate*stress_ratio[0])/2;
-	(*intfc_trac)[n*dim+2] = stress*stress_ratio[2] - accoust*(rate*stress_ratio[2])/2;
-	(*intfc_trac)[n*dim+1] = stress*stress_ratio[1] - eta[0]*accoust*(rate*stress_ratio[1])/2;
-
+  for (UInt i = 0; i < n_ele[0]; ++i) {
+    for (UInt j = 0; j < n_ele[1]; ++j) {
+      (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim] *= (1+ksi/zeta)/(eta[0]+ksi*eta[1]/zeta); 
+    }
+  }
+  (*velocities[1])=(*velocities[0]); 
+  
+  for (UInt i = 0; i < n_ele[0]; ++i) {
+    for (UInt j = 0; j < n_ele[1]; ++j) {
+      
+      Real trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim];
+      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0)) computeIndepNormalVelocities(i,j);
+      else {
+	(*intfc_trac)[(i*dim+1)+j*n_ele[0]*dim] = trac;
+	computeShearVelocities(shr_strength[i+n_ele[0]*j], i+j*n_ele[0]);
       }
     }
   }
 }
+

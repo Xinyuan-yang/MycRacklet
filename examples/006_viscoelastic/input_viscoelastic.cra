@@ -2,10 +2,10 @@
 % Line starting with % are not parsed
 
 % Name of the simulation
-output_folder run/2d_mI_4096_6Gl_06cs/
+output_folder output/
 
 % Number of elements in the x-direction
-nb_elements 128
+nb_elements 4096
 
 % Domain size in the direction x (Times Gl)
 dom_size 0.2
@@ -16,7 +16,7 @@ nu 0.35
 cs 1263
 
 %Loading conditions
-load 1e4
+load 0.75e3
 psi 0
 phi 0
 
@@ -25,7 +25,7 @@ critical_normal_opening 0.02e-3
 critical_shear_opening 0.02e-3
 max_normal_strength 9e6
 max_shear_strength 9e6
-lim_velocity 100000
+lim_velocity 1e15
 
 % Maximum numbers of time step
 nb_time_steps 0

@@ -146,8 +146,8 @@ def main():
 
     x_tip = 0
     
-    while (x_tip < end_propagation):
-
+    while (t < len(load[t])):
+        
         model.setLoadingCase(load[t],psi,phi,False)
         model.updateLoads()
 

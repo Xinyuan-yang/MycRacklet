@@ -49,9 +49,6 @@ enum OutputFormat {
   _binary
 };
 
-/// Help to use names for directions when calling the dumpers
-enum SpatialDirection { _x = 0, _y = 1, _z = 2 };
-
 // A list of fields preset by default when using PointDumper
 static std::vector<DataFields> standard_fields_history =
   {_normal_strength,_shear_strength,_interface_tractions,_normal_displacement_jumps,

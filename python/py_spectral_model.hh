@@ -7,6 +7,7 @@ namespace pybind11{
 
 namespace cRacklet{
 
+  void register_directions(pybind11::module & mod);
   void register_spectral_model(pybind11::module & mod);
 
 }

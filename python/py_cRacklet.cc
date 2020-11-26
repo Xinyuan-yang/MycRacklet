@@ -25,6 +25,7 @@ PYBIND11_MODULE(py_cRacklet, mod){
   cRacklet::register_integrator_types(mod);
   cRacklet::register_data_register(mod);
 
+  cRacklet::register_directions(mod);
   cRacklet::register_spectral_model(mod);
   cRacklet::register_simulation_driver(mod);
   cRacklet::register_interfacer(mod);

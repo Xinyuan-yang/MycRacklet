@@ -91,6 +91,11 @@ public:
   void restart(bool pausing=false, UInt nele_2d=0);
   // Prevent the overlapping of the two surfaces and associate a ContactLaw
   void preventSurfaceOverlapping(std::shared_ptr<ContactLaw> contactlaw);
+
+  // Count the number of elements being part of the process zone (ind_crack = 1)
+  UInt getNbCohesiveNodes(){return std::count(this->ind_crack.begin(),this->ind_crack.end(),1);};
+  // Count the number of elements being part of the process zone (ind_crack = 2)
+  UInt getNbBrokenNodes(){return std::count(this->ind_crack.begin(),this->ind_crack.end(),2);};
   
 private:
 

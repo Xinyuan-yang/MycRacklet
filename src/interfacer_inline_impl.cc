@@ -198,6 +198,43 @@ inline void Interfacer<_linear_coupled_cohesive>::insertPatternfromFile(std::str
 }
 
 /* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_linear_coupled_cohesive>::createHeterogeneousInterface(std::vector<Real> crit_nor_opening, std::vector<Real> max_nor_strength, std::vector<Real> crit_shr_opening, std::vector<Real> max_shr_strength) {
+
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+
+  // Check the length of the shear arguments...
+
+  if ( crit_shr_opening.size() == 0 ){
+    crit_shr_opening = crit_nor_opening;
+    max_shr_strength = max_nor_strength;
+  }
+  
+  for (UInt x = 0; x < n_ele[0]; ++x) {
+    for (UInt z = 0; z < n_ele[1]; ++z ) {
+
+      (*shr_strength)[x+z*n_ele[0]] = max_shr_strength[x+z*n_ele[0]];
+      (*nor_strength)[x+z*n_ele[0]] = max_nor_strength[x+z*n_ele[0]];
+      (*crit_s_open)[x+z*n_ele[0]] = crit_shr_opening[x+z*n_ele[0]];
+      (*crit_n_open)[x+z*n_ele[0]] = crit_nor_opening[x+z*n_ele[0]];
+      
+      if(max_shr_strength[x+z*n_ele[0]]==0 || max_nor_strength[x+z*n_ele[0]]) {
+	(*ind_crack)[x+z*n_ele[0]] = 0;
+      }
+    }
+  }
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << "Maximum strength and critical opening patterns inserted from vectors."
+	      << std::endl
+	      << std::endl;
+}
+
+/* -------------------------------------------------------------------------- */
 #ifdef CRACKLET_USE_LIBSURFER
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::createBrownianHeterogInterface(Real crit_nor_opening, 

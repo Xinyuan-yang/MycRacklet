@@ -93,9 +93,16 @@ public:
    @param file_opening : name of the input file containing the critical opening properties
   */
   void insertPatternfromFile(std::string file_strength, std::string file_opening);
+  /** create an heterogeneous interface from vectors
+      @param crit_nor_opening : Vector of critical normal opening of the cohesive law
+      @param max_nor_strength : Vector of maximum normal strength of the cohesive law
+      @param crit_shr_opening : Vector of critical shear opening of the cohesive law. If not specified, it is assumed to be equal to the normal one.
+      @param max_shr_strength : Vector of maximum shear strength of the cohesive law. If not specified, it is assumed to be equal to the normal one.
+  */
+  void createHeterogeneousInterface(std::vector<Real> crit_nor_opening, std::vector<Real> max_nor_strength, std::vector<Real> crit_shr_opening = {}, std::vector<Real> max_shr_strength = {});
   /** create an heterogeneous interface following normal distribution of strength
-      @param crit_nor_opening : Reference critical normal opening of the cohesive
-      @param crit_shr_opening : Reference critical normal opening of the cohesive law
+      @param crit_nor_opening : Reference critical normal opening of the cohesive law
+      @param crit_shr_opening : Reference critical shear opening of the cohesive law
       @param max_nor_strength : Reference maximum normal strength of the cohesive law
       @param max_shr_strength : Reference maximum shear strength of the cohesive law
       @param stddev : Standard deviation of the normal distribution

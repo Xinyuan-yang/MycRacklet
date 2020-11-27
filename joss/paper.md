@@ -52,9 +52,9 @@ cRacklet is aimed at researchers studying rupture dynamics ...
 
 cRacklet allows for planar rupture interface simulations loaded in any directions. cRacklet handle the simulation of interfaces bonded between dissimilar elastic solids. Any stress or material heterogeneity along the fracture plane can be resolved using cRacklet. Several interfacial behavior are included in the library, such as:
 
-- slip-weakening [ref] with the possibility to coupled with standard Coulomb
+- slip-weakening laws [@ida_cohesive_1972] [@palmer_growth_1973] with the possibility to coupled with standard Coulomb friction laws
 
-- several formulation of the rate and state dependant friction laws [Ruina & Dieterich + regularized?]. 
+- several formulation of rate and state dependant friction laws [@dieterich_modeling_1979], [@ruina_slip_1983], [@aldam_critical_2017]
 
 We are not aware of any public software package including the implementation of the so-called spectral formulation of the elastodynamics boundary integral equations.
 

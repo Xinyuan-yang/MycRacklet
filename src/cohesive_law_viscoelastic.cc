@@ -9,6 +9,11 @@ void CohesiveLawViscoelastic::initLinearFormulation() {
 }
 
 /* -------------------------------------------------------------------------- */
+void CohesiveLawViscoelastic::initQuadraticFormulation() {
+  formulation = std::make_shared<ViscoelasticQuadraticFormulation>();
+}
+
+/* -------------------------------------------------------------------------- */
 void CohesiveLawViscoelastic::initPowerLawFormulation() {
   formulation = std::make_shared<ViscoelasticPowerLawFormulation>();
 }

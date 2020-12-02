@@ -77,6 +77,8 @@ public:
 
   /** formulation with linear strenghtening */
   void initLinearFormulation();
+  /** formulation with quadratic strenghtening */
+  void initQuadraticFormulation();
   /** formulation with power law strenghtening */
   void initPowerLawFormulation();
   

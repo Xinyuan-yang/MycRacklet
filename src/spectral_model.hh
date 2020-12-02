@@ -186,7 +186,7 @@ public:
   /* ------------------------------------------------------------------------ */
   
   // Return the current simulation time
-  Real getTime() {return it*beta*dxmin/X[0];}
+  Real getTime() {return it*beta*dxmin/cs_t;}
   // Return the current simulation time step
   UInt getCurrentTimeStep() {return it;}
   // Return stable time step ratio beta

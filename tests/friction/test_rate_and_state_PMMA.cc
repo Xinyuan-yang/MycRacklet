@@ -120,7 +120,7 @@ int main(int argc, char *argv[]){
       if (t%50==0){
       Real v_max = shear_velo_jump->getMaxValue();
       const Real v_av = (*shear_velo_jump)[0];
-      std::cout << "Simulation at t " << t << " = " << model.getTime()*dom_size/cs << " [sec]"<< std::endl
+      std::cout << "Simulation at t " << t << " = " << model.getTime() << " [sec]"<< std::endl
 		<< "-> v_max-v_av = " << (v_max-v_av)*cs << std::endl;
       }
     ++t;

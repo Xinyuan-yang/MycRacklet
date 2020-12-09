@@ -82,7 +82,8 @@ inline SpectralModel::SpectralModel(std::vector<UInt> nele, UInt nb_time_steps,
   rho[0] = mu[0]/(cs_top*cs_top);
   rho[1] = mu[1]/(cs_bot*cs_bot);
   ksi = cs_top/cs_bot;
-  cs_t = cs_top;
+  cs[0] = cs_top;
+  cs[1] = cs_bot;
   t_cut.resize(2);
   t_cut[0] = tcut_top;
   t_cut[1] = tcut_bot;

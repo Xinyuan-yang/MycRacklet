@@ -166,8 +166,8 @@ void SpectralModel::registerModelFields() {
   this->registerParameter("shear modulus bottom", mu[1]);
   this->registerParameter("poisson ratio top", nu[0]);
   this->registerParameter("poisson ratio bottom", nu[1]);
-  this->registerParameter("shear wave speed top", cs_t);
-  this->registerParameter("shear wave speed bottom", cs_t/ksi);
+  this->registerParameter("shear wave speed top", cs[0]);
+  this->registerParameter("shear wave speed bottom", cs[1]);
   this->registerParameter("delta x", dx[0]);
   this->registerParameter("delta z", dx[1]);
   this->registerParameter("Domain length X", X[0]);
@@ -524,6 +524,6 @@ void SpectralModel::printSelf() {
 		 << "E_bot " << 2*mu[1]*(1+nu[1]) << std::endl
 		 << "nu_top "<< nu[0] << std::endl
 		 << "nu_bot "<< nu[1] << std::endl
-		 << "cs_top " << cs_t << std::endl
-		 << "cs_bot " << cs_t/ksi << std::endl;
+		 << "cs_top " << cs[0] << std::endl
+		 << "cs_bot " << cs[1] << std::endl;
 }

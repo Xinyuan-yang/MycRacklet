@@ -186,7 +186,7 @@ public:
   /* ------------------------------------------------------------------------ */
   
   // Return the current simulation time
-  Real getTime() {return it*beta*dxmin/cs_t;}
+  Real getTime() {return it*beta*dxmin/cs[0];}
   // Return the current simulation time step
   UInt getCurrentTimeStep() {return it;}
   // Return stable time step ratio beta
@@ -235,8 +235,8 @@ private:
   UInt ntim;
   // Poisson ratios of top and bottom material
   std::vector<Real> nu;
-  // Top material wave speed
-  Real cs_t;
+  // Top and bottom wave speed
+  std::vector<Real> cs;
   // Top and bottom shear modulus
   std::vector<Real> mu;
   // Top and bottom density

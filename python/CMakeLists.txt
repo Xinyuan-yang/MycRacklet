@@ -1,5 +1,3 @@
-find_package(pybind11 REQUIRED)
-
 set(PYCRACKLET_SRCS
   py_interface_law.cc
   py_cRacklet.cc

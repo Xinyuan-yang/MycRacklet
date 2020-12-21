@@ -2,6 +2,7 @@
 # @file   CMakeLists.txt
 #
 # @author Fabian Barras <fabian.barras@epfl.ch>
+# @author Thibault Roch <thibault.roch@epfl.ch>
 #
 # @date   Mon Sept 1 9:12:20 2014
 #
@@ -96,6 +97,7 @@ SET(KERNELS_DIR ${PROJECT_SOURCE_DIR}/pre-computed-kernels)
 add_subdirectory(${KERNELS_DIR})
 
 include(cRackletSimulationMacros)
+include(cRackletTools)
 
 #===============================================================================
 # Python interface
@@ -103,6 +105,7 @@ include(cRackletSimulationMacros)
 option(CRACKLET_PYTHON_INTERFACE "Activate python binding" OFF)
 
 if(CRACKLET_PYTHON_INTERFACE)
+  add_external_package(pybind11 VERSION 2.2.4 CONFIG)
   add_subdirectory(python)
 endif()
 

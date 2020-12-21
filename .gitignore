@@ -2,3 +2,5 @@
 #*
 *html
 *classes
+*.pdf
+build/

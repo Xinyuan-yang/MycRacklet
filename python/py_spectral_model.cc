@@ -10,7 +10,14 @@ namespace py = pybind11;
 /* -------------------------------------------------------------------------- */
 namespace cRacklet {
 /* -------------------------------------------------------------------------- */
-    
+
+void register_directions(py::module& mod) {
+  py::enum_<SpatialDirection>(mod,"SpatialDirection")
+    .value("_x",SpatialDirection::_x)
+    .value("_y",SpatialDirection::_y)
+    .value("_z",SpatialDirection::_z);
+  }
+  
 void register_spectral_model(py::module& mod) {      
   py::class_<SpectralModel,DataRegister>(mod, "SpectralModel")
     .def(py::init<>())
@@ -55,6 +62,8 @@ void register_spectral_model(py::module& mod) {
 #endif
 
     .def("setLoadingCase",&SpectralModel::setLoadingCase,py::arg("load_in"),py::arg("psi"),py::arg("phi"),py::arg("write")=true)
+    .def("setLoadingShape",&SpectralModel::setLoadingShape)
+    .def("incrementLoad",&SpectralModel::incrementLoad)
     .def("updateLoads",py::overload_cast<>(&SpectralModel::updateLoads))
     .def("updateLoads",py::overload_cast<Real *>(&SpectralModel::updateLoads))
     .def("initInterfaceFields",&SpectralModel::initInterfaceFields)

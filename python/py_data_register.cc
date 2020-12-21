@@ -63,6 +63,7 @@ void register_data_register(py::module& mod) {
     .def("registerParameterString",&DataRegister::registerParameter<std::string>)
     .def("readInputFile",&DataRegister::readInputFile)
     .def("getParameterReal",&DataRegister::getParameter<Real>)
+    .def("getParameterInt",&DataRegister::getParameter<UInt>)
     .def("getParameterString",&DataRegister::getParameter<std::string>)
     .def("registerComputer",&DataRegister::registerComputer)
     .def("getComputer",&DataRegister::getComputer)

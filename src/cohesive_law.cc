@@ -60,8 +60,8 @@ void CohesiveLaw::computeInitialVelocities() {
 	}
       }
       else{//velocities u2
-	(*velocities[0])[i*dim+1] = std::max(((*loads[0])[i*dim+1]-nor_strength[i])/(mu[0]*eta[0]),0.0);
-	(*velocities[1])[i*dim+1] = std::min((zeta/ksi)*(nor_strength[i]-(*loads[1])[i*dim+1])/(mu[0]*eta[1]),0.0);
+	(*velocities[0])[i*dim+1] = std::max(((*loads[0])[i*dim+1]-nor_strength[i])/(mu[0]*eta[0])*cs[0],0.0);
+	(*velocities[1])[i*dim+1] = std::min((nor_strength[i]-(*loads[1])[i*dim+1])/(mu[1]*eta[1])*cs[1],0.0);
       }
       
       //velocities u1 & u3
@@ -81,8 +81,8 @@ void CohesiveLaw::computeInitialVelocities() {
 	  }
 	}
 	else {
-	  if (side==0) shr_velo = std::max((shr_trac-strength)/mu[0],0.0);
-	  else shr_velo = std::min((zeta/ksi)*(strength - shr_trac)/mu[0],0.0);
+	  if (side==0) shr_velo = std::max((shr_trac-strength)/mu[0]*cs[0],0.0);
+	  else shr_velo = std::min((strength - shr_trac)/mu[0]*cs[1],0.0);
 	  
 	  for (UInt k = 0; k < 2; ++k) {
 	    (*velocities[side])[i*dim+2*k] = shr_velo*temp_f[k]/shr_trac;
@@ -148,22 +148,25 @@ void CohesiveLaw::computeVelocities(){
    
   deltaStresses = (*stresses[0]) - (*stresses[1]);
    
-  Real cste = 1/(mu[0]*(1+ksi/zeta)); 
-
+  Real cste = 1/(mu[0]/cs[0]+mu[1]/cs[1]); 
+  
   (*velocities[0]) =  deltaStresses * cste;
 
+  // Correction for the normal velocity
   for (UInt i = 0; i < n_ele[0]; ++i) {
     for (UInt j = 0; j < n_ele[1]; ++j) {
-      (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim] *= (1+ksi/zeta)/(eta[0]+ksi*eta[1]/zeta); 
+      (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim] *= 1/(mu[0]*eta[0]/cs[0]+mu[1]*eta[1]/cs[1])*(1/cste); 
     }
   }
   (*velocities[1])=(*velocities[0]); 
-
+  
   for (UInt i = 0; i < n_ele[0]; ++i) {
     for (UInt j = 0; j < n_ele[1]; ++j) {
-
-      trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim];
-      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0)) computeIndepNormalVelocities(i,j);
+      
+      trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim] / cs[0];
+      
+      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0))
+	computeIndepNormalVelocities(i,j);
       else {
 	(*intfc_trac)[(i*dim+1)+j*n_ele[0]*dim] = trac;
 	computeShearVelocities(shr_strength[i+n_ele[0]*j], i+j*n_ele[0]);

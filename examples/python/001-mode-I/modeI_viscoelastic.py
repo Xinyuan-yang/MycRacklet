@@ -130,7 +130,7 @@ def main():
     
     st_diag_id = 'ST_Diagram_id.cra'
     st_diag_nor_trac = 'ST_Diagram_normal_tractions.cra'
-    st_diag_nor_velo = 'ST_Diagram_normal_velocitiy_jumps.cra'
+    st_diag_nor_velo = 'ST_Diagram_normal_velocity_jumps.cra'
     top_u = 'top_displ_snapshot.cra'
     
     dumper.initVectorDumper(st_diag_nor_trac,DataFields._interface_tractions,1)

@@ -8,6 +8,7 @@ inline SpectralModel::SpectralModel(){
   nu.resize(2);
   mu.resize(2);
   rho.resize(2);
+  cs.resize(2);
   t_cut.resize(2);
   ksi = 0;
   interface_law=NULL;
@@ -82,6 +83,7 @@ inline SpectralModel::SpectralModel(std::vector<UInt> nele, UInt nb_time_steps,
   rho[0] = mu[0]/(cs_top*cs_top);
   rho[1] = mu[1]/(cs_bot*cs_bot);
   ksi = cs_top/cs_bot;
+  cs.resize(2);
   cs[0] = cs_top;
   cs[1] = cs_bot;
   t_cut.resize(2);

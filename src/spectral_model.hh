@@ -186,7 +186,7 @@ public:
   /* ------------------------------------------------------------------------ */
   
   // Return the current simulation time
-  Real getTime() {return it*beta*dxmin/cs[0];}
+  Real getTime() {return it*beta*dxmin/(std::max(cs[0],cs[1]));}
   // Return the current simulation time step
   UInt getCurrentTimeStep() {return it;}
   // Return stable time step ratio beta

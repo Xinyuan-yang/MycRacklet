@@ -404,8 +404,10 @@ void SpectralModel::initInterfaceFields() {
 /* -------------------------------------------------------------------------- */
 void SpectralModel::updateDisplacements() {
 
+  Real dt = dxmin*beta/(std::max(cs[0],cs[1]));
+  
   for (UInt i = 0; i < 2; ++i) {
-    displacements[i] += velocities[i]*dxmin*beta;
+    displacements[i] += velocities[i]*dt;
   } 
   displ_jump->computeJumpFields(); 
 }
@@ -467,7 +469,7 @@ void SpectralModel::increaseTimeStep() {
 
  displ_jump->computeJumpFields();
  veloc_jump->computeJumpFields();
- computeAll(it*beta*dxmin/X[0]);
+ computeAll(it*beta*dxmin/(std::max(cs[0],cs[1])));
  ++it;
 
  if((it>ntim+1)&&(ntim!=0))

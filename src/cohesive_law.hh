@@ -67,6 +67,7 @@ public:
     this->registerData(_critical_shear_opening, &crit_shr_opening); 
     
     mu = {getParameter<Real>("shear modulus top"),getParameter<Real>("shear modulus bottom")};
+    cs = {getParameter<Real>("shear wave speed top"),getParameter<Real>("shear wave speed bottom")};
     stresses = {datas[_top_dynamic_stress],datas[_bottom_dynamic_stress]};
     velocities = {datas[_top_velocities],datas[_bottom_velocities]};
     displacements = {datas[_top_displacements],datas[_bottom_displacements]};
@@ -150,6 +151,7 @@ protected:
   /** Permanent access toward some fields registered in the DataRegister
       required to compute interface conditions */
   std::vector<Real> mu;
+  std::vector<Real> cs;
   std::vector<CrackProfile*> stresses;
   std::vector<CrackProfile*> velocities;
   std::vector<CrackProfile*> displacements;

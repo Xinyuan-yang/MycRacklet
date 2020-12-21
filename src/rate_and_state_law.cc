@@ -41,8 +41,8 @@ void RateAndStateLaw::setVelocityPredictor(std::vector<Real> v_0_pred) {
     for (UInt j = 0; j < n_ele[1]; ++j) {
       for (UInt dir=0; dir < dim; ++dir) {
 	UInt i=h+j*n_ele[0];
-	(*dot_u_top)[i*dim+dir] = 0.5*v_0_pred[dir]/c_s;
-	(*dot_u_bot)[i*dim+dir] = -0.5*v_0_pred[dir]/c_s;
+	(*dot_u_top)[i*dim+dir] = 0.5*v_0_pred[dir];
+	(*dot_u_bot)[i*dim+dir] = -0.5*v_0_pred[dir];
       }
     }
   }
@@ -82,7 +82,7 @@ void RateAndStateLaw::computeSteadyStateSliding() {
   for (UInt i = 0; i < n_ele; ++i) {     
 
     Real stress = shear_stress[i];    
-    Real rate = (*shear_velo_jump)[i]*c_s;
+    Real rate = (*shear_velo_jump)[i];
     Real converg=1.0;
     Real delta_v = 0.0;
     Real delta_cf,K;
@@ -100,7 +100,7 @@ void RateAndStateLaw::computeSteadyStateSliding() {
       cf[i] = (*formulation)(rate,phi[i],a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);
       delta_cf = stress/sigma_0 - cf[i];
       K = formulation->getSteadyTangent(rate,phi[i],a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);
-
+      
       delta_v = delta_cf/K;
       if ((delta_v > 0))
 	delta_v = std::min(std::abs(delta_v),0.1*std::abs(rate));
@@ -151,9 +151,9 @@ std::vector<Real> RateAndStateLaw::computeNextAverageVelocity() {
     std::vector<Real> shear_ratio = {tau_x[i]/shear_stress[i],tau_z[i]/shear_stress[i]};
     
     while(!is_good) {
-    
+      
       stress = shear_stress[i];    
-      rate = (*shear_velo_jump)[i]*c_s + V0;
+      rate = (*shear_velo_jump)[i] + V0;
       Real new_phi = phi[i];
       
       for (UInt t = 0; t < nb_t_stp; ++t) {
@@ -181,16 +181,15 @@ std::vector<Real> RateAndStateLaw::computeNextAverageVelocity() {
 	}
 	new_phi += (*state_evol)(rate, new_phi, D[i], delta_t/(Real)(nb_t_stp));
       }
-           
+      
       if(new_phi<0) {
 	nb_t_stp *= 2;
 	is_good = false;
       }
       else {
 	is_good = true;
-	//phi[i]=new_phi;
       }
-
+      
       if(nb_t_stp>1) {
 	std::cerr << "WARNING ! Negative Phi values have been observed ! " 
 		  << "Internal time step is locally refined, leading to potential instabilities. " 
@@ -219,12 +218,12 @@ std::vector<Real> RateAndStateLaw::computeNextAverageVelocity() {
 
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::updateInterfaceConditions() {
-
+  
   UInt n_ele = D.size();
-
+  
   CrackProfile tau_x = stresses->getStridedPart(3,0);
   CrackProfile tau_z = stresses->getStridedPart(3,2);
-
+  
   CrackProfile shear_stress = tau_x*tau_x + tau_z*tau_z;
   shear_stress.squareRoot();
 
@@ -242,7 +241,7 @@ void RateAndStateLaw::updateInterfaceConditions() {
     while(!is_good) {
     
       stress = shear_stress[i];    
-      rate = (*shear_velo_jump)[i]*c_s + V0;
+      rate = (*shear_velo_jump)[i] + V0;
       Real new_phi = phi[i];
       
       for (UInt t = 0; t < nb_t_stp; ++t) {
@@ -294,8 +293,8 @@ void RateAndStateLaw::updateInterfaceConditions() {
     } 
 
     for (UInt s = 0; s < 2; ++s) {
-      (*dot_u_top)[i*3+2*s] = 0.5*(rate*shear_ratio[s]-V_0[s])/c_s;
-      (*dot_u_bot)[i*3+2*s] = -0.5*(rate*shear_ratio[s]-V_0[s])/c_s;
+      (*dot_u_top)[i*3+2*s] = 0.5*(rate*shear_ratio[s]-V_0[s]);
+      (*dot_u_bot)[i*3+2*s] = -0.5*(rate*shear_ratio[s]-V_0[s]);
       (*intfc_trac)[3*i+2*s] = stress*shear_ratio[s] - accoust*(rate*shear_ratio[s]-V_0[s])/2;
     }
 
@@ -324,8 +323,8 @@ void RateAndStateLaw::insertPerturbationPatch(std::vector<UInt> patch_limits, Re
   
   for (UInt i = patch_limits[0]; i < patch_limits[1]; ++i) {     
 
-    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1])/c_s;
-    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1])/c_s;
+    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1]);
+    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1]);
 
     Real tractions = (*stresses)[i*3+2] - accoust*(new_rate-V_0[1])/2;
     
@@ -347,8 +346,8 @@ void RateAndStateLaw::insertGaussianPerturbation(Real std_dev, Real amplitude) {
     Real gauss = exp(-0.5*((i-mu)/std_dev)*((i-mu)/std_dev));
     Real new_rate = amplitude*gauss+V_0[1];
 
-    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1])/c_s;
-    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1])/c_s;
+    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1]);
+    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1]);
 
     Real tractions = (*stresses)[i*3+2] - accoust*(new_rate-V_0[1])/2;
     

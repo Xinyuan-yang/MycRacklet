@@ -134,9 +134,9 @@ int main(int argc, char *argv[]){
 	state_75 = (*state)[(int)(0.75*nb_elements)];
 	
 	std::cout << "Simulation at t " << t << " = " << model.getTime() << " [sec]"<< std::endl
-		  << "sliding velocity at the observation point: " << v_25*cs << std::endl
+		  << "sliding velocity at the observation point: " << v_25 << std::endl
 		  << "state variable at the expected nucleation point: " << state_75/state_ss << std::endl
-		  << "-> v_max-v_av = " << (v_max-v_av)*cs << std::endl;
+		  << "-> v_max-v_av = " << (v_max-v_av) << std::endl;
       }
       ++t;
   }

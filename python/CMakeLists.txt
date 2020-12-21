@@ -1,6 +1,6 @@
 set(PYCRACKLET_SRCS
-  py_interface_law.cc
   py_cRacklet.cc
+  py_interface_law.cc
   py_data_register.cc
   py_spectral_model.cc
   py_simulation_driver.cc
@@ -16,8 +16,8 @@ set(PYCRACKLET_SRCS
   )
 
 pybind11_add_module(py_cRacklet ${PYCRACKLET_SRCS})
-target_link_libraries(py_cRacklet PRIVATE cRacklet pybind11::module)
-target_include_directories(py_cRacklet INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(py_cRacklet PUBLIC cRacklet)
+set_target_properties(py_cRacklet PROPERTIES DEBUG_POSTIFX "")
 
 set(_python_install_dir
   ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages)

@@ -92,7 +92,8 @@ void register_fracture_law_type(py::module&mod){
       .def("createUniformInterface",&Interfacer<F>::createUniformInterface)
       .def("createThroughArea",&Interfacer<F>::createThroughArea)
       .def("createThroughCrack",&Interfacer<F>::createThroughCrack)
-      .def("createThroughWall",&Interfacer<F>::createThroughWall);
+      .def("createThroughWall",&Interfacer<F>::createThroughWall)
+      .def("createHeterogeneousInterface",&Interfacer<F>::createHeterogeneousInterface,py::arg("crit_nor_opening"),py::arg("max_nor_strength"),py::arg("crit_shr_opening")=std::vector<Real>(),py::arg("max_shr_strength")=std::vector<Real>()); // Create an interface from vectors
        }
   
   void register_interfacer(py::module& mod) {

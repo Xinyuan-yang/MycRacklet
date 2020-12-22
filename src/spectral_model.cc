@@ -316,13 +316,33 @@ void SpectralModel::setLoadingCase(Real load, Real psi, Real phi, bool write) {
 }
 
 /* -------------------------------------------------------------------------- */
+void SpectralModel::setLoadingShape(std::vector<Real> shape) {
+
+  loading_ratio = shape;
+
+}
+
+/* -------------------------------------------------------------------------- */
+void SpectralModel::incrementLoad(Real increment, UInt loading_direction) {
+  
+  for (UInt x = 0; x < n_ele[0]; ++x) {
+    for (UInt z = 0; z < n_ele[1]; ++z) {
+      for (UInt side = 0; side < 2; ++side) {
+	loads[side][(x*dim+loading_direction)+z*n_ele[0]*dim] += increment;
+      }
+    }
+  }
+}
+
+
+/* -------------------------------------------------------------------------- */
 void SpectralModel::updateLoads(Real * loading_per_dim) {
     
   for (UInt x = 0; x < n_ele[0]; ++x) {
     for (UInt z = 0; z < n_ele[1]; ++z) {
       for (UInt side = 0; side < 2; ++side) {
 	for (UInt j = 0; j < dim; ++j) {
-	  loads[side][(x*dim+j)+z*n_ele[0]*dim] = *(loading_per_dim+j)*loading_ratio[x+z*n_ele[0]];     
+	  loads[side][(x*dim+j)+z*n_ele[0]*dim] = *(loading_per_dim+j)*loading_ratio[x+z*n_ele[0]];
 	}
       }
     }

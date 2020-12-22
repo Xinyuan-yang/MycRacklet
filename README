@@ -116,27 +116,26 @@ of the surrounding solids (as function of Poisson's ratio) shall be pre-computed
 ==================================================================================================
 * PYTHON INTERFACE
 
-In order to use the python interface build for cRacklet, you need pybind11.
+In order to use the python interface build for cRacklet, you need pybind11 and python3.
 
 During configuration, activate CRACKLET_PYTHON_INTERFACE. The make comment will create a python library in the build/python/ folder. Please add this path to your python path.
 
 You can activate the python example with the option CRACKLET_EXAMPLES_PYTHON
 
-An example of the use of the python interface is provided in build/examples/python/001-bimaterial/bimaterial.py
+An example of the use of the python interface is provided in build/examples/python/001-modeI/modeI.py
 
 ==================================================================================================
 * AUTHORS
 
 - Fabian Barras <fabian.barras@epfl.ch>
+- Thibault Roch <thibault.roch@epfl.ch>
 - Damien Spielmann
 - David Kammer
 - Guillaume Anciaux
 - Nicolas Richart
-- Thibault Roch <thibault.roch@epfl.ch>
 
 ==================================================================================================
 * RELATED PUBLICATIONS
-
 
 [1] Geubelle PH, Rice JR (1995) A spectral method for three-dimensional elastodynamic fracture 
     problems. J Mech Phys Solids 43(11):1791–1824

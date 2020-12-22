@@ -50,6 +50,9 @@
 #endif
 /* -------------------------------------------------------------------------- */
 
+/// Help to use names for directions when calling the dumpers
+enum SpatialDirection { _x = 0, _y = 1, _z = 2 };
+
 // Structure used to compute field variation across the interface
 struct InterfaceFields{
   
@@ -155,6 +158,10 @@ public:
   void brownianHeterogLoading(Real rms, long int seed, Real hurst, UInt q0,UInt q1, UInt q2);
   // Definition of the loading case
   void setLoadingCase(Real load_in, Real psi, Real phi, bool write=true);
+  // Definition of the loading shape
+  void setLoadingShape(std::vector<Real> shape);
+  // Increment uniformly the load in a given direction
+  void incrementLoad(Real increment,UInt loading_direction);
   // Set loading case using a pre-computed loading file
   // Real setLoadingCase(std::string loading_file, Real psi, Real phi);
   // update loading case

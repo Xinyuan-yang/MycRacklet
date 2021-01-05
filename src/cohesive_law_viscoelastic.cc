@@ -107,8 +107,8 @@ void CohesiveLawViscoelastic::updateCohesiveLaw() {
 	
 	ind_crack[i] = 1;
 	
-	Real rate_nor = ((*velocities[0])[i*dim+1]-(*velocities[1])[i*dim+1])*c_s;
-	Real rate_shr = c_s*sqrt( ( (*velocities[0])[i*dim+0]-(*velocities[1])[i*dim+0])*( (*velocities[0])[i*dim+0]-(*velocities[1])[i*dim+0]) + ( (*velocities[0])[i*dim+2]-(*velocities[1])[i*dim+2]) * ( (*velocities[0])[i*dim+2]-(*velocities[1])[i*dim+2]));
+	Real rate_nor = ((*velocities[0])[i*dim+1]-(*velocities[1])[i*dim+1]);
+	Real rate_shr = sqrt( ( (*velocities[0])[i*dim+0]-(*velocities[1])[i*dim+0])*( (*velocities[0])[i*dim+0]-(*velocities[1])[i*dim+0]) + ( (*velocities[0])[i*dim+2]-(*velocities[1])[i*dim+2]) * ( (*velocities[0])[i*dim+2]-(*velocities[1])[i*dim+2]));
 	
 	nor_strength[i] = formulation->getStrength(max_nor_strength[i] * (1-this->op_eq[i]),rate_nor,lim_velocity[i]);
 	shr_strength[i] = formulation->getStrength(max_shr_strength[i] * (1-this->op_eq[i]),rate_shr,lim_velocity[i]);;
@@ -140,7 +140,7 @@ void CohesiveLawViscoelastic::computeVelocities(){
   for (UInt i = 0; i < n_ele[0]; ++i) {
     for (UInt j = 0; j < n_ele[1]; ++j) {
       
-      Real trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim];
+      Real trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim]/cs[0];
       if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0))
 	computeIndepNormalVelocities(i,j);
       else {

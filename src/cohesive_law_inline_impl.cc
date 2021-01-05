@@ -48,7 +48,7 @@ void CohesiveLaw::computeContactVelocities(UInt ix, UInt iz){
   }
   
   aux = ((*displacements[0])[i*dim+1] - (*displacements[1])[i*dim+1])/dt;
-  temp_velot = cs[0]/(eta[0]+ksi*eta[1]/zeta)*((cmpted_stress[0]-cmpted_stress[1])/mu[0] - aux*ksi*eta[1]/zeta/cs[0]);
+  temp_velot = 1/(eta[0]/cs[0]+eta[1]/cs[1]/(mu[0]/mu[1]))*((cmpted_stress[0]-cmpted_stress[1])/mu[0] - aux*eta[1]/cs[1]/(mu[0]/mu[1]));
   (*velocities[0])[i*dim+1] = temp_velot;
   (*velocities[1])[i*dim+1] = temp_velot + aux;
   

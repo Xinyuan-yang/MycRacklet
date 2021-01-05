@@ -86,8 +86,6 @@ void SpectralModel::initModel(Real reset_beta, bool blank) {
 
   nb_kernels = 4;
 
-  zeta = mu[0]/mu[1];
-
   displacements.resize(2);
   velocities.resize(2);
   stresses.resize(2);

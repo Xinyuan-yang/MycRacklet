@@ -12,7 +12,7 @@ void CohesiveLawViscoelastic::computeIndepNormalVelocities(UInt ix, UInt iz){
 
   // Compute the velocity for the top part. Here we assume it's the same material!
     
-  Real rate = this->prev_nor_vel[i]*c_s;
+  Real rate = this->prev_nor_vel[i];
   
   Real converg_v=1.0;
   Real converg_s=1.0;
@@ -59,18 +59,20 @@ void CohesiveLawViscoelastic::computeIndepNormalVelocities(UInt ix, UInt iz){
     }
     
   }
+
+  Real dt = dxmin*beta/(std::max(cs[0],cs[1]));
   
-  delta_overlap = (*displacements[0])[i*dim+1] - (*displacements[1])[i*dim+1] + beta*dxmin*rate/c_s; 
+  delta_overlap = (*displacements[0])[i*dim+1] - (*displacements[1])[i*dim+1] + dt*rate; 
   
   if (cRacklet::is_negative(delta_overlap)&&(!allow_overlapping)){
     computeContactVelocities(ix, iz);
   }
   else {
 
-    this->prev_nor_vel[i] = rate / c_s;
+    this->prev_nor_vel[i] = rate;
     
-    (*velocities[0])[i*dim+1] = 0.5*rate/c_s;
-    (*velocities[1])[i*dim+1] = -0.5*rate/c_s;
+    (*velocities[0])[i*dim+1] = 0.5*rate;
+    (*velocities[1])[i*dim+1] = -0.5*rate;
     (*intfc_trac)[i*dim+1] = cmpted_stress[0]-mu[0]*eta[0]*rate/c_s/2;       
     computeShearVelocities(shr_strength[i], i);
   }
@@ -92,11 +94,11 @@ void CohesiveLawViscoelastic::computeContactVelocities(UInt ix, UInt iz){
   }
   
   aux = ((*displacements[0])[i*dim+1] - (*displacements[1])[i*dim+1])/(dxmin*beta);
-  temp_velot = 1/(eta[0]+ksi*eta[1]/zeta)*((cmpted_stress[0]-cmpted_stress[1])/mu[0] - aux*ksi*eta[1]/zeta);
+  temp_velot = 1/(eta[0]/cs[0]+eta[1]/cs[1]/(mu[0]/mu[1]))*((cmpted_stress[0]-cmpted_stress[1])/mu[0] - aux*eta[1]/cs[1]/(mu[0]/mu[1]));
   (*velocities[0])[i*dim+1] = temp_velot;
   (*velocities[1])[i*dim+1] = temp_velot + aux;
   
-  temp_trac = cmpted_stress[0] - eta[0]*mu[0]*temp_velot;
+  temp_trac = cmpted_stress[0] - eta[0]*mu[0]*temp_velot/cs[0];
   (*intfc_trac)[i*dim+1] = temp_trac;
   
   contact_law->computeFricStrength(temp_trac, strength, i, it);
@@ -119,12 +121,12 @@ void CohesiveLawViscoelastic::computeShearVelocities(Real strength, UInt i) {
     cmpted_stress[j] = (*stresses[0])[i*dim+2*j];
   }
   
-  Real rate = this->prev_shr_vel[i] * c_s;
-    
+  Real rate = this->prev_shr_vel[i];
+  
   shr_trac = sqrt((cmpted_stress[0]*cmpted_stress[0])+(cmpted_stress[1]*cmpted_stress[1])); 
   
   Real local_strength = formulation->getStrength(max_shr_strength[i] * (1-this->op_eq[i]),rate,lim_velocity[i]);
-
+  
   if (shr_trac <= local_strength){
     for (UInt j = 0; j < (dim-1); ++j) {
       (*intfc_trac)[i*dim+2*j] = cmpted_stress[j];
@@ -184,13 +186,13 @@ void CohesiveLawViscoelastic::computeShearVelocities(Real strength, UInt i) {
     }
     
     for (UInt j = 0; j < 2; ++j) {
-      (*velocities[0])[i*dim+2*j] = 0.5*rate*cmpted_stress[j]/shr_trac/c_s;
-      (*velocities[1])[i*dim+2*j] = -0.5*rate*cmpted_stress[j]/shr_trac/c_s;    
+      (*velocities[0])[i*dim+2*j] = 0.5*rate*cmpted_stress[j]/shr_trac;
+      (*velocities[1])[i*dim+2*j] = -0.5*rate*cmpted_stress[j]/shr_trac;    
       (*intfc_trac)[i*dim+2*j] = local_strength*cmpted_stress[j]/shr_trac;
       
     }
 
-    this->prev_shr_vel[i] = rate/c_s;
+    this->prev_shr_vel[i] = rate;
 
   }
 }

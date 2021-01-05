@@ -273,8 +273,6 @@ protected:
   static Real ksi;
   // Dilatation over shear wave speed of top and bottom material
   static std::vector<Real> eta;
-  // Ratio of top and bottom shear modulus
-  static Real zeta;
 };
 
 // Class computing integral over a defined sets of interface points (a.e. energy integration)

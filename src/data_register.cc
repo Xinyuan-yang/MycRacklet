@@ -21,7 +21,6 @@ Real DataRegister::beta;
 Real DataRegister::dxmin;
 Real DataRegister::ksi;
 std::vector<Real> DataRegister::eta;
-Real DataRegister::zeta;
 /* -------------------------------------------------------------------------- */
 void DataRegister::data_initialize(const std::string output_folder,
 				   const std::string description) {

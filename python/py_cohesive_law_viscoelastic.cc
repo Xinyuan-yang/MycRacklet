@@ -14,6 +14,7 @@ void register_cohesive_law_viscoelastic(py::module& mod) {
   py::class_<CohesiveLawViscoelastic,CohesiveLaw>(mod, "CohesiveLawViscoelastic")
     .def(py::init<>())
     .def("initLinearFormulation",&CohesiveLawViscoelastic::initLinearFormulation)
+    .def("initQuadraticFormulation",&CohesiveLawViscoelastic::initQuadraticFormulation)
     .def("initPowerLawFormulation",&CohesiveLawViscoelastic::initPowerLawFormulation)
     .def("initInterfaceConditions",&CohesiveLawViscoelastic::initInterfaceConditions)
     .def("updateInterfaceConditions",&CohesiveLawViscoelastic::updateInterfaceConditions)

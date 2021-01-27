@@ -29,8 +29,10 @@
  */
 """
 
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
 
 from py_cRacklet import SpectralModel
 from py_cRacklet import InterfacerLinearCoupledCohesive
@@ -162,10 +164,10 @@ def plotEvolution():
     
     py,px = np.mgrid[0:timer[-1]+dt:dt,0:1:dx/dom_size]
     
-    fig,axe = plt.subplots(nrows=1, ncols=1,figsize=(3.5,3.5),dpi=300)
+    fig,axe = plt.subplots(nrows=1, ncols=1,figsize=(6,3),dpi=300)
     
 
-    axe.set_ylabel(r"$t c_s / W $")
+    axe.set_ylabel(r"$t$ [s]")
     axe.set_xlabel(r"$x / W $")
     axe.set_xlim([0,0.9])
 
@@ -176,10 +178,13 @@ def plotEvolution():
     colorsList = [(0,0,1),(0,1,0),(1,0,0)]
     colormap = matplotlib.colors.ListedColormap(colorsList)
     
-    axe.pcolormesh(px,py,state,vmin=vmin,vmax=vmax,cmap=colormap)
+    mesh = axe.pcolormesh(px,py,state,vmin=vmin,vmax=vmax,cmap=colormap)
+    divider = make_axes_locatable(axe)
     cax = divider.append_axes("right",size="5%",pad = 0.05)
     cbar = plt.colorbar(mesh,ticks=ticks_pos,cax = cax)
     cbar.ax.set_yticklabels(ticks)
+
+    axe.ticklabel_format(axis="y",style="sci",scilimits=(0,0))
     
     fig.tight_layout()
     fig.savefig("state_evolution.png")

@@ -68,15 +68,15 @@ void register_data_register(py::module& mod) {
     .def("registerComputer",&DataRegister::registerComputer)
     .def("getComputer",&DataRegister::getComputer)
     .def("getCrackTipPosition",&DataRegister::getCrackTipPosition)
-    .def("getTopVelocities",&DataRegister::getTopVelocities)
-    .def("getBotVelocities",&DataRegister::getBotVelocities)
-    .def("getShearVelocityJumps",&DataRegister::getShearVelocityJumps)
-    .def("getNormalVelocityJumps",&DataRegister::getNormalVelocityJumps)
-    .def("getTopDisplacements",&DataRegister::getTopDisplacements)
-    .def("getBotDisplacements",&DataRegister::getBotDisplacements)
-    .def("getShearDisplacementJumps",&DataRegister::getShearDisplacementJumps)
-    .def("getNormalDisplacementJumps",&DataRegister::getNormalDisplacementJumps)
-    .def("getInterfaceTractions",&DataRegister::getInterfaceTractions);
+    .def("getTopVelocities",&DataRegister::getTopVelocities,py::return_value_policy::reference)
+    .def("getBotVelocities",&DataRegister::getBotVelocities,py::return_value_policy::reference)
+    .def("getShearVelocityJumps",&DataRegister::getShearVelocityJumps,py::return_value_policy::reference)
+    .def("getNormalVelocityJumps",&DataRegister::getNormalVelocityJumps,py::return_value_policy::reference)
+    .def("getTopDisplacements",&DataRegister::getTopDisplacements,py::return_value_policy::reference)
+    .def("getBotDisplacements",&DataRegister::getBotDisplacements,py::return_value_policy::reference)
+    .def("getShearDisplacementJumps",&DataRegister::getShearDisplacementJumps,py::return_value_policy::reference)
+    .def("getNormalDisplacementJumps",&DataRegister::getNormalDisplacementJumps,py::return_value_policy::reference)
+    .def("getInterfaceTractions",&DataRegister::getInterfaceTractions,py::return_value_policy::reference);
   
 }
 

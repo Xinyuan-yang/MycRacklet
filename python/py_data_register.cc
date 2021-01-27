@@ -67,8 +67,16 @@ void register_data_register(py::module& mod) {
     .def("getParameterString",&DataRegister::getParameter<std::string>)
     .def("registerComputer",&DataRegister::registerComputer)
     .def("getComputer",&DataRegister::getComputer)
-    .def("getCrackTipPosition",&DataRegister::getCrackTipPosition);
-
+    .def("getCrackTipPosition",&DataRegister::getCrackTipPosition)
+    .def("getTopVelocities",&DataRegister::getTopVelocities)
+    .def("getBotVelocities",&DataRegister::getBotVelocities)
+    .def("getShearVelocityJumps",&DataRegister::getShearVelocityJumps)
+    .def("getNormalVelocityJumps",&DataRegister::getNormalVelocityJumps)
+    .def("getTopDisplacements",&DataRegister::getTopDisplacements)
+    .def("getBotDisplacements",&DataRegister::getBotDisplacements)
+    .def("getShearDisplacementJumps",&DataRegister::getShearDisplacementJumps)
+    .def("getNormalDisplacementJumps",&DataRegister::getNormalDisplacementJumps)
+    .def("getInterfaceTractions",&DataRegister::getInterfaceTractions);
   
 }
 

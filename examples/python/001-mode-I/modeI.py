@@ -39,6 +39,7 @@ from py_cRacklet import DataDumper
 from py_cRacklet import DataRegister
 from py_cRacklet import DataFields
 from py_cRacklet import SimulationDriver
+from py_cRacklet import CrackProfile
 
 def main():
 
@@ -119,6 +120,8 @@ def main():
 
     print_freq = 0.001 * nb_time_steps
 
+    normal_velo_jump = model.getNormalVelocityJumps()
+    
     # Launch the crack up to dynamic propagation
 
     sim_driver.launchCrack(0.,G_length,0.1)
@@ -136,7 +139,8 @@ def main():
         if ((t%print_freq)==0):
             print("Process at {:.3f} %".format(t/nb_time_steps*100))
             print("Crack position at {:.3f} %".format(x_tip/dom_size*100))
-
+            print("Normal velocity jump at x=0 {:.3f} [m/s]".format(normal_velo_jump(0)))
+            
             dumper.dumpAll()
 
         t += 1

@@ -208,6 +208,28 @@ public:
   template<typename T>
   static void restartData(std::vector<T> & my_data , const std::string data_file,
 			  bool pausing, UInt nele_2d=0);  
+
+  //Acessors
+  
+  // Direct access to top velocities
+  const CrackProfile * getTopVelocities();
+  // Direct access to bot velocities
+  const CrackProfile * getBotVelocities();
+  // Direct access to shear velocity jumps
+  const CrackProfile * getShearVelocityJumps();
+  // Direct access to normal velocity jumps
+  const CrackProfile * getNormalVelocityJumps();
+  // Direct access to top displacement
+  const CrackProfile * getTopDisplacements();
+  // Direct access to bot displacement
+  const CrackProfile * getBotDisplacements();
+  // Direct access to shear displacement jumps
+  const CrackProfile * getShearDisplacementJumps();
+  // Direct access to normal displacement jumps
+  const CrackProfile * getNormalDisplacementJumps();
+  // Direct access to interface tractions
+  const CrackProfile * getInterfaceTractions();
+
 protected:
  
   //Initialize the register providing the output folder of simulation as well as its description

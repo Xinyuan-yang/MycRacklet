@@ -96,7 +96,8 @@ int main(int argc, char *argv[]){
 
   UInt t = 0;
 
-  const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
+  //const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
+  const CrackProfile * shear_velo_jump = model.getShearVelocityJumps();
   
 
   r_and_s.setVelocityPredictor({0.,0.,3e-4});

@@ -62,6 +62,9 @@ enum DataFields {
   _critical_normal_opening, //n_ele
   _critical_shear_opening, //n_ele
 
+  _residual_normal_strength, //n_ele
+  _residual_shear_strength, //n_ele
+  
   // For viscoelastic law
   _lim_velocity, //n_ele
   

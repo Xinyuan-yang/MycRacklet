@@ -67,7 +67,7 @@ void register_fracture_law_type(py::module&mod){
       .def("createUniformInterface",&Interfacer<F>::createUniformInterface)
       
       .def("insertPatternfromFile",py::overload_cast<std::string, UInt>(&Interfacer<F>::insertPatternfromFile))
-      .def("insertPatternfromFile",py::overload_cast<std::string, std::string>(&Interfacer<F>::insertPatternfromFile)) // Create an interface based on two files: one for the strength, the other for the opening
+      .def("insertPatternfromFile",py::overload_cast<std::string, std::string,std::string>(&Interfacer<F>::insertPatternfromFile)) // Create an interface based on three files: one for the strength, the other for the opening, one for the residual (If provided)
       .def("createNormalDistributedInterface",&Interfacer<F>::createNormalDistributedInterface)
       .def("createHeterogeneousInterface",&Interfacer<F>::createHeterogeneousInterface,py::arg("crit_nor_opening"),py::arg("max_nor_strength"),py::arg("crit_shr_opening")=std::vector<Real>(),py::arg("max_shr_strength")=std::vector<Real>()) // Create an interface from vectors
 #ifdef CRACKLET_USE_LIBSURFER

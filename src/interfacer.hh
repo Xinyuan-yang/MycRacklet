@@ -93,7 +93,7 @@ public:
    @param file_strength : name of the input file containing the strength properties
    @param file_opening : name of the input file containing the critical opening properties
   */
-  void insertPatternfromFile(std::string file_strength, std::string file_opening);
+  void insertPatternfromFile(std::string file_strength, std::string file_opening, std::string file_residual = "None");
   /** create an heterogeneous interface from vectors
       @param crit_nor_opening : Vector of critical normal opening of the cohesive law
       @param max_nor_strength : Vector of maximum normal strength of the cohesive law

@@ -51,7 +51,7 @@ void CohesiveLaw::computeInitialVelocities() {
     for (UInt j = 0; j < n_ele[1]; ++j) {
       i=h+j*n_ele[0];
       
-      if((nor_strength[i]==0)&&((*loads[0])[i*dim+1] < 0.0)) { 
+      if((nor_strength[i]==res_nor_strength[i])&&((*loads[0])[i*dim+1] < 0.0)) { 
 	
 	contact_law->computeFricStrength((*loads[0])[i*dim+1], strength, i, it); 
 	
@@ -67,7 +67,7 @@ void CohesiveLaw::computeInitialVelocities() {
       //velocities u1 & u3
       for (UInt side = 0; side < 2; ++side) {
 	strength = shr_strength[i];
-  
+	
 	for (UInt k = 0; k < 2; ++k) {
 	  temp_f[k] = (*loads[side])[i*dim+2*k];
 	}
@@ -116,24 +116,24 @@ void CohesiveLaw::updateCohesiveLaw() {
       aux = sqrt(((*nor_opening)[i]/crit_nor_opening[i])*((*nor_opening)[i]/crit_nor_opening[i])+
 		 ((*shr_opening)[i]/crit_shr_opening[i])*((*shr_opening)[i]/crit_shr_opening[i]));
       
-      if ((aux>=1)||(nor_strength[i] * shr_strength[i] == 0)) {
+      if ((aux>=1)||(nor_strength[i]==res_nor_strength[i])||(shr_strength[i]==res_shr_strength[i])) {
 
-	bool in_contact = ((nor_strength[i] == 0)&&(cRacklet::is_negative((*nor_opening)[i])));
+	bool in_contact = ((nor_strength[i] == res_nor_strength[i])&&(cRacklet::is_negative((*nor_opening)[i])));
 	// the case of contact is handled by the associated ContactLaw
 	
 	if (!in_contact) { 
 
 	  ind_crack[i] = 2;
-	  nor_strength[i] = 0.0;
-	  shr_strength[i] = 0.0;
+	  nor_strength[i] = res_nor_strength[i];
+	  shr_strength[i] = res_shr_strength[i];
 	}
       }
 
       else {
 
 	ind_crack[i] = 1;
-	nor_strength[i] = max_nor_strength[i] * (1-aux);
-	shr_strength[i] = max_shr_strength[i] * (1-aux);
+	nor_strength[i] = max_nor_strength[i] - (max_nor_strength[i]-res_nor_strength[i])*aux;
+	shr_strength[i] = max_shr_strength[i] - (max_shr_strength[i]-res_shr_strength[i])*aux;
       }
     }
   }    

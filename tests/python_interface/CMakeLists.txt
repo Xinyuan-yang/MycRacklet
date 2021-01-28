@@ -2,11 +2,10 @@
 # @file   CMakeLists.txt
 #
 # @author Fabian Barras <fabian.barras@epfl.ch>
-# @author Damien Spielmann <damien.spielmann@epfl.ch>
 #
-# @date   Mon Mar 2 9:12:20 2015
+# @date   Mon Sept 1 9:12:20 2014
 #
-# @brief  configuration file of cRacklet tests
+# @brief  configuration file of cRacklet python interface test
 #
 # @section LICENSE
 #
@@ -32,45 +31,9 @@
 
 #===============================================================================
 
-option(BIMA_FRACT "Bimaterial Alu-Homalite fracture test" ON)
+include_directories (${cRacklet_SOURCE_DIR}/src)
+configure_file(test_pybind.py test_pybind.py COPYONLY)
+copy_kernel_files(33 FALSE)
+copy_kernel_files(35 TRUE)
 
-if(BIMA_FRACT)
-  add_subdirectory(bima_fract)
-endif()
-
-option(BIMA_FRACT_3D "Bimaterial Alu-Homalite fracture test in 3D" ON)
-
-if(BIMA_FRACT_3D)
-  add_subdirectory(bima_fract_3d)
-endif()
-
-option(ASPERITY_3D "Testing 3D fracture event with a circular asperity" ON)
-
-if(ASPERITY_3D)
-  add_subdirectory(asperity_3d)
-endif()
-
-option(CRACKLET_ENGINE "Testing core features of cRacklet library" ON)
-
-if(CRACKLET_ENGINE)
-  add_subdirectory(cRacklet_engine)
-endif()
-
-option(FRICTION "Testing frictional models of cRacklet library" ON)
-
-if(FRICTION)
-  add_subdirectory(friction)
-endif()
-
-option(CONSTANT_CRACK_SPEED "Testing constant crack speed algorithm" ON)
-
-if(CONSTANT_CRACK_SPEED)
-  add_subdirectory(cst_speed)
-endif()
-
-if(CRACKLET_PYTHON_INTERFACE)
-  option(TEST_PYTHON_INTERFACE "Testing python interface" ON)
-  if(TEST_PYTHON_INTERFACE)
-    add_subdirectory(python_interface)
-  endif()
-endif()
+add_test(test_pybind test_pybind.py "Python Interface")

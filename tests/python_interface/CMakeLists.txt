@@ -1,9 +1,9 @@
 #===============================================================================
 # @file   CMakeLists.txt
 #
-# @author Fabian Barras <fabian.barras@epfl.ch>
+# @author Thibault Roch <thibault.roch@epfl.ch>
 #
-# @date   Mon Sept 1 9:12:20 2014
+# @date   Fri Jan 29 17:27:10 2021
 #
 # @brief  configuration file of cRacklet python interface test
 #
@@ -32,8 +32,8 @@
 #===============================================================================
 
 include_directories (${cRacklet_SOURCE_DIR}/src)
-configure_file(test_pybind.py test_pybind.py COPYONLY)
 copy_kernel_files(33 FALSE)
 copy_kernel_files(35 TRUE)
 
-add_test(test_pybind test_pybind.py "Python Interface")
+register_cRacklet_test(test_pybind "Python Interface"
+  PYTHON)

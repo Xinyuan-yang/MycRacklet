@@ -1,15 +1,55 @@
 #!/bin/bash
 
-./$1 > $1.lastout 2> $1.errout
+executable=
+name=
+envi=
+reference=
 
-ret=$?
+while :
+do
+    case "$1" in
+	-e)
+	    executable=$2
+	    shift 2
+	    ;;
+	-E)
+	    envi="$2"
+	    shift 2
+	    ;;
+	-r)
+	    reference="$2"
+	    shift 2
+	    ;;
+	-n)
+	    name="$2"
+	    shift 2
+	    ;;
+	--) # End of all options
+	    shift
+	    break
+	    ;;
+	-*)
+	    echo "Error: Unknown option: $1" >&2
+	    show_help
+	    exit 1
+	    ;;
+	*) #No more options
+	    break
+	    ;;
+    esac
+done
+	
+_args=$@
 
-if [ $ret -eq 0 ]
-then
-    diff -q $1.lastout $2 && echo "Test passed!!!"
+if [ -n "${envi}" ]; then
+    source ${envi}
+fi
 
-else
-    echo "Test Failed!!" 
+if [ -n "${executable}" ]; then
+    ./${executable}
+fi
 
-    exit $ret
+if [ -n "${reference}" ]; then
+    ./${name} > ${name}.lastout 2> ${name}.errout
+   diff -w ${name}.lastout ${reference}
 fi

@@ -38,3 +38,8 @@ configure_file(cmake/cRackletBuildTreeSettings.cmake.in
 # Create the cRackletConfig.cmake and cRackletConfigVersion files
 get_filename_component(CONF_REL_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}" ABSOLUTE)
 configure_file(cmake/cRackletConfig.cmake.in "${PROJECT_BINARY_DIR}/cRackletConfig.cmake" @ONLY)
+
+# Copy environement file for python interface
+
+configure_file(cmake/cRacklet_environement.sh.in
+  ${PROJECT_BINARY_DIR}/cRacklet_environement.sh  @ONLY)

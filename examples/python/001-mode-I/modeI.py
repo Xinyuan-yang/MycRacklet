@@ -97,6 +97,8 @@ def main():
     DataRegister.registerParameterReal("critical_shear_opening",crit_s_open)
     DataRegister.registerParameterReal("max_normal_strength",max_n_str)
     DataRegister.registerParameterReal("max_shear_strength",max_s_str)
+    DataRegister.registerParameterReal("res_normal_strength",max_n_str/10)
+    DataRegister.registerParameterReal("res_shear_strength",max_s_str/10)
     
     interfacer.createUniformInterface()
     interfacer.createThroughCrack(0,initial_crack_size)

@@ -62,6 +62,9 @@ enum DataFields {
   _critical_normal_opening, //n_ele
   _critical_shear_opening, //n_ele
 
+  _residual_normal_strength, //n_ele
+  _residual_shear_strength, //n_ele
+  
   // For viscoelastic law
   _lim_velocity, //n_ele
   
@@ -208,6 +211,28 @@ public:
   template<typename T>
   static void restartData(std::vector<T> & my_data , const std::string data_file,
 			  bool pausing, UInt nele_2d=0);  
+
+  //Acessors
+  
+  // Direct access to top velocities
+  const CrackProfile * getTopVelocities();
+  // Direct access to bot velocities
+  const CrackProfile * getBotVelocities();
+  // Direct access to shear velocity jumps
+  const CrackProfile * getShearVelocityJumps();
+  // Direct access to normal velocity jumps
+  const CrackProfile * getNormalVelocityJumps();
+  // Direct access to top displacement
+  const CrackProfile * getTopDisplacements();
+  // Direct access to bot displacement
+  const CrackProfile * getBotDisplacements();
+  // Direct access to shear displacement jumps
+  const CrackProfile * getShearDisplacementJumps();
+  // Direct access to normal displacement jumps
+  const CrackProfile * getNormalDisplacementJumps();
+  // Direct access to interface tractions
+  const CrackProfile * getInterfaceTractions();
+
 protected:
  
   //Initialize the register providing the output folder of simulation as well as its description
@@ -273,8 +298,6 @@ protected:
   static Real ksi;
   // Dilatation over shear wave speed of top and bottom material
   static std::vector<Real> eta;
-  // Ratio of top and bottom shear modulus
-  static Real zeta;
 };
 
 // Class computing integral over a defined sets of interface points (a.e. energy integration)

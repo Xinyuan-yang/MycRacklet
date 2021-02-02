@@ -5,6 +5,7 @@
 
 namespace cRacklet{
 
+  void register_load_control_type(pybind11::module & mod);
   void register_simulation_driver(pybind11::module & mod);
 
 }

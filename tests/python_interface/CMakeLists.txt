@@ -1,12 +1,11 @@
 #===============================================================================
-# @file   cRackletInstall.txt
+# @file   CMakeLists.txt
 #
 # @author Thibault Roch <thibault.roch@epfl.ch>
 #
-# @date   Wed June 24 15:18:20 2020
+# @date   Fri Jan 29 17:27:10 2021
 #
-# @brief Create the files that allows users to link with cRacklet in an other
-# cmake project
+# @brief  configuration file of cRacklet python interface test
 #
 # @section LICENSE
 #
@@ -32,14 +31,9 @@
 
 #===============================================================================
 
-configure_file(cmake/cRackletBuildTreeSettings.cmake.in
-  "${PROJECT_BINARY_DIR}/cRackletBuildTreeSettings.cmake" @ONLY)
+include_directories (${cRacklet_SOURCE_DIR}/src)
+copy_kernel_files(33 FALSE)
+copy_kernel_files(35 TRUE)
 
-# Create the cRackletConfig.cmake and cRackletConfigVersion files
-get_filename_component(CONF_REL_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}" ABSOLUTE)
-configure_file(cmake/cRackletConfig.cmake.in "${PROJECT_BINARY_DIR}/cRackletConfig.cmake" @ONLY)
-
-# Copy environement file for python interface
-
-configure_file(cmake/cRacklet_environement.sh.in
-  ${PROJECT_BINARY_DIR}/cRacklet_environement.sh  @ONLY)
+register_cRacklet_test(test_pybind "Python Interface"
+  PYTHON)

@@ -21,7 +21,6 @@ Real DataRegister::beta;
 Real DataRegister::dxmin;
 Real DataRegister::ksi;
 std::vector<Real> DataRegister::eta;
-Real DataRegister::zeta;
 /* -------------------------------------------------------------------------- */
 void DataRegister::data_initialize(const std::string output_folder,
 				   const std::string description) {
@@ -347,4 +346,81 @@ void SurfingIntegrator::updateIntegrationPoints() {
     new_integ_points[i] = start+i;
   }
   this->index = new_integ_points;  
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getTopDisplacements(){
+  
+  const CrackProfile * u_top = DataRegister::readData(_top_displacements);
+
+  return u_top;
+  
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getBotDisplacements(){
+
+  const CrackProfile * u_bot = DataRegister::readData(_bottom_displacements);
+  return u_bot;
+
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getShearDisplacementJumps(){
+  
+  const CrackProfile * shear_u_jump = DataRegister::readData(_shear_displacement_jumps);
+  return shear_u_jump;
+  
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getNormalDisplacementJumps(){
+  
+  const CrackProfile * normal_u_jump = DataRegister::readData(_normal_displacement_jumps);
+
+  return normal_u_jump;
+  
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getTopVelocities(){
+  
+  const CrackProfile * v_top = DataRegister::readData(_top_velocities);
+
+  return v_top;
+  
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getBotVelocities(){
+
+  const CrackProfile * v_bot = DataRegister::readData(_bottom_velocities);
+  return v_bot;
+
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getShearVelocityJumps(){
+  
+  const CrackProfile * shear_v_jump = DataRegister::readData(_shear_velocity_jumps);
+  return shear_v_jump;
+  
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getNormalVelocityJumps(){
+  
+  const CrackProfile * normal_v_jump = DataRegister::readData(_normal_velocity_jumps);
+
+  return normal_v_jump;
+  
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getInterfaceTractions(){
+  
+  const CrackProfile * itf_tractions = DataRegister::readData(_interface_tractions);
+
+  return itf_tractions;
+  
 }

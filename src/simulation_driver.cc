@@ -298,6 +298,8 @@ void SimulationDriver::launchCrack(Real crack_start, Real launched_size,
   
   std::vector<Real> * nor_strength = datas[_normal_strength];
   std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<Real> * res_nor_strength = datas[_residual_normal_strength];
+  std::vector<Real> * res_shr_strength = datas[_residual_shear_strength];
   std::vector<UInt> * ind_crack = datas[_id_crack];
   
   std::cout << "Rupture is currently artificially triggered with speed " << v_init
@@ -326,13 +328,13 @@ void SimulationDriver::launchCrack(Real crack_start, Real launched_size,
       x_tip_prev = model.getCrackTipPosition(x_start,model.getNbElements()[0]);
       
       for (UInt z = 0; z < nb_elements[1]; ++z) {
-	(*nor_strength)[x_tip+z*nb_elements[0]]=0.;
-	(*shr_strength)[x_tip+z*nb_elements[0]]=0.;
+	(*nor_strength)[x_tip+z*nb_elements[0]]=(*res_nor_strength)[x_tip+z*nb_elements[0]];
+	(*shr_strength)[x_tip+z*nb_elements[0]]=(*res_shr_strength)[x_tip+z*nb_elements[0]];
  	(*ind_crack)[x_tip+z*nb_elements[0]]=2;
 
 	if(!one_side_propagation) {
-	  (*nor_strength)[2*x_start-x_tip+z*nb_elements[0]]=0.;
-	  (*shr_strength)[2*x_start-x_tip+z*nb_elements[0]]=0.;
+	  (*nor_strength)[2*x_start-x_tip+z*nb_elements[0]]=(*res_nor_strength)[2*x_start-x_tip+z*nb_elements[0]];
+	  (*shr_strength)[2*x_start-x_tip+z*nb_elements[0]]=(*res_shr_strength)[2*x_start-x_tip+z*nb_elements[0]];
 	  (*ind_crack)[2*x_start-x_tip+z*nb_elements[0]]=2;
 	}
       }

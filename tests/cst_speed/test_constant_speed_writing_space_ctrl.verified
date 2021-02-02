@@ -56,7 +56,7 @@ Rupture is currently artificially triggered with speed 0.05*c_s
 Initiation just ends...
 Crack tip at 10.9375%  and far-field loading               0           3e+06               0
 Crack tip at 14.4531%  and far-field loading               0           3e+06               0
-Initiation phase just ends -> time: 1.93984
+Initiation phase just ends -> time: 0.000581558
 Crack tip at 20.1172%  and far-field loading               0     2.19976e+06               0
 Crack tip at 25.9766%  and far-field loading               0     1.97667e+06               0
 Crack tip at 31.6406%  and far-field loading               0     1.81719e+06               0

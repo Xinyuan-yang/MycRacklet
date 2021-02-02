@@ -96,7 +96,8 @@ int main(int argc, char *argv[]){
 
   UInt t = 0;
 
-  const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
+  //const CrackProfile * shear_velo_jump = model.readData(_shear_velocity_jumps);
+  const CrackProfile * shear_velo_jump = model.getShearVelocityJumps();
   
 
   r_and_s.setVelocityPredictor({0.,0.,3e-4});
@@ -120,8 +121,8 @@ int main(int argc, char *argv[]){
       if (t%50==0){
       Real v_max = shear_velo_jump->getMaxValue();
       const Real v_av = (*shear_velo_jump)[0];
-      std::cout << "Simulation at t " << t << " = " << model.getTime()*dom_size/cs << " [sec]"<< std::endl
-		<< "-> v_max-v_av = " << (v_max-v_av)*cs << std::endl;
+      std::cout << "Simulation at t " << t << " = " << model.getTime() << " [sec]"<< std::endl
+		<< "-> v_max-v_av = " << (v_max-v_av) << std::endl;
       }
     ++t;
   }

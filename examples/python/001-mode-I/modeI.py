@@ -29,8 +29,10 @@
  */
 """
 
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
 
 from py_cRacklet import SpectralModel
 from py_cRacklet import InterfacerLinearCoupledCohesive
@@ -39,6 +41,7 @@ from py_cRacklet import DataDumper
 from py_cRacklet import DataRegister
 from py_cRacklet import DataFields
 from py_cRacklet import SimulationDriver
+from py_cRacklet import CrackProfile
 
 def main():
 
@@ -94,6 +97,8 @@ def main():
     DataRegister.registerParameterReal("critical_shear_opening",crit_s_open)
     DataRegister.registerParameterReal("max_normal_strength",max_n_str)
     DataRegister.registerParameterReal("max_shear_strength",max_s_str)
+    DataRegister.registerParameterReal("res_normal_strength",max_n_str/10)
+    DataRegister.registerParameterReal("res_shear_strength",max_s_str/10)
     
     interfacer.createUniformInterface()
     interfacer.createThroughCrack(0,initial_crack_size)
@@ -109,7 +114,7 @@ def main():
     
     st_diag_id = 'ST_Diagram_id.cra'
     st_diag_nor_trac = 'ST_Diagram_normal_tractions.cra'
-    st_diag_nor_velo = 'ST_Diagram_normal_velocitiy_jumps.cra'
+    st_diag_nor_velo = 'ST_Diagram_normal_velocity_jumps.cra'
     top_u = 'top_displ_snapshot.cra'
     
     dumper.initVectorDumper(st_diag_nor_trac,DataFields._interface_tractions,1)
@@ -119,6 +124,8 @@ def main():
 
     print_freq = 0.001 * nb_time_steps
 
+    normal_velo_jump = model.getNormalVelocityJumps()
+    
     # Launch the crack up to dynamic propagation
 
     sim_driver.launchCrack(0.,G_length,0.1)
@@ -136,7 +143,8 @@ def main():
         if ((t%print_freq)==0):
             print("Process at {:.3f} %".format(t/nb_time_steps*100))
             print("Crack position at {:.3f} %".format(x_tip/dom_size*100))
-
+            print("Normal velocity jump at x=0 {:.3f} [m/s]".format(normal_velo_jump(0)))
+            
             dumper.dumpAll()
 
         t += 1
@@ -158,10 +166,10 @@ def plotEvolution():
     
     py,px = np.mgrid[0:timer[-1]+dt:dt,0:1:dx/dom_size]
     
-    fig,axe = plt.subplots(nrows=1, ncols=1,figsize=(3.5,3.5),dpi=300)
+    fig,axe = plt.subplots(nrows=1, ncols=1,figsize=(6,3),dpi=300)
     
 
-    axe.set_ylabel(r"$t c_s / W $")
+    axe.set_ylabel(r"$t$ [s]")
     axe.set_xlabel(r"$x / W $")
     axe.set_xlim([0,0.9])
 
@@ -172,10 +180,13 @@ def plotEvolution():
     colorsList = [(0,0,1),(0,1,0),(1,0,0)]
     colormap = matplotlib.colors.ListedColormap(colorsList)
     
-    axe.pcolormesh(px,py,state,vmin=vmin,vmax=vmax,cmap=colormap)
+    mesh = axe.pcolormesh(px,py,state,vmin=vmin,vmax=vmax,cmap=colormap)
+    divider = make_axes_locatable(axe)
     cax = divider.append_axes("right",size="5%",pad = 0.05)
     cbar = plt.colorbar(mesh,ticks=ticks_pos,cax = cax)
     cbar.ax.set_yticklabels(ticks)
+
+    axe.ticklabel_format(axis="y",style="sci",scilimits=(0,0))
     
     fig.tight_layout()
     fig.savefig("state_evolution.png")

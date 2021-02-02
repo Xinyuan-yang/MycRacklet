@@ -12,7 +12,7 @@ namespace cRacklet {
     
 void register_contact_law(py::module& mod) {
   py::class_<ContactLaw, std::shared_ptr<ContactLaw>>(mod, "ContactLaw");
-      
+  
 }
 
 } // namespace cRacklet

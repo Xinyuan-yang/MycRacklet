@@ -58,6 +58,8 @@ public:
     max_shr_strength.resize(total_n_ele);
     crit_nor_opening.resize(total_n_ele);
     crit_shr_opening.resize(total_n_ele);
+    res_nor_strength.resize(total_n_ele);
+    res_shr_strength.resize(total_n_ele);
     
     this->registerData(_normal_strength, &nor_strength);
     this->registerData(_shear_strength, &shr_strength);
@@ -65,8 +67,12 @@ public:
     this->registerData(_id_crack, &ind_crack);
     this->registerData(_critical_normal_opening, &crit_nor_opening);
     this->registerData(_critical_shear_opening, &crit_shr_opening); 
+    // Register also the residual level of strength
+    this->registerData(_residual_normal_strength, &res_nor_strength);
+    this->registerData(_residual_shear_strength, &res_shr_strength);
     
     mu = {getParameter<Real>("shear modulus top"),getParameter<Real>("shear modulus bottom")};
+    cs = {getParameter<Real>("shear wave speed top"),getParameter<Real>("shear wave speed bottom")};
     stresses = {datas[_top_dynamic_stress],datas[_bottom_dynamic_stress]};
     velocities = {datas[_top_velocities],datas[_bottom_velocities]};
     displacements = {datas[_top_displacements],datas[_bottom_displacements]};
@@ -137,7 +143,6 @@ protected:
       Other values can be defined arbitrarily at interface creation */
   std::vector<UInt> ind_crack;
 
-
   /** Critical normal opening */
   std::vector<Real> crit_nor_opening;
   /** Critical shear opening */
@@ -146,6 +151,10 @@ protected:
   std::vector<Real> max_nor_strength;
   /** Maximum shear strength */
   std::vector<Real> max_shr_strength;
+  /** Residual normal strength */
+  std::vector<Real> res_nor_strength;
+  /** Residual shear strength */
+  std::vector<Real> res_shr_strength;
 
   /** Overlapping tolerance (0 = no , 1 = yes) */
   bool allow_overlapping;
@@ -155,6 +164,7 @@ protected:
   /** Permanent access toward some fields registered in the DataRegister
       required to compute interface conditions */
   std::vector<Real> mu;
+  std::vector<Real> cs;
   std::vector<CrackProfile*> stresses;
   std::vector<CrackProfile*> velocities;
   std::vector<CrackProfile*> displacements;

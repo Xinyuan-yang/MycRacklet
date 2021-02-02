@@ -86,8 +86,6 @@ void SpectralModel::initModel(Real reset_beta, bool blank) {
 
   nb_kernels = 4;
 
-  zeta = mu[0]/mu[1];
-
   displacements.resize(2);
   velocities.resize(2);
   stresses.resize(2);
@@ -166,8 +164,8 @@ void SpectralModel::registerModelFields() {
   this->registerParameter("shear modulus bottom", mu[1]);
   this->registerParameter("poisson ratio top", nu[0]);
   this->registerParameter("poisson ratio bottom", nu[1]);
-  this->registerParameter("shear wave speed top", cs_t);
-  this->registerParameter("shear wave speed bottom", cs_t/ksi);
+  this->registerParameter("shear wave speed top", cs[0]);
+  this->registerParameter("shear wave speed bottom", cs[1]);
   this->registerParameter("delta x", dx[0]);
   this->registerParameter("delta z", dx[1]);
   this->registerParameter("Domain length X", X[0]);
@@ -424,8 +422,10 @@ void SpectralModel::initInterfaceFields() {
 /* -------------------------------------------------------------------------- */
 void SpectralModel::updateDisplacements() {
 
+  Real dt = dxmin*beta/(std::max(cs[0],cs[1]));
+  
   for (UInt i = 0; i < 2; ++i) {
-    displacements[i] += velocities[i]*dxmin*beta;
+    displacements[i] += velocities[i]*dt;
   } 
   displ_jump->computeJumpFields(); 
 }
@@ -487,7 +487,7 @@ void SpectralModel::increaseTimeStep() {
 
  displ_jump->computeJumpFields();
  veloc_jump->computeJumpFields();
- computeAll(it*beta*dxmin/X[0]);
+ computeAll(it*beta*dxmin/(std::max(cs[0],cs[1])));
  ++it;
 
  if((it>ntim+1)&&(ntim!=0))
@@ -544,6 +544,6 @@ void SpectralModel::printSelf() {
 		 << "E_bot " << 2*mu[1]*(1+nu[1]) << std::endl
 		 << "nu_top "<< nu[0] << std::endl
 		 << "nu_bot "<< nu[1] << std::endl
-		 << "cs_top " << cs_t << std::endl
-		 << "cs_bot " << cs_t/ksi << std::endl;
+		 << "cs_top " << cs[0] << std::endl
+		 << "cs_bot " << cs[1] << std::endl;
 }

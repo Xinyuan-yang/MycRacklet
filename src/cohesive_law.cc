@@ -51,7 +51,7 @@ void CohesiveLaw::computeInitialVelocities() {
     for (UInt j = 0; j < n_ele[1]; ++j) {
       i=h+j*n_ele[0];
       
-      if((nor_strength[i]==0)&&((*loads[0])[i*dim+1] < 0.0)) { 
+      if((nor_strength[i]==res_nor_strength[i])&&((*loads[0])[i*dim+1] < 0.0)) { 
 	
 	contact_law->computeFricStrength((*loads[0])[i*dim+1], strength, i, it); 
 	
@@ -60,14 +60,14 @@ void CohesiveLaw::computeInitialVelocities() {
 	}
       }
       else{//velocities u2
-	(*velocities[0])[i*dim+1] = std::max(((*loads[0])[i*dim+1]-nor_strength[i])/(mu[0]*eta[0]),0.0);
-	(*velocities[1])[i*dim+1] = std::min((zeta/ksi)*(nor_strength[i]-(*loads[1])[i*dim+1])/(mu[0]*eta[1]),0.0);
+	(*velocities[0])[i*dim+1] = std::max(((*loads[0])[i*dim+1]-nor_strength[i])/(mu[0]*eta[0])*cs[0],0.0);
+	(*velocities[1])[i*dim+1] = std::min((nor_strength[i]-(*loads[1])[i*dim+1])/(mu[1]*eta[1])*cs[1],0.0);
       }
       
       //velocities u1 & u3
       for (UInt side = 0; side < 2; ++side) {
 	strength = shr_strength[i];
-  
+	
 	for (UInt k = 0; k < 2; ++k) {
 	  temp_f[k] = (*loads[side])[i*dim+2*k];
 	}
@@ -81,8 +81,8 @@ void CohesiveLaw::computeInitialVelocities() {
 	  }
 	}
 	else {
-	  if (side==0) shr_velo = std::max((shr_trac-strength)/mu[0],0.0);
-	  else shr_velo = std::min((zeta/ksi)*(strength - shr_trac)/mu[0],0.0);
+	  if (side==0) shr_velo = std::max((shr_trac-strength)/mu[0]*cs[0],0.0);
+	  else shr_velo = std::min((strength - shr_trac)/mu[0]*cs[1],0.0);
 	  
 	  for (UInt k = 0; k < 2; ++k) {
 	    (*velocities[side])[i*dim+2*k] = shr_velo*temp_f[k]/shr_trac;
@@ -116,24 +116,24 @@ void CohesiveLaw::updateCohesiveLaw() {
       aux = sqrt(((*nor_opening)[i]/crit_nor_opening[i])*((*nor_opening)[i]/crit_nor_opening[i])+
 		 ((*shr_opening)[i]/crit_shr_opening[i])*((*shr_opening)[i]/crit_shr_opening[i]));
       
-      if ((aux>=1)||(nor_strength[i] * shr_strength[i] == 0)) {
+      if ((aux>=1)||(nor_strength[i]==res_nor_strength[i])||(shr_strength[i]==res_shr_strength[i])) {
 
-	bool in_contact = ((nor_strength[i] == 0)&&(cRacklet::is_negative((*nor_opening)[i])));
+	bool in_contact = ((nor_strength[i] == res_nor_strength[i])&&(cRacklet::is_negative((*nor_opening)[i])));
 	// the case of contact is handled by the associated ContactLaw
 	
 	if (!in_contact) { 
 
 	  ind_crack[i] = 2;
-	  nor_strength[i] = 0.0;
-	  shr_strength[i] = 0.0;
+	  nor_strength[i] = res_nor_strength[i];
+	  shr_strength[i] = res_shr_strength[i];
 	}
       }
 
       else {
 
 	ind_crack[i] = 1;
-	nor_strength[i] = max_nor_strength[i] * (1-aux);
-	shr_strength[i] = max_shr_strength[i] * (1-aux);
+	nor_strength[i] = max_nor_strength[i] - (max_nor_strength[i]-res_nor_strength[i])*aux;
+	shr_strength[i] = max_shr_strength[i] - (max_shr_strength[i]-res_shr_strength[i])*aux;
       }
     }
   }    
@@ -148,22 +148,25 @@ void CohesiveLaw::computeVelocities(){
    
   deltaStresses = (*stresses[0]) - (*stresses[1]);
    
-  Real cste = 1/(mu[0]*(1+ksi/zeta)); 
-
+  Real cste = 1/(mu[0]/cs[0]+mu[1]/cs[1]); 
+  
   (*velocities[0]) =  deltaStresses * cste;
 
+  // Correction for the normal velocity
   for (UInt i = 0; i < n_ele[0]; ++i) {
     for (UInt j = 0; j < n_ele[1]; ++j) {
-      (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim] *= (1+ksi/zeta)/(eta[0]+ksi*eta[1]/zeta); 
+      (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim] *= 1/(mu[0]*eta[0]/cs[0]+mu[1]*eta[1]/cs[1])*(1/cste); 
     }
   }
   (*velocities[1])=(*velocities[0]); 
-
+  
   for (UInt i = 0; i < n_ele[0]; ++i) {
     for (UInt j = 0; j < n_ele[1]; ++j) {
-
-      trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim];
-      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0)) computeIndepNormalVelocities(i,j);
+      
+      trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim] / cs[0];
+      
+      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0))
+	computeIndepNormalVelocities(i,j);
       else {
 	(*intfc_trac)[(i*dim+1)+j*n_ele[0]*dim] = trac;
 	computeShearVelocities(shr_strength[i+n_ele[0]*j], i+j*n_ele[0]);

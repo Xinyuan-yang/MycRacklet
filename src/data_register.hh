@@ -204,7 +204,7 @@ public:
   //Access a registered computer object
   static Computer * getComputer(std::string computer_name);
   //Method returning current crack position searched between x_start and x_end (searching along z=0)
-  static UInt getCrackTipPosition(UInt x_start, UInt x_end);
+  static UInt getCrackTipPosition(UInt x_start, UInt x_end, UInt z_pos=0);
   // Method used in restart framework to load/export a vector from/to a data_file 
   // pausing=true->generate restart data_file | pausing=false->load vector from existing data_file
   // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)

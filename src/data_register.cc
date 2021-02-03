@@ -309,13 +309,15 @@ template
 void DataRegister::restartDataFrom2d(std::vector<Real> & my_data , std::fstream & file, UInt nele_2d);
 
 /* -------------------------------------------------------------------------- */
-UInt DataRegister::getCrackTipPosition(UInt x_start, UInt x_end) {
+UInt DataRegister::getCrackTipPosition(UInt x_start, UInt x_end, UInt z_pos) {
 
+  UInt nb_x = n_ele[0];
+  
   UInt x_tip=x_start;
 
   const std::vector<UInt> * ind_crack = readData(_id_crack);
 
-  while (((*ind_crack)[x_tip]==2)&&(x_tip<x_end))
+  while (((*ind_crack)[x_tip+z_pos*nb_x]==2)&&(x_tip<x_end))
     ++x_tip;
   
   return x_tip;

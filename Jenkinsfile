@@ -13,7 +13,7 @@ pipeline {
     }
 
     agent {
-        dockerfile { additionalBuildArgs '--tag cRacklet-environment'}
+        dockerfile { additionalBuildArgs '--tag cracklet-environment'}
     }
 
     stages {

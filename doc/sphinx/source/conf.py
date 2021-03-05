@@ -10,9 +10,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import subprocess
 
 
 # -- Project information -----------------------------------------------------
@@ -28,7 +29,9 @@ author = 'Fabian Barras, Thibault Roch, Philippe H Geubelle, Jean-François Moli
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx_rtd_theme",
+    'sphinx.ext.autodoc',
+    'sphinx_rtd_theme',
+    'breathe',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -59,3 +62,23 @@ html_static_path = ['_static']
 # html_theme_options = {}
 
 html_logo = '../../logo.svg'
+
+
+# -- Extension configuration -------------------------------------------------
+
+# If on RTD build, run doxygen
+on_read_the_docs = os.environ.get('READTHEDOCS') == 'True'
+
+if on_read_the_docs:
+    subprocess.call('cd ../../; mkdir -p build/doxygen; '
+                    + 'doxygen doxygen/Doxyfile', shell=True)
+    
+breathe_projects = {
+    'cRacklet': '../../build/doxygen/xml'
+}
+
+breathe_default_project = 'cRacklet'
+
+intersphinx_mapping = {
+    'numpy': ('https://numpy.org/doc/stable/', None),
+}

@@ -66,7 +66,7 @@ pipeline {
       }
     }
 
-    stage('Compile') {
+    stage('compile') {
       steps{sh '''#!/bin/bash set - o pipefail make - C build / src |
             tee build / compilation.txt
 		      ''' } post {
@@ -74,7 +74,7 @@ pipeline {
       }
     }
 
-    stage('Compile python') {
+    stage('compile python') {
       steps{sh '''#!/bin/bash set -
                 o pipefail
 

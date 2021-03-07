@@ -2,36 +2,21 @@ FROM debian:stable-slim
 
 MAINTAINER Thibault Roch <thibault.roch@epfl.ch>
 
-# Add contrib and non-free
-RUN sed -i 's/main/main contrib non-free/' /etc/apt/sources.list
-
-# Install any needed packages from ubuntu repos
+# Library dependencies
 RUN apt-get -qq update && apt-get install -y \
-    curl \
-    gcc \
-    git \
-    libboost-dev \
-    libpython3-dev \
-    libthrust-dev \
-    libfftw3-dev \
-    libfftw3-mpi-dev \
-    python3 \
-    python3-dev \
-    python3-numpy \
-    python3-pip \
-    python3-scipy \
-    python3-h5py \
-    python3-netcdf4 \
-    python3-phabricator \
-    python3-click \
-    python3-yaml \
-    python3-matplotlib \
-    python3-sphinx \
-    python3-breathe \
-    python3-sphinx-rtd-theme \
-    python3-mpi4py \
-    doxygen \
-    scons \
+    gcc cmake \
+    libgsl-dev libfftw3-dev libfftw3-openmp-dev \
+    python3 python3-dev python3-numpy python3-mpi4py \
   && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install pytest uvw
+# for documentation 
+RUN apt-get -qq update && apt-get -qq -y install \
+    python3-sphinx python3-sphinx-rtd-theme python3-breathe doxygen graphviz \
+    && rm -rf /var/lib/apt/lists/*
+
+# for ci on c4science.ch
+RUN apt-get -qq update && apt-get -qq -y install \
+    python3-pytest git \
+    php-cli php-curl php-xml \
+    python3-phabricator python3-click python3-yaml \
+    && rm -rf /var/lib/apt/lists/*

@@ -24,8 +24,8 @@ pipeline {
 
   environment{
     PHABRICATOR_HOST = 'https://c4science.ch/api/' PYTHONPATH = sh
-    returnStdout : true,
-    script : 'echo ${WORKSPACE}/tests/ci/script/'
+    returnStdout: true,
+    script: 'echo ${WORKSPACE}/tests/ci/script/'
   }
 
   agent {
@@ -35,7 +35,7 @@ pipeline {
   stages {
     stage('SCM Checkout') {
       steps {
-        checkout scm : [$class:'GitSCM',
+        checkout scm: [$class:'GitSCM',
                                     branches:scm.branches,
                                   extensions:[[$class:'SubmoduleOption',
                                                  recursiveSubmodules:true, ]],

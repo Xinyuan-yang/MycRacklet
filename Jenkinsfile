@@ -18,11 +18,14 @@ pipeline {
   stages {
     stage('SCM Checkout') {
       steps {
-        checkout scm: [$class:'GitSCM',
-                                    branches:scm.branches,
-                                  extensions:[[$class:'SubmoduleOption',
-                                                 recursiveSubmodules:true, ]],
-                           userRemoteConfigs:scm.userRemoteConfigs]
+        checkout scm: [
+		 $class:'GitSCM',
+		 branches:scm.branches,
+		 extensions:[[
+			$class:'SubmoduleOption',
+		 	recursiveSubmodules:true,
+		 ]],
+		 userRemoteConfigs:scm.userRemoteConfigs]
       }
     }
 

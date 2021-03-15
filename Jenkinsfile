@@ -23,9 +23,8 @@ pipeline {
                                 : 'PROJECT_ID')}
 
   environment{
-    PHABRICATOR_HOST = 'https://c4science.ch/api/' PYTHONPATH = sh
-    returnStdout: true,
-    script: 'echo ${WORKSPACE}/tests/ci/script/'
+    PHABRICATOR_HOST = 'https://c4science.ch/api/'
+    PYTHONPATH = sh returnStdout: true, script: 'echo ${WORKSPACE}/tests/ci/script/'
   }
 
   agent {

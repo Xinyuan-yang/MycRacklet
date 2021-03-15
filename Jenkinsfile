@@ -88,4 +88,42 @@ pipeline {
       }
     }
   }
+
+  post {
+       always {
+       createArtifact("build/CTestResults.xml")
+
+      step([$class: 'XUnitBuilder',
+      thresholds: [
+          [$class: 'SkippedThreshold', failureThreshold: '0'],
+          [$class: 'FailedThreshold', failureThreshold: '0']],
+      tools: [
+        [$class: 'CTestType', pattern: 'build/CTestResults.xml', skipNoTestFiles: true]
+      ]])
+    }
+  success {
+      passed()
+    }
+
+    failure {
+      failed()
+    }
+  }
+}
+
+def failed() {
+  sh "./test/ci/scripts/hbm failed"
+}
+
+def passed() {
+  sh "./test/ci/scripts/hbm passed"
+}
+
+def createArtifact(filename) {
+  sh "./test/ci/scripts/hbm send-uri -k 'Jenkins URI' -u ${BUILD_URL} -l 'View Jenkins result'"
+  sh "./test/ci/scripts/hbm send-ctest-results -f ${filename}"
+}
+
+def uploadArtifact(artifact, name) {
+  sh "./test/ci/scripts/hbm upload-file -f ${artifact} -n \"${name}\" -v ${PROJECT_ID}"
 }

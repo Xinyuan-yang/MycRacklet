@@ -44,43 +44,47 @@ pipeline {
 
     stage('Configure') {
       steps{
-        sh ""
-           "#!/bin/bash
-            set -
-            o pipefail mkdir - p build cd build cmake -
-            DCRACKLET_PYTHON_INTERFACE : BOOL =
-            TRUE - DCRACKLET_EXAMPLES : BOOL =
-                TRUE - DCRACKLET_TESTS : BOOL =
-                    TRUE - DCMAKE_BUILD_TYPE : STRING =
-                        RelWithDebInfo..| tee../ configure.txt ""
-                                                               "
+        sh """#!/bin/bash
+            set -o pipefail
+	     mkdir - p build
+	      cd build 
+	      cmake -DCRACKLET_PYTHON_INTERFACE:BOOL=TRUE 
+	      	    -DCRACKLET_EXAMPLES:BOOL=TRUE 
+		    -DCRACKLET_TESTS:BOOL=TRUE
+		    -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo ..| tee../ configure.txt 
+		    """
       } post {
         failure {
-          uploadArtifact('build/configure.txt', 'Configure') sh ""
-                                                                "
-              rm -
-              rf build ""
-                       "
-        }
+          uploadArtifact('build/configure.txt', 'Configure')
+	  	sh """
+              	rm -rf build
+		 """
+		 }
       }
     }
 
     stage('compile') {
-      steps{sh '''#!/bin/bash set - o pipefail make - C build / src |
-            tee build / compilation.txt
-		      ''' } post {
-        failure { uploadArtifact('build/compilation.txt', 'Compilation') }
-      }
+      steps {
+      	sh '''#!/bin/bash
+	set - o pipefail
+	make - C build / src | tee build / compilation.txt
+	'''
+	}
+	post {
+	        failure {
+		uploadArtifact('build/compilation.txt', 'Compilation')
+		}
+     	}
     }
 
     stage('compile python') {
-      steps{sh '''#!/bin/bash set -
-                o pipefail
-
-                    make -
-                C build / python |
-            tee build / compilation_python.txt
-			     ''' } post {
+      steps {
+      sh '''#!/bin/bash
+      set -o pipefail
+      make -C build/python | tee build / compilation_python.txt
+      '''
+      }
+      post {
         failure {
           uploadArtifact('build/compilation_python.txt', 'Compilation_Python')
         }

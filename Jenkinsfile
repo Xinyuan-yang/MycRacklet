@@ -32,6 +32,7 @@ pipeline {
 		 	recursiveSubmodules:true,
 		 ]],
 		 userRemoteConfigs:scm.userRemoteConfigs]
-      }
-    }
-}
+		 }
+	}
+	}
+	}

@@ -18,7 +18,10 @@ pipeline {
   stages {
     stage('SCM Checkout') {
       steps {
-        checkout scm: [
+      	    // Clean before build
+	    cleanWs()
+	    // Checkout from SCM
+      	    checkout scm: [
 		 $class:'GitSCM',
 		 branches:scm.branches,
 		 extensions:[[

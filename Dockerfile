@@ -5,7 +5,7 @@ MAINTAINER Thibault Roch <thibault.roch@epfl.ch>
 # Library dependencies
 RUN apt-get -qq update && apt-get install -y \
     gcc cmake \
-    libgsl-dev libfftw3-dev libfftw3-openmp-dev \
+    libfftw3-dev libfftw3-openmp-dev \
     python3 python3-dev python3-numpy python3-mpi4py \
   && rm -rf /var/lib/apt/lists/*
 

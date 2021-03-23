@@ -69,7 +69,7 @@ void register_fracture_law_type(py::module&mod){
       .def("insertPatternfromFile",py::overload_cast<std::string, UInt>(&Interfacer<F>::insertPatternfromFile))
       .def("insertPatternfromFile",py::overload_cast<std::string, std::string,std::string>(&Interfacer<F>::insertPatternfromFile)) // Create an interface based on three files: one for the strength, the other for the opening, one for the residual (If provided)
       .def("createNormalDistributedInterface",&Interfacer<F>::createNormalDistributedInterface)
-      .def("createHeterogeneousInterface",&Interfacer<F>::createHeterogeneousInterface,py::arg("crit_nor_opening"),py::arg("max_nor_strength"),py::arg("crit_shr_opening")=std::vector<Real>(),py::arg("max_shr_strength")=std::vector<Real>()) // Create an interface from vectors
+      .def("createHeterogeneousInterface",&Interfacer<F>::createHeterogeneousInterface,py::arg("crit_nor_opening"),py::arg("max_nor_strength"),py::arg("res_nor_strength")=std::vector<Real>(),py::arg("crit_shr_opening")=std::vector<Real>(),py::arg("max_shr_strength")=std::vector<Real>(),py::arg("res_shr_strength")=std::vector<Real>()) // Create an interface from vectors
 #ifdef CRACKLET_USE_LIBSURFER
       .def("createBrownianHeterogInterface",&Interfacer<F>::createBrownianHeterogInterface)
 #endif
@@ -93,8 +93,8 @@ void register_fracture_law_type(py::module&mod){
       .def("createThroughArea",&Interfacer<F>::createThroughArea)
       .def("createThroughCrack",&Interfacer<F>::createThroughCrack)
       .def("createThroughWall",&Interfacer<F>::createThroughWall)
-      .def("createHeterogeneousInterface",&Interfacer<F>::createHeterogeneousInterface,py::arg("crit_nor_opening"),py::arg("max_nor_strength"),py::arg("crit_shr_opening")=std::vector<Real>(),py::arg("max_shr_strength")=std::vector<Real>()); // Create an interface from vectors
-       }
+      .def("createHeterogeneousInterface",&Interfacer<F>::createHeterogeneousInterface,py::arg("crit_nor_opening"),py::arg("max_nor_strength"),py::arg("res_nor_strength")=std::vector<Real>(),py::arg("crit_shr_opening")=std::vector<Real>(),py::arg("max_shr_strength")=std::vector<Real>(),py::arg("res_shr_strength")=std::vector<Real>()); // Create an interface from vectors
+      }
   
   void register_interfacer(py::module& mod) {
     wrap_interfacer_cohesive<_linear_coupled_cohesive>(mod);

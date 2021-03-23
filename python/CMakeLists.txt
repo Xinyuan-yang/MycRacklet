@@ -16,6 +16,12 @@ set(PYCRACKLET_SRCS
   )
 
 pybind11_add_module(py_cRacklet ${PYCRACKLET_SRCS})
+target_include_directories(py_cRacklet
+  SYSTEM BEFORE
+  PRIVATE ${PYBIND11_INCLUDE_DIR}                                                           
+  PRIVATE ${pybind11_INCLUDE_DIR}                                                           
+  PRIVATE ${PYTHON_INCLUDE_DIRS})
+
 target_link_libraries(py_cRacklet PUBLIC cRacklet)
 set_target_properties(py_cRacklet PROPERTIES DEBUG_POSTIFX "")
 

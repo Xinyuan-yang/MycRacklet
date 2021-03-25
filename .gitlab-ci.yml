@@ -1,6 +1,7 @@
 stages:
     - configure
     - build
+    - test
 
 default:
   image: registry.gitlab.com/tiburoch/cracklet
@@ -12,6 +13,8 @@ default:
     script:
         - cmake -E make_directory build
         - cd build
+        - cmake -DCRACKLET_TESTS:BOOL=TRUE
+                -DCRACKLET_EXAMPLES:BOOL=TRUE
         - cmake -DCMAKE_BUILD_TYPE:STIRNG=Release ..
     artifacts:
         when: on_success
@@ -23,6 +26,19 @@ default:
     stage: build
     script:
         - cmake --build build/src > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+        - cmake --build build/test > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+        - cmake --build build/examples > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+    artifacts:
+        when: on_success
+        paths:
+          - build
+        expire_in: 10h
+
+.tests:
+  stage: test
+  script:
+    - cd build
+    - ctest -T test --no-compress-output --timeout 1800
 
 configure:ubuntu:
     extends:
@@ -35,3 +51,9 @@ build:ubuntu:
     - .build
   dependencies:
     - configure:ubuntu
+
+test:ubuntu:
+  extends:
+    - .tests
+  dependencies:
+    - build:ubuntu

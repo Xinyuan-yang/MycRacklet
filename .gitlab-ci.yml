@@ -15,7 +15,7 @@ default:
 .build:
     stage: build
     script:
-        - cmake --build build/src > >(tee -a ${output}-out.log) 2> >(tee -a ${output}-err.log >&2)
+        - cmake --build build/src > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
 
 configure:ubuntu:
     extends:

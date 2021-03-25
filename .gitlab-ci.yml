@@ -30,6 +30,7 @@ default:
         - cmake --build build/src > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
         - cmake --build build/examples > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
         - cmake --build build/tests > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+        - cmake --build build/python > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
     artifacts:
         when: on_success
         paths:

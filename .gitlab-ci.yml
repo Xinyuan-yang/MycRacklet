@@ -10,8 +10,8 @@ default:
     except:
         - tags
     script:
-	- cmake -E make_directory build
-	- cd build
+        - cmake -E make_directory build
+        - cd build
 
 .build:
     stage: build
@@ -25,7 +25,3 @@ configure:ubuntu:
         policy: pull-push
 
 build:ubuntu:
-    extends:
-        - .build
-    dependencies:
-        - configure:ubuntu

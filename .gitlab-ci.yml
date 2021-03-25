@@ -15,6 +15,7 @@ default:
         - cd build
         - cmake -DCRACKLET_TESTS:BOOL=TRUE
                 -DCRACKLET_EXAMPLES:BOOL=TRUE
+                -DCRACKLET_MULTRI_THREADED:BOOL=TRUE
                 -DCMAKE_BUILD_TYPE:STIRNG=Release ..
     artifacts:
         when: on_success

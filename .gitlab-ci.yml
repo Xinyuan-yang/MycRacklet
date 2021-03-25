@@ -25,3 +25,7 @@ configure:ubuntu:
         policy: pull-push
 
 build:ubuntu:
+  extends:
+    - .build
+  dependencies:
+    - configure:ubuntu

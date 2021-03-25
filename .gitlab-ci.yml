@@ -12,7 +12,6 @@ default:
     script:
 	- cmake -E make_directory build
 	- cd build
-	- cmake -DCRACKLET_MULTI_THREADED:BOOL=TRUE
 
 .build:
     stage: build

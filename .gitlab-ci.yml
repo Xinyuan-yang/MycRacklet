@@ -10,14 +10,14 @@ default:
     except:
         - tags
     script:
-	- cmake -E make_directory build
+        - cmake -E make_directory build
         - cd build
         - cmake -DCMAKE_BUILD_TYPE:STIRNG=Release ..
     artifacts:
-	when: on_success
-	paths:
-	  - build
-	expire_in: 10h
+        when: on_success
+        paths:
+          - build
+        expire_in: 10h
 
 .build:
     stage: build

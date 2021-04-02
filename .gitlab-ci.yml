@@ -15,7 +15,8 @@ default:
         - cd build
         - cmake -DCRACKLET_TESTS:BOOL=TRUE
                 -DCRACKLET_EXAMPLES:BOOL=TRUE
-                -DCRACKLET_MULTRI_THREADED:BOOL=TRUE
+                -DCRACKLET_MULTI_THREADED:BOOL=TRUE
+                -DCRACKLET_PYTHON_INTERFACE:BOOL=TRUE
                 -DCMAKE_BUILD_TYPE:STIRNG=Release ..
     artifacts:
         when: on_success
@@ -29,6 +30,7 @@ default:
         - cmake --build build/src > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
         - cmake --build build/examples > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
         - cmake --build build/tests > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+        - cmake --build build/python > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
     artifacts:
         when: on_success
         paths:

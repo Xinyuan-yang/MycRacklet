@@ -260,7 +260,7 @@ inline void Interfacer<_linear_coupled_cohesive>::insertPatternfromFile(std::str
 
 /* -------------------------------------------------------------------------- */
 template<>
-inline void Interfacer<_linear_coupled_cohesive>::createHeterogeneousInterface(std::vector<Real> crit_nor_opening, std::vector<Real> max_nor_strength, std::vector<Real> crit_shr_opening, std::vector<Real> max_shr_strength) {
+inline void Interfacer<_linear_coupled_cohesive>::createHeterogeneousInterface(std::vector<Real> crit_nor_opening, std::vector<Real> max_nor_strength,std::vector<Real> res_nor_strength, std::vector<Real> crit_shr_opening, std::vector<Real> max_shr_strength, std::vector<Real> res_shr_strength) {
 
   std::vector<Real> * nor_strength = datas[_normal_strength];
   std::vector<Real> * shr_strength = datas[_shear_strength];
@@ -269,9 +269,6 @@ inline void Interfacer<_linear_coupled_cohesive>::createHeterogeneousInterface(s
   std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
   std::vector<Real> * res_n_strength = datas[_residual_normal_strength];
   std::vector<Real> * res_s_strength = datas[_residual_shear_strength];
-
-  std::fill(res_n_strength->begin(),  res_n_strength->end(), 0);
-  std::fill(res_s_strength->begin(),  res_s_strength->end(), 0);
   
   // Check the length of the shear arguments...
 
@@ -293,6 +290,33 @@ inline void Interfacer<_linear_coupled_cohesive>::createHeterogeneousInterface(s
       }
     }
   }
+
+  // Check the length of the residual normal
+  
+  if ( res_nor_strength.size() == 0 ){
+    std::fill(res_n_strength->begin(),  res_n_strength->end(), 0);
+  }
+  else{
+    for (UInt x = 0; x < n_ele[0]; ++x) {
+      for (UInt z = 0; z < n_ele[1]; ++z ) {
+	(*res_n_strength)[x+z*n_ele[0]] = res_nor_strength[x+z*n_ele[0]];
+      }
+    }
+  }
+  
+  // Check the length of the residual shear
+  
+  if ( res_shr_strength.size() == 0 ){
+    std::fill(res_s_strength->begin(),  res_s_strength->end(), 0);
+  }
+  else{
+    for (UInt x = 0; x < n_ele[0]; ++x) {
+      for (UInt z = 0; z < n_ele[1]; ++z ) {
+	(*res_s_strength)[x+z*n_ele[0]] = res_shr_strength[x+z*n_ele[0]];
+      }
+    }
+  }    
+  
   out_summary << "/* -------------------------------------------------------------------------- */ "
 	      << std::endl
 	      << "Maximum strength and critical opening patterns inserted from vectors."
@@ -1021,7 +1045,7 @@ inline void Interfacer<_viscoelastic_coupled_cohesive>::createThroughWall(Real w
 
 /* -------------------------------------------------------------------------- */
 template<>
-inline void Interfacer<_viscoelastic_coupled_cohesive>::createHeterogeneousInterface(std::vector<Real> crit_nor_opening, std::vector<Real> max_nor_strength, std::vector<Real> crit_shr_opening, std::vector<Real> max_shr_strength) {
+inline void Interfacer<_viscoelastic_coupled_cohesive>::createHeterogeneousInterface(std::vector<Real> crit_nor_opening, std::vector<Real> max_nor_strength,std::vector<Real> res_nor_strength, std::vector<Real> crit_shr_opening, std::vector<Real> max_shr_strength, std::vector<Real> res_shr_strength) {
 
   Real lim_velocity = DataRegister::getParameter<Real>("lim_velocity");
   

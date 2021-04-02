@@ -122,9 +122,9 @@ add_subdirectory(src)
 # Documentation
 #===============================================================================
 
-option(CRACKLET_DOCUMENTATION_DOXYGEN "Build source documentation using Doxygen" OFF)
+option(CRACKLET_DOCUMENTATION "Build documentation" OFF)
 
-if(CRACKLET_DOCUMENTATION_DOXYGEN)
+if(CRACKLET_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 

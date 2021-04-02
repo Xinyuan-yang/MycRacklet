@@ -1,0 +1,62 @@
+stages:
+    - configure
+    - build
+    - test
+
+default:
+  image: registry.gitlab.com/tiburoch/cracklet
+
+.configure:
+    stage: configure
+    except:
+        - tags
+    script:
+        - cmake -E make_directory build
+        - cd build
+        - cmake -DCRACKLET_TESTS:BOOL=TRUE
+                -DCRACKLET_EXAMPLES:BOOL=TRUE
+                -DCRACKLET_MULTI_THREADED:BOOL=TRUE
+                -DCRACKLET_PYTHON_INTERFACE:BOOL=TRUE
+                -DCMAKE_BUILD_TYPE:STIRNG=Release ..
+    artifacts:
+        when: on_success
+        paths:
+          - build
+        expire_in: 10h
+
+.build:
+    stage: build
+    script:
+        - cmake --build build/src > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+        - cmake --build build/examples > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+        - cmake --build build/tests > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+        - cmake --build build/python > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+    artifacts:
+        when: on_success
+        paths:
+          - build
+        expire_in: 10h
+
+.tests:
+  stage: test
+  script:
+    - cd build
+    - ctest -T test --no-compress-output --timeout 1800
+
+configure:ubuntu:
+    extends:
+        - .configure
+    cache:
+        policy: pull-push
+
+build:ubuntu:
+  extends:
+    - .build
+  dependencies:
+    - configure:ubuntu
+
+test:ubuntu:
+  extends:
+    - .tests
+  dependencies:
+    - build:ubuntu

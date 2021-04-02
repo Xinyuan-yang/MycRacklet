@@ -100,7 +100,7 @@ public:
       @param crit_shr_opening : Vector of critical shear opening of the cohesive law. If not specified, it is assumed to be equal to the normal one.
       @param max_shr_strength : Vector of maximum shear strength of the cohesive law. If not specified, it is assumed to be equal to the normal one.
   */
-  void createHeterogeneousInterface(std::vector<Real> crit_nor_opening, std::vector<Real> max_nor_strength, std::vector<Real> crit_shr_opening = {}, std::vector<Real> max_shr_strength = {});
+  void createHeterogeneousInterface(std::vector<Real> crit_nor_opening, std::vector<Real> max_nor_strength, std::vector<Real> res_nor_strength = {}, std::vector<Real> crit_shr_opening = {}, std::vector<Real> max_shr_strength = {}, std::vector<Real> res_shr_strength = {});
   /** create an heterogeneous interface following normal distribution of strength
       @param crit_nor_opening : Reference critical normal opening of the cohesive law
       @param crit_shr_opening : Reference critical shear opening of the cohesive law

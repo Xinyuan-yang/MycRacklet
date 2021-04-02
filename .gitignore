@@ -5,3 +5,4 @@
 *.pdf
 build/
 .ipynb_checkpoints
+*.ipynb

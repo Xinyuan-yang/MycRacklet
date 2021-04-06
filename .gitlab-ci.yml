@@ -75,7 +75,8 @@ test:ubuntu:
 # ----------------------------------------------------------------------------------------
 pages:
     stage: deploy
-    dependencies: []
+    dependencies:
+        - build:ubuntu
     script:
         - cd build
         - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..

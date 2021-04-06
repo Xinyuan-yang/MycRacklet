@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import shutil
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import subprocess
@@ -30,6 +31,13 @@ extensions = ['sphinx.ext.autodoc',
               'breathe']
 
 read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
+
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ['_static']
+html_logo = '_static/logo.svg'
+
 if os.environ.get('READTHEDOCS', None) is not None:
     print("${READTHEDOCS} = " + os.environ.get('READTHEDOCS', None))
 if read_the_docs_build:
@@ -37,7 +45,10 @@ if read_the_docs_build:
 else:
     cRacklet_path = "@CMAKE_CURRENT_BINARY_DIR@"
     os.makedirs("@CMAKE_CURRENT_BINARY_DIR@/_static", exist_ok=True)
-
+    shutil.copyfile(
+        os.path.join('@CMAKE_CURRENT_SOURCE_DIR@', html_logo),
+        os.path.join(cRacklet_path, html_logo))
+    
 print("cRacklet_path = '{}'".format(cRacklet_path))
 subprocess.call('ls; pwd', shell=True)
 subprocess.call("cd {} && doxygen".format(cRacklet_path), shell=True)
@@ -102,11 +113,6 @@ if on_rtd:
 else:
     html_theme = 'sphinx_rtd_theme'
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
@@ -129,7 +135,6 @@ htmlhelp_basename = 'cRackletdoc'
 #
 # html_theme_options = {}
 
-html_logo = '../../logo.svg'
 
 # -- Extension configuration -------------------------------------------------
     

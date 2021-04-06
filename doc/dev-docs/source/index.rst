@@ -17,44 +17,15 @@ cRacklet - A boundary integral library for interfacial rupture simulations
    ./examples
    ./api_reference
 
-Seeking help
-------------
+Seeking help - Bug reports
+--------------------------
 
-You can ask your questions on `c4science <https://c4science.ch>`_ using this
-`form
-(ADD LINK)
-If you do not have an account, you can create one `here
-<https://c4science.ch/auth/start/?next=%2F>`_.      
+You can ask your questions or report any bugs you find here https://gitlab.com/tiburoch/cracklet/-/issues
 
-Contribution
-------------
+Code contribution
+-----------------
 
-Code
-....
-
-To contribute code to cRacklet, you can use `Arcanist
-<https://secure.phabricator.com/book/phabricator/article/arcanist/>`_ to send
-code differentials. In a nutshell, the process to contribute is:
-
-1. Create a branch for the modifications you wish to submit
-2. Work on your branch (commits + run tests)
-3. ``arc diff`` to send your code for review
-4. Commit any requested changes
-5. ``arc diff`` to send your modifications
-
-For reviewers:
-
-1. Checkout a code differential using ``arc patch D???``
-2. Accept the code differential on `c4science <https://c4science.ch>`_.
-3. ``arc land`` to merge the differential
-4. Profit with ``arc anoid``
-
-Bug reports
-...........
-
-You can also contribute to cRacklet by reporting any bugs you find `here
-(ADD LINK)
-if you have an account on `c4science <https://c4science.ch>`_.
+Any contribution to cRacklet, bugfixes or new features, is welcome with a gitlab pull request.
    
 Indices and tables
 ==================

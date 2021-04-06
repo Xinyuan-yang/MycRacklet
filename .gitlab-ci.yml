@@ -17,7 +17,7 @@ default:
                 -DCRACKLET_EXAMPLES:BOOL=TRUE
                 -DCRACKLET_MULTI_THREADED:BOOL=TRUE
                 -DCRACKLET_PYTHON_INTERFACE:BOOL=TRUE
-                -DCMAKE_BUILD_TYPE:STIRNG=Release ..
+                -DCMAKE_BUILD_TYPE:STRING=Release ..
     artifacts:
         when: on_success
         paths:
@@ -50,10 +50,20 @@ configure:ubuntu:
         policy: pull-push
 
 build:ubuntu:
-  extends:
-    - .build
-  dependencies:
-    - configure:ubuntu
+    extends:
+        - .build
+    dependencies:
+        - configure:ubuntu
+
+build:test_documentation:
+    stage: build
+    script:
+        - cd build
+        - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
+        - make dev_doc
+    artifacts:
+        paths:
+            - build/doc/html
 
 test:ubuntu:
   extends:

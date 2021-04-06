@@ -52,7 +52,7 @@ For reviewers:
 Bug reports
 ...........
 
-You can also contribute to Tamaas by reporting any bugs you find `here
+You can also contribute to cRacklet by reporting any bugs you find `here
 (ADD LINK)
 if you have an account on `c4science <https://c4science.ch>`_.
    

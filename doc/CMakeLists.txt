@@ -4,9 +4,9 @@
 # @author Thibault Roch <thibault.roch@epfl.ch>
 #
 # @date creation: Fri May 22 2020
-# @date last modification: Fri May 22 2020
+# @date last modification: Fri Apr 2 2021
 #
-# @brief  configuration file for doxygen
+# @brief  configuration file for documentation
 #
 # @section LICENSE
 #
@@ -34,91 +34,43 @@
 #
 #===============================================================================
 
-set(DOXYGEN_INPUT_DOX ${CMAKE_CURRENT_BINARY_DIR}/cracklet.dox)
-set(DOXYGEN_HTML_DIR ${CMAKE_CURRENT_BINARY_DIR}/html)
-set(DOXYGEN_OUTPUT ${DOXYGEN_HTML_DIR}/index.html)
+find_package(Sphinx REQUIRED)
 
-# ---------------------------------------------------------------------------- #
-# Doxygen                                                                      #
-# ---------------------------------------------------------------------------- #
-find_package(Doxygen REQUIRED)
+# configured documentation tools and intermediate build results
+set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
 
-set(DOXYGEN_WARNINGS NO)
-set(DOXYGEN_QUIET YES)
-if(CMAKE_VERBOSE_MAKEFILE)
-  set(DOXYGEN_WARNINGS YES)
-  set(DOXYGEN_QUIET NO)
-endif(CMAKE_VERBOSE_MAKEFILE)
+# Sphinx cache with pickled ReST documents
+set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
 
-if (CMAKE_VERSION VERSION_GREATER 3.9.5)
+# HTML output directory
+set(SPHINX_HTML_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
 
-  #set(DOXYGEN_WARNINGS YES)
-  #set(DOXYGEN_QUIET NO)
-  set(DOXYGEN_STRIP_FROM_PATH ${PROJECT_SOURCE_DIR})
-  set(DOXYGEN_STRIP_FROM_INC_PATH ${PROJECT_SOURCE_DIR})
-  set(DOXYGEN_ALIASES
-    "rst=\\verbatim embed:rst"
-    "endrst=\\endverbatim"
-    )
-  set(DOXYGEN_WARN_IF_UNDOCUMENTED NO)
-  set(DOXYGEN_WARN_IF_DOC_ERROR YES)
-  set(DOXYGEN_WARN_AS_ERROR NO)
-  set(DOXYGEN_RECURSIVE YES)
-  #set(DOXYGEN_EXAMPLE_PATH "${PROJECT_SOURCE_DIR}/examples")
-  set(DOXYGEN_EXAMPLE_RECURSIVE YES)
-  set(DOXYGEN_SOURCE_BROWSER NO)
-  set(DOXYGEN_CLANG_ASSISTED_PARSING NO)
-  #set(DOXYGEN_CLANG_OPTIONS          )
-  set(DOXYGEN_CLANG_DATABASE_PATH ${CMAKE_BINARY_DIR})
-  set(DOXYGEN_USE_MATHJAX YES)
-  set(DOXYGEN_GENERATE_HTML YES)
-  set(DOXYGEN_GENERATE_HTMLHELP NO)
-  set(DOXYGEN_GENERATE_LATEX NO)
-  set(DOXYGEN_GENERATE_XML NO)
-  set(DOXYGEN_HTML_OUTPUT html)
-  set(DOXYGEN_ENABLE_PREPROCESSING YES)
-  set(DOXYGEN_MACRO_EXPANSION YES)
-  set(DOXYGEN_COLLABORATION_GRAPH NO)
-  set(DOXYGEN_UML_LOOK YES)
-  set(DOXYGEN_TEMPLATE_RELATIONS YES)
-  set(DOXYGEN_CALL_GRAPH YES)
-  set(DOXYGEN_CALLER_GRAPH YES)
-  set(DOXYGEN_DOT_GRAPH_MAX_NODES 500)
-  set(DOXYGEN_SHOW_FILES NO)
-  set(DOXYGEN_LOOKUP_CACHE_SIZE 9)
-  
-  set(_SRCS
-    ${PROJECT_SOURCE_DIR}
-    )
-    
-  doxygen_add_docs(doxygen-doc
-    ${_SRCS}
-    COMMENT "Building HTML documentation with Doxygen in ${DOXYGEN_HTML_DIR}"
-    )
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/dev-docs/source/conf.py"
+  "${CMAKE_CURRENT_BINARY_DIR}/conf.py"
+  @ONLY)
 
-else()
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/dev-docs/source/Doxyfile"
+  "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+  @ONLY)
 
-  message(${PROJECT_BINARY_DIR})
-  
-  make_directory(${DOXYGEN_HTML_DIR})
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/dev-docs/source/input_def.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/input_def"
+  @ONLY)
 
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cracklet.dox.in
-    ${DOXYGEN_INPUT_DOX}
-    )
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/dev-docs/source/xml_output_def.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/xml_output_def"
+  @ONLY)
 
-  add_custom_command(
-    OUTPUT ${DOXYGEN_OUTPUT}
-    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT_DOX}
-    DEPENDS ${DOXYGEN_INPUT_DOX}
-    COMMENT "Building HTML documentation with Doxygen in ${DOXYGEN_HTML_DIR}"
-    )
-
-  add_custom_target(doxygen-doc ALL
-    DEPENDS ${DOXYGEN_OUTPUT}
-    )
-
-  add_custom_target(doxygen-doc-forced
-    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_INPUT}
-    COMMENT "Building HTML documentation with Doxygen (forced) in ${DOXYGEN_XML_DIR}"
-    )
-endif()
+add_custom_target(dev_doc
+  ${SPHINX_EXECUTABLE}
+  -j 4
+  -q -b html
+  -c "${CMAKE_CURRENT_BINARY_DIR}"
+  -d "${SPHINX_CACHE_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/dev-docs/source"
+  "${SPHINX_HTML_DIR}"
+  COMMENT "Building HTML documentation with Sphinx")

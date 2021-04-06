@@ -94,3 +94,4 @@ cRacklet Dumper and Data Management
 C++ API
 -------
 
+.. doxygenindex::

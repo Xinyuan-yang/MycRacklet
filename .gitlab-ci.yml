@@ -2,6 +2,7 @@ stages:
     - configure
     - build
     - test
+    - deploy
 
 default:
   image: registry.gitlab.com/tiburoch/cracklet
@@ -70,3 +71,18 @@ test:ubuntu:
     - .tests
   dependencies:
     - build:ubuntu
+
+# ----------------------------------------------------------------------------------------
+pages:
+    stage: deploy
+    dependencies: []
+    script:
+        - cd build
+        - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
+        - make dev_doc
+        - mv doc/html ../public
+    artifacts:
+        paths:
+            - public
+    only:
+        - readthedoc

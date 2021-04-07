@@ -1,6 +1,7 @@
 /**
  * @file   spectral_model.hh
  * @author Fabian Barras <fabian.barras@epfl.ch>
+ * @author Thibault Roch <thibault.roch@epfl.ch>
  * @date   Fri Nov  9 19:10:51 2012
  *
  * @brief  Class performing the core operations of the spectral method
@@ -86,36 +87,91 @@ struct InterfaceFields{
 
 };
 
+/**
+ * @class  SpectralModel spectral_model.hh
+ *
+ * This class is the core of cRacklet and contains the methods processing the different steps required to solve the elastodynamic response of the two semi-infinite half space.
+ *
+*/
 class SpectralModel : public DataRegister {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
-  // Default constructor
+  /// Default Constructor
   SpectralModel();
-  // Constructor for 2D, same material on top and bottom
+  /** Constructor for 2D interface, same material on top and bottom
+      @param nele_x : (Int) Number of discretization points
+      @param nb_time_steps : (Int) Number of time steps
+      @param dom_size_x : (Real) Size of the interface
+      @param nu : (Real) Poisson ratio of the bulk
+      @param E : (Real) Young Modulus of the bulk
+      @param cs : (Real) Shear wave speed of the bulk material
+      @param tcut : (Int) cut-off of the material kernels
+      @param simulation_summary : (string) text summarizing the simulation
+      @param output_dir : (string) Output directory. By default, its the executable directory
+  */
   SpectralModel(UInt nele_x, UInt nb_time_steps, Real dom_size_x,
 		Real nu, Real E, Real cs, UInt tcut, 
 		const std::string & simulation_summary,
 		const std::string output_dir="./");
-  // Constructor for 2D, different materials on top and bottom
+  /** Constructor for 2D interface, bi-material interface
+      @param nele_x : (Int) Number of discretization points
+      @param nb_time_steps : (Int) Number of time steps
+      @param dom_size_x : (Real) Size of the interface
+      @param nu_top : (Real) Poisson ratio of the bulk material on top
+      @param nu_bot : (Real) Poisson ratio of the bulk material on bottom
+      @param E_top : (Real) Young Modulus of the bulk material on top
+      @param E_bot : (Real) Young Modulus of the bulk material on bottom
+      @param cs_top : (Real) Shear wave speed of the bulk material material on top
+      @param cs_bot : (Real) Shear wave speed of the bulk material material on bottom
+      @param tcut_top : (Int) cut-off of the kernels for the  material on top
+      @param tcut_bot : (Int) cut-off of the kernels for the  material on bottom
+      @param simulation_summary : (string) text summarizing the simulation
+      @param output_dir : (string) Output directory. By default, its the executable directory
+  */
   SpectralModel(UInt nele_x, UInt nb_time_steps, Real dom_size_x,
 		Real nu_top, Real nu_bot, Real E_top, Real E_bot, 
 		Real cs_top, Real cs_bot, UInt tcut_top, UInt tcut_bot, 
 		const std::string & simulation_summary,
 		const std::string output_dir="./");  
-  // Constructor for 3D, same material on top and bottom
+  /** Constructor for 3D interface, same material on top and bottom
+      @param nele : (array<Int>) Number of discretization points in the x and y direction
+      @param nb_time_steps : (Int) Number of time steps
+      @param dom_size : (array<Real>) Size of the interface in x and y direction
+      @param nu : (Real) Poisson ratio of the bulk
+      @param E : (Real) Young Modulus of the bulk
+      @param cs : (Real) Shear wave speed of the bulk material
+      @param tcut : (Int) cut-off of the material kernels
+      @param simulation_summary : (string) text summarizing the simulation
+      @param output_dir : (string) Output directory. By default, its the executable directory
+  */
   SpectralModel(std::vector<UInt> nele, UInt nb_time_steps, std::vector<Real> dom_size, 
 		Real nu, Real E, Real cs, UInt tcut, 
 		const std::string & simulation_summary,
 		const std::string output_dir="./");
-  // Constructor for 3D, different materials on top and bottom  
+  /** Constructor for 2D interface, bi-material interface
+      @param nele : (array<Int>) Number of discretization points in the x and y direction
+      @param nb_time_steps : (Int) Number of time steps
+      @param dom_size : (array<Real>) Size of the interface in x and y direction
+      @param nu_top : (Real) Poisson ratio of the bulk material on top
+      @param nu_bot : (Real) Poisson ratio of the bulk material on bottom
+      @param E_top : (Real) Young Modulus of the bulk material on top
+      @param E_bot : (Real) Young Modulus of the bulk material on bottom
+      @param cs_top : (Real) Shear wave speed of the bulk material material on top
+      @param cs_bot : (Real) Shear wave speed of the bulk material material on bottom
+      @param tcut_top : (Int) cut-off of the kernels for the  material on top
+      @param tcut_bot : (Int) cut-off of the kernels for the  material on bottom
+      @param simulation_summary : (string) text summarizing the simulation
+      @param output_dir : (string) Output directory. By default, its the executable directory
+  */
   SpectralModel(std::vector<UInt> nele, UInt nb_time_steps, std::vector<Real> dom_size, 
 		Real nu_top, Real nu_bot, Real E_top, Real E_bot, 
 		Real cs_top, Real cs_bot, UInt tcut_top, UInt tcut_bot, 
 		const std::string & simulation_summary,
 		const std::string output_dir="./");
 
+  /// Default Destructor
   virtual ~SpectralModel();
   
   /* ------------------------------------------------------------------------ */
@@ -138,15 +194,17 @@ private :
   
 public:
 
-  // Initialization of the model. Specity a beta only to modify stable time step parameter
-  // Default value defined in cRacklet_common.hh
-  // Set blank to true to run a blank initialization predicting the memory requirement
+  /** Initialization of the model. Specify a beta only to modify stable time step parameter
+      @param beta : (Real) Pre-factor of the stable time step. Default value in cRacklet_commom.hh
+      @param blank : (bool) Set to true to run a blank initialization predicting the memory requirement
+  */
   void initModel(Real beta=0.0, bool blank=false);
-  // Create restarting files enabling to continue the current simulation later
+  /// Create restarting files enabling to continue the current simulation later
   void pauseModel();
-  // Restart a previous simulation from restarting file. Should be call after model initalization
-  // See ../tests/bima_fract/test_bima_fract_restart.cc for a practical example
-  // Restart can be made from 2d to 3d simulations (see ../tests/bima_fract_3d/test_alu_homa3d_restart.cc)
+  /** Restart a previous simulation from restarting file. Should be call after model initalization
+      See ../tests/bima_fract/test_bima_fract_restart.cc for a practical example
+      @param from_2dto3d : (bool) Set to true to restart from 2D to 3D simulation (see ../tests/bima_fract_3d/test_alu_homa3d_restart.cc)
+  */
   void restartModel(bool from_2dto3d=false);
   // Set a sinusoidal load distribution
   void sinusoidalLoading(Real min);
@@ -156,65 +214,82 @@ public:
   // rms=root mean square, hurst=hurst exponent, q0=low cut_off, q1=roll_off, q2=high cut_off
   // !!! Required LibSurfer as an external library
   void brownianHeterogLoading(Real rms, long int seed, Real hurst, UInt q0,UInt q1, UInt q2);
-  // Definition of the loading case
+  /** Definition of the loading case
+      @param load_in : (Real) Norm of the loading vector
+      @param psi : (Real) Angle of the loading with respect to the x axis
+      @param phi : (Real) Angle of the loading with respect to the y axis
+      @param write : (bool) By default is true. Save a file with the loading
+  */
   void setLoadingCase(Real load_in, Real psi, Real phi, bool write=true);
-  // Definition of the loading shape
+  /** Spatial enveloppe to modifiy the loading shape
+      @param shape : (array<Real>) spatial profile of the loading
+  */
   void setLoadingShape(std::vector<Real> shape);
   // Increment uniformly the load in a given direction
   void incrementLoad(Real increment,UInt loading_direction);
   // Set loading case using a pre-computed loading file
   // Real setLoadingCase(std::string loading_file, Real psi, Real phi);
-  // update loading case
+  /// update loading case
   void updateLoads();
   // Update point-wise loading conidtions using an uniform constant value per dimension  
   void updateLoads(Real * loading_per_dim);
   // update loading case from pre-computed loading condition
   //UInt readUpdateLoads(Real start=0.0);
-  // Set the initial values of interface fields (strength,traction,velocities)
-  // using the interface conditions given in the associated InterfaceLaw
+  /** Set the initial values of interface fields (strength,traction,velocities)
+      using the interface conditions given in the associated InterfaceLaw
+  */
   void initInterfaceFields();
-  // Launch the registered computers for current time step and increases time step number
+  /// Launch the registered computers for current time step and increases time step number
   void increaseTimeStep();
-  // Update displacements with velocities 
+  /// Update displacements with velocities 
   void updateDisplacements();
-  // Compute interface fields (strength,traction,velocities)
-  // using the interface conditions given in the associated InterfaceLaw
+  /** Compute interface fields (strength,traction,velocities)
+      using the interface conditions given in the associated InterfaceLaw
+  */
   void computeInterfaceFields();
-  // Compute FFT on displacement feelds
+  /// Compute FFT on displacement feelds
   void fftOnDisplacements();
-  // Compute stresses convolution terms by Backward FFT
+  /// Compute stresses convolution terms by Backward FFT
   void computeStress();
-  // dump the model paramters to simulation summary file
+  /** dump the load parameters to simulation summary file
+      @param load : (Real) Norm of the loading vector
+      @param psi : (Real) Angle of the loading with respect to the x axis
+      @param phi : (Real) Angle of the loading with respect to the y axis      
+  */
   void printSelfLoad(Real load, Real psi, Real phi);
+  /// dump the model parameters to simulation summary file
   void printSelf();  
 
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */
   
-  // Return the current simulation time
+  /// Return the current simulation time
   Real getTime() {return it*beta*dxmin/(std::max(cs[0],cs[1]));}
-  // Return the current simulation time step
+  /// Return the current simulation time step
   UInt getCurrentTimeStep() {return it;}
-  // Return stable time step ratio beta
+  /// Return stable time step ratio beta
   Real getBeta() {return beta;}
-  // Return plane discretization
+  /// Return plane discretization
   std::vector<Real> getElementSize() {return dx;}
-  // Return the number of elements
+  /// Return the number of elements
   std::vector<UInt> getNbElements() {return n_ele;}
-  // Return the number of time steps
+  /// Return the number of time steps
   Real getNbTimeSteps() {return ntim;}
-  // Return model dimension
+  /// Return model dimension
   UInt getDim() {return dim;}
-  // Return uniform loading vector used to set average interface loading conditions
+  /// Return uniform loading vector used to set average interface loading conditions
   std::vector<Real> & getUniformLoading() {return uniform_loading;}
-  // Get reference to the FractureLaw
+  /// Get reference to the FractureLaw
   InterfaceLaw& getInterfaceLaw() {return *interface_law;}
 
   /* ------------------------------------------------------------------------ */
   /* Setters                                                                  */
   /* ------------------------------------------------------------------------ */
   
+  /** Set reference to the FractureLaw
+      @param itf_law : (shared pointer to <InterfaceLaw>)
+   */
   void setInterfaceLaw(std::shared_ptr<InterfaceLaw> itf_law){ this->interface_law = itf_law;};
   
   // 

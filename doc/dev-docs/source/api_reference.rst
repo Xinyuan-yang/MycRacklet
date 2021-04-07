@@ -94,4 +94,10 @@ cRacklet Dumper and Data Management
 C++ API
 -------
 
-.. doxygenindex::
+.. doxygenclass:: SpectralModel
+   :members:
+   :undoc-members:
+
+.. doxygenclass:: SimulationDriver
+
+.. doxygenclass:: CohesiveLaw

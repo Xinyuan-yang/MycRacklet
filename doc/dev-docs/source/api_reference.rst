@@ -96,8 +96,8 @@ C++ API
 
 .. doxygenclass:: SpectralModel
    :members:
-   :undoc-members:
 
 .. doxygenclass:: SimulationDriver
+   :members:
 
 .. doxygenclass:: CohesiveLaw

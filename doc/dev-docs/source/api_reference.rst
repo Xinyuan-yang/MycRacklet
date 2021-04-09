@@ -22,8 +22,8 @@ cRacklet C++ bindings
    :show-inheritance:
    :inherited-members:
       
-cRacklet Interface Laws
-^^^^^^^^^^^^^^^^^^^^^^^
+py_cRacklet Interface Laws
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: py_cRacklet.CohesiveLaw
    :members:
@@ -43,6 +43,9 @@ cRacklet Interface Laws
    :show-inheritance:
    :inherited-members:
 
+py_cRacklet Interfacer
+^^^^^^^^^^^^^^^^^^^^^^
+      
 .. autoclass:: py_cRacklet.InterfacerRateAndState
    :members:
    :undoc-members:
@@ -61,8 +64,8 @@ cRacklet Interface Laws
    :show-inheritance:
    :inherited-members:
       
-cRacklet Contact Laws
-^^^^^^^^^^^^^^^^^^^^^
+py_cRacklet Contact Laws
+^^^^^^^^^^^^^^^^^^^^^^^^
       
 .. autoclass:: py_cRacklet.CoulombLaw
    :members:
@@ -76,8 +79,8 @@ cRacklet Contact Laws
    :show-inheritance:
    :inherited-members:
 
-cRacklet Dumper and Data Management
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+py_cRacklet Dumper and Data Management
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: py_cRacklet.DataRegister
    :members:
@@ -100,4 +103,43 @@ C++ API
 .. doxygenclass:: SimulationDriver
    :members:
 
+py_cRacklet Interface Laws
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+      
+.. doxygenclass:: InterfaceLaw
+   :members:
+
+.. doxygenenum:: FractureLawType
+		 
 .. doxygenclass:: CohesiveLaw
+   :members:
+
+.. doxygenclass:: RateAndStateLaw
+   :members:
+
+cRacklet Interfacer
+^^^^^^^^^^^^^^^^^^^      
+
+.. doxygenclass:: Interfacer
+   :members:
+      
+cRacklet Contact Laws
+^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: ContactLaw
+   :members:
+
+.. doxygenclass:: CoulombLaw
+   :members:
+
+.. doxygenclass:: RegularizedCoulombLaw
+   :members:
+
+cRacklet Dumper and Data Management
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: DataRegister
+   :members:
+
+.. doxygenclass:: DataDumper
+   :members:

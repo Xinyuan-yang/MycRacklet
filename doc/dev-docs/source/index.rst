@@ -21,7 +21,7 @@ cRacklet - A boundary integral library for interfacial rupture simulations
 Seeking help - Bug reports
 --------------------------
 
-You can ask your questions or report any bugs you find here https://gitlab.com/tiburoch/cracklet/-/issues
+You can ask your questions or report any bugs you find here https://gitlab.com/cracklet/cracklet/-/issues
 
 Code contribution
 -----------------

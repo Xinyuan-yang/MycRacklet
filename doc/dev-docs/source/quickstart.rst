@@ -23,7 +23,7 @@ Optional dependencies are:
   
 First clone the git repository::
 
-  git clone https://gitlab.com/tiburoch/cracklet
+  git clone https://gitlab.com/cracklet/cracklet
   
 You can then compile cRacklet using cMake::
 

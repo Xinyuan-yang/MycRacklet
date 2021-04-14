@@ -35,24 +35,41 @@
 #include <vector>
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @class  RegularizedCoulombLaw regularized_coulomb_law.hh
+ *
+ * Class computing regularized coulomb friction law
+ *
+*/
 class RegularizedCoulombLaw : public ContactLaw {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
   
+  /** Constructor
+      @param coef: (Real) coefficient of friction
+      @param ratio: (Real) regularization ratio (dt/t*)
+      @param n_ele: (UInt) number of interface points
+   */
   RegularizedCoulombLaw(Real coef, Real ratio, UInt n_ele);
+  /// Default Destructor
   virtual ~RegularizedCoulombLaw();
   
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
-  // Compute the frictionnal strength with the normal compressive stress
+  /** Compute the frictionnal strength with the normal compressive stress
+      @param norm_comp_stress: (Real) value of the compressive stress
+      @param strength: (Real) strength
+      @param  i: (UInt) element
+      @param it: (UInt) iteration number
+   */
   void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it); 
-  // Method used in restart framework of contact history
-  // pausing=true->generate restart files | pausing=false->restart simulation from existing files
-  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  /// Method used in restart framework of contact history
+  /// pausing=true->generate restart files | pausing=false->restart simulation from existing files
+  /// If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
   void restart(bool pausing=false, UInt nele_2d=0);
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */
@@ -79,7 +96,7 @@ private:
 /* -------------------------------------------------------------------------- */
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
-inline RegularizedCoulombLaw::RegularizedCoulombLaw(Real coef, Real ratio, UInt n_ele) : ContactLaw(){							
+inline RegularizedCoulombLaw::RegularizedCoulombLaw(Real coef, Real ratio, UInt n_ele) : ContactLaw(){
 
   cf = coef;
   dt_tstar = ratio;
@@ -99,7 +116,7 @@ inline RegularizedCoulombLaw::RegularizedCoulombLaw(Real coef, Real ratio, UInt 
   
 }										
 /* -------------------------------------------------------------------------- */
-inline RegularizedCoulombLaw::~RegularizedCoulombLaw(){							  
+inline RegularizedCoulombLaw::~RegularizedCoulombLaw(){
 										 
 }	
 

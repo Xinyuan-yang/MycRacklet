@@ -143,3 +143,7 @@ cRacklet Dumper and Data Management
 
 .. doxygenclass:: DataDumper
    :members:
+
+.. doxygenenum:: DataFields
+
+      

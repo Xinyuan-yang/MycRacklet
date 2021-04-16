@@ -12,10 +12,11 @@ The following dependencies are required for cRacklet:
 - **cMake**
 - **FFTW3**
 - **GSL** library
-- **pybind11** (automatically installed)
   
 Optional dependencies are:
 
+- **pybind11** (for python binding, automatically installed)
+- **python3** (for python binding)
 - **OpenMP** (for multi-threaded parallel computing)
 - **pytest** (for tests)
 - **Doxygen** and **Sphinx** (for documentation)
@@ -42,5 +43,6 @@ To build the documentation locally, activate the documentation option with **cMa
 Running the test
 ----------------
 
-You need to activate the test options with cMake (CRACKLET_TESTS). Run the test with::
+You need to activate the test options with cMake (CRACKLET_TESTS). You can then run the test with::
+
   make test

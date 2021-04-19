@@ -26,7 +26,7 @@ You can ask your questions or report any bugs you find here https://gitlab.com/c
 Code contribution
 -----------------
 
-Any contribution to cRacklet, bugfixes or new features, is welcome with a gitlab pull request.
+Any contribution to cRacklet, bugfixes or new features, is welcome with a merge request on GitLab.
    
 Indices and tables
 ------------------

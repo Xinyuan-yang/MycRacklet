@@ -71,7 +71,7 @@ master_doc = 'index'
 # -- Project information -----------------------------------------------------
 
 project = 'cRacklet'
-copyright = '2021, TBA'
+copyright = '2012-2013 Fabian Barras, 2014-2021 EPFL (Ecole Polytechnique Fédérale de Lausanne)'
 author = 'Fabian Barras, Thibault Roch, Philippe H Geubelle, Jean-François Molinari'
 
 # The version info for the project you're documenting, acts as replacement for

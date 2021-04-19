@@ -58,9 +58,9 @@ and LibSurfer to generate fractal interfaces (available on request).
 ==================================================================================================
 * DOCUMENTATION
 
-Source code documentation can be generated using doxygen. You first have to activate the option CRACKLET_DOCUMENTATION_DOXYGEN with cmake. Then go inside build/doc/ and run
+Source code documentation can be generated using sphinx and doxygen. You first have to activate the option CRACKLET_DOCUMENTATION with cmake. Then go inside build/ and run
 
-> doxygen Doxyfile.doxygen-doc
+> make dev_doc
 
 The documentation will be generated in html format and store inside build/doc/html
 
@@ -118,7 +118,7 @@ of the surrounding solids (as function of Poisson's ratio) shall be pre-computed
 
 In order to use the python interface build for cRacklet, you need pybind11 and python3.
 
-During configuration, activate CRACKLET_PYTHON_INTERFACE. The make comment will create a python library in the build/python/ folder. Please add this path to your python path.
+During configuration, activate CRACKLET_PYTHON_INTERFACE. The make command will create a python library in the build/python/ folder. Please add this path to your python path.
 
 You can activate the python example with the option CRACKLET_EXAMPLES_PYTHON
 
@@ -133,6 +133,8 @@ An example of the use of the python interface is provided in build/examples/pyth
 - David Kammer
 - Guillaume Anciaux
 - Nicolas Richart
+- Philippe H Geubelle
+- Jean-François Molinari
 
 ==================================================================================================
 * RELATED PUBLICATIONS

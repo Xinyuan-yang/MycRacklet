@@ -56,6 +56,8 @@ if(NOT CRACKLET_TARGETS_EXPORT)
   set(CRACKLET_TARGETS_EXPORT cRackletTargets)
 endif()
 
+include(GNUInstallDirs)
+
 #===============================================================================
 # Release file target
 #===============================================================================

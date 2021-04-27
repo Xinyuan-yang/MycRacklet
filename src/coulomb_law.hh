@@ -32,22 +32,36 @@
 #include "contact_law.hh"
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @class  CoulombLaw coulomb_law.hh
+ *
+ * Class describing coulomb contact law
+ *
+*/
 class CoulombLaw : public ContactLaw {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
   
+  /** Constructor
+      @param coef: (Real) coefficient of friction
+   */
   CoulombLaw(Real coef);
+  /// Default Destructor
   virtual ~CoulombLaw();
   
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
-  // Compute the frictionnal strength with the normal compressive stress
+  /** Compute the frictionnal strength with the normal compressive stress
+      @param norm_comp_stress: (Real) value of the compressive stress
+      @param strength: (Real) strength
+      @param  i and it are unused
+   */
   void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it);
-  // Method used in restart framework but no history-dependant variable within this law
+  /// Method used in restart framework but no history-dependant variable within this law
   void restart(bool pausing=false, UInt nele_2d=0){};
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */

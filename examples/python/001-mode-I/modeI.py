@@ -89,7 +89,7 @@ def main():
 
     # Simulation driver
 
-    sim_driver = SimulationDriver(model);
+    sim_driver = SimulationDriver(model)
     
     interfacer = InterfacerLinearCoupledCohesive(model)
 

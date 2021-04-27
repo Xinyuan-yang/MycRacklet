@@ -173,64 +173,85 @@ protected:
   std::vector<UInt> index;
 };
 
+/**
+ * @class DataRegister data_register.hh
+ *
+ * Mother class centralizing access to simulation data
+ *
+*/
 class DataRegister {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
 
+  /// Default Constructor
   DataRegister(){};
+  /// Default Destructor
   virtual ~DataRegister(){};
 
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
-
-  //Access to a given field returned in the type DataTypes
+  
+  /// Access to a given field returned in the type DataTypes
   static inline const DataTypes readData(DataFields my_field);
-  // Register a global simulation parameter
+  /** Register a global simulation parameter, whose type is templated T
+      @param name (string) : name of the parameter
+      @param value (T) : value
+   */
   template<typename T>
   static void registerParameter(std::string name, T value);
-  //Register a set of global parameters from input file
+  /** Register a set of global parameters from input file
+      @param input_file (string):  path to the input file
+   */
   static void readInputFile(std::string input_file);
-  // Check if a parameter is present before accessing it
+  /** Check if a parameter is present before accessing it
+      @param name (string) : name of the parameter
+  */
   static inline bool hasParameter(std::string name);
-  // Access a global simulation parameter
+  /** Get the value of a simulation parameter
+      @param name (string) : name of the parameter
+   */
   template<typename T>
   static inline T getParameter(std::string name);
-  //Register a computer object with a given name
+  /// Register a computer object with a given name
   static void registerComputer(std::string computer_name, Computer * computer);
-  //Access a registered computer object
+  /// Access a registered computer object
   static Computer * getComputer(std::string computer_name);
-  //Method returning current crack position searched between x_start and x_end (searching along z=0)
+  /** Method returning current crack position searched between x_start and x_end (looking for the first point with state == 2)
+      @param x_start (UInt) : index of the first element to start looking for the tip position
+      @param x_end (UInt) : index of the last element to look for the tip position
+      @param z_pos (UInt) : z index for 3D simulation. By default the position of the tip is investigated along z = 0
+   */
   static UInt getCrackTipPosition(UInt x_start, UInt x_end, UInt z_pos=0);
-  // Method used in restart framework to load/export a vector from/to a data_file 
-  // pausing=true->generate restart data_file | pausing=false->load vector from existing data_file
-  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  /// Method used in restart framework to load/export a vector from/to a data_file 
+  /// pausing=true->generate restart data_file | pausing=false->load vector from existing data_file
+  /// If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
   template<typename T>
   static void restartData(std::vector<T> & my_data , const std::string data_file,
 			  bool pausing, UInt nele_2d=0);  
 
   //Acessors
   
-  // Direct access to top velocities
+  /// Direct access to top velocities
   const CrackProfile * getTopVelocities();
-  // Direct access to bot velocities
+  /// Direct access to bot velocities
   const CrackProfile * getBotVelocities();
-  // Direct access to shear velocity jumps
+  /// Direct access to shear velocity jumps
   const CrackProfile * getShearVelocityJumps();
-  // Direct access to normal velocity jumps
+  /// Direct access to normal velocity jumps
   const CrackProfile * getNormalVelocityJumps();
-  // Direct access to top displacement
+  /// Direct access to top displacement
   const CrackProfile * getTopDisplacements();
-  // Direct access to bot displacement
+  /// Direct access to bot displacement
   const CrackProfile * getBotDisplacements();
-  // Direct access to shear displacement jumps
+  /// Direct access to shear displacement jumps
   const CrackProfile * getShearDisplacementJumps();
-  // Direct access to normal displacement jumps
+  /// Direct access to normal displacement jumps
   const CrackProfile * getNormalDisplacementJumps();
-  // Direct access to interface tractions
+  /// Direct access to interface tractions
   const CrackProfile * getInterfaceTractions();
 
 protected:
@@ -267,13 +288,13 @@ public:
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */
   /* ------------------------------------------------------------------------ */
-  // Ofstream of simulation summary file
+  /// Ofstream of simulation summary file
   static std::ofstream out_summary;
-  // Ofstream of simulation parameters file
+  /// Ofstream of simulation parameters file
   static std::ofstream out_parameters;
-  // Output directory where simulation outputs will be written
+  /// Output directory where simulation outputs will be written
   static std::string output_dir;
-  // Output directory where restart outputs will be written
+  /// Output directory where restart outputs will be written
   static std::string restart_dir;
 
 protected:

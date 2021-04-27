@@ -32,6 +32,12 @@
 #include <iostream>
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @class  InterfaceLaw interface_law.hh
+ *
+ * Abstract class representing the laws governing interface conditions
+ *
+*/
 class InterfaceLaw : public DataRegister {
 
   /* ------------------------------------------------------------------------ */
@@ -39,20 +45,22 @@ class InterfaceLaw : public DataRegister {
   /* ------------------------------------------------------------------------ */
 public:
   
+  /// Default Constructor
   InterfaceLaw();
+  /// Default Destructor
   virtual ~InterfaceLaw();
   
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
-  // initialize the conditions at the interface
+  /// Initialize the conditions at the interface
   virtual void initInterfaceConditions() = 0;
-  // solve the interface conditions in function of the opening profile and dynamic stress field
+  /// Solve the interface conditions in function of the opening profile and dynamic stress field
   virtual void updateInterfaceConditions() = 0;
-  // Method used in restart framework in case of history dependant fracture law
-  // pausing=true->generate restart files | pausing=false->restart simulation from existing files
-  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  /// Method used in restart framework in case of history dependant fracture law
+  /// pausing=true->generate restart files | pausing=false->restart simulation from existing files
+  /// If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
   virtual void restart(bool pausing=true, UInt nele_2d=0)=0;
 
   /* ------------------------------------------------------------------------ */

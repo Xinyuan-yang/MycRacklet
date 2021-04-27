@@ -1,6 +1,7 @@
 /**
  * @file   rate_and_state_law.hh
  * @author Fabian Barras <fabian.barras@epfl.ch>
+ * @author Thibault Roch <thibault.roch@epfl.ch>
  * @date   Fri Feb 24 16:41:05 2017
  *
  * @brief  Class describing a rate and state friction law
@@ -37,7 +38,12 @@
 #include <vector>
 #include <math.h>
 /* -------------------------------------------------------------------------- */
-
+/**
+ * @class  RateAndStateLaw rate_and_state_law.hh
+ *
+ * Class describing a rate and state friction law
+ *
+*/
 class RateAndStateLaw : public InterfaceLaw {
 
   #include "rate_and_state_formulations.hh"
@@ -45,8 +51,8 @@ class RateAndStateLaw : public InterfaceLaw {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
-public:
-  
+public:  
+  /// Default constructor
   RateAndStateLaw()
     
     :InterfaceLaw() {
@@ -100,6 +106,7 @@ public:
     V_0.resize(2,0.);
   };
 
+  /// Default destructor
   virtual ~RateAndStateLaw();
   
   /* ------------------------------------------------------------------------ */
@@ -107,22 +114,22 @@ public:
   /* ------------------------------------------------------------------------ */
 public:
   
-  /** Init a given state evolution law
-      Standard evolution law */
+  /** Init the state evolution law
+   */
   void initStateEvolution();
-  /** Regularized state evolution
+  /** Init Regularized state evolution
    */
   void initRegularizedStateEvolution(Real v0);
   /** Init a given R&S formulation and state evolution
       standard rate and state formulation */
   void initStandardFormulation();
-  /** formulation with a unique velocity-weakening branch
+  /** Init formulation with a unique velocity-weakening branch
    */
   void initVelocityWeakeningFormulation();
-  /** rate and state formulation with a regularized stick-to-slip transition
+  /** Init rate and state formulation with a regularized stick-to-slip transition
    */
   void initRegularizedFormulation(Real v0, Real theta, Real xi);
-  /** rate and state formulation with a regularized stick-to-slip transition and weakening behavior at high velocities
+  /** Init rate and state formulation with a regularized stick-to-slip transition and weakening behavior at high velocities
    */
   void initRegularizedWeakeningFormulation(Real v0, Real theta, Real xi);
   /** Define the velocity prediction for each component (used before searching the initial steady state)
@@ -132,13 +139,13 @@ public:
   /** Set the initial steady state velocity, if know a priori, for example in case of a restart. 
    */
   void setV0(std::vector<Real> v_0);
-  /** initialize interface fields
+  /** Initialize interface fields
    */
   void initInterfaceConditions();
-  /** Compute the interface conditions but do not update it!
+  /** Compute the interface conditions but do not update them! (Used in pseudo-velocity driven systems)
    */
   std::vector<Real> computeNextAverageVelocity();
-  /** update the strength of the material in function of the opening profile
+  /** Update the strength of the material in function of the opening profile
    */
   void updateInterfaceConditions();
   /** perturbe the state variable by adding \f$ \epsilon sin\left(2\pi k \frac{x}{X}\right) \f$

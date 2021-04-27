@@ -1,6 +1,7 @@
 /**
  * @file   cohesive_law.hh
  * @author Fabian Barras <fabian.barras@epfl.ch>
+ * @author Thibault Roch <thibault.roch@epfl.ch>
  * @date   Sun Jan  6 19:35:47 2013
  *
  * @brief  Class describing a coupled slip/opening weakening cohesive interface
@@ -38,12 +39,18 @@
 #include <math.h>
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @class  CohesiveLaw cohesive_law.hh
+ *
+ * Class describing a coupled slip/opening weakening cohesive interface
+ *
+*/
 class CohesiveLaw : public InterfaceLaw {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
-  
+  /// Default constructor
   CohesiveLaw() 
     :InterfaceLaw() {
 
@@ -82,6 +89,7 @@ public:
     allow_overlapping = true;
   };
 
+  /// Default destructor
   virtual ~CohesiveLaw();
   
   /* ------------------------------------------------------------------------ */

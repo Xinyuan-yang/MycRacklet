@@ -32,24 +32,32 @@
 #include "data_register.hh"
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @class  ContactLaw contact_law.hh
+ *
+ * Abstract class representing the associated contact law in case of interface overlapping
+ *
+*/
 class ContactLaw : public DataRegister {
   /* ------------------------------------------------------------------------ */
   /* Constructors/Destructors                                                 */
   /* ------------------------------------------------------------------------ */
 public:
   
+  /// Default Constructor
   ContactLaw();
+  /// Default Destructor
   virtual ~ContactLaw();
   
   /* ------------------------------------------------------------------------ */
   /* Methods                                                                  */
   /* ------------------------------------------------------------------------ */
 public:
-  // Compute the frictionnal strength with the normal compressive stress
+  /// Compute the frictionnal strength with the normal compressive stress
   virtual void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it) = 0;
-  // Method used in restart framework in case of history dependant contact law
-  // pausing=true->generate restart files | pausing=false->restart simulation from existing files
-  // If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
+  /// Method used in restart framework in case of history dependant contact law
+  /// pausing=true->generate restart files | pausing=false->restart simulation from existing files
+  /// If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)
   virtual void restart(bool pausing=false, UInt nele_2d=0)=0;
   /* ------------------------------------------------------------------------ */
   /* Accessors                                                                */

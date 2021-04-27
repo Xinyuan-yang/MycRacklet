@@ -1,0 +1,28 @@
+PROJECT_NAME           = @CMAKE_PROJECT_NAME@
+PROJECT_NUMBER         = @CRACKLET_VERSION@
+INPUT		       = @CMAKE_SOURCE_DIR@/src
+## This overwrites the INPUT path for local builds
+@INCLUDE 	       = input_def
+RECURSIVE              = YES
+
+SOURCE_BROWSER         = NO
+
+GENERATE_HTML          = NO
+GENERATE_LATEX         = NO
+GENERATE_XML           = YES
+
+XML_OUTPUT             = doxygenxml
+## This overwrites the XML_OUTPUT path for local builds
+@INCLUDE	       = xml_output_def
+
+ALIASES                = "rst=\verbatim embed:rst" \
+                         "endrst=\endverbatim"
+
+#QUIET                  = @DOXYGEN_QUIET@
+QUIET                  = NO
+WARNINGS               = @DOXYGEN_WARNINGS@
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+WARN_AS_ERROR          = NO
+
+EXCLUDE_PATTERNS       = */CMakeLists.txt

@@ -58,5 +58,6 @@ install(FILES
   ${PROJECT_BINARY_DIR}/cRackletConfig.cmake
   ${PROJECT_SOURCE_DIR}/cmake/cRackletSimulationMacros.cmake
   ${PROJECT_SOURCE_DIR}/cmake/cRackletTests.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/cRackletTools.cmake
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
   COMPONENT dev)

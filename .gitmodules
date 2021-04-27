@@ -1,3 +1,0 @@
-[submodule "tests/ci"]
-	path = tests/ci
-	url = https://c4science.ch/diffusion/HBMJCI/hbm-jenkins-ci.git

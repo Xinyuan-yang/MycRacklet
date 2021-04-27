@@ -14,6 +14,7 @@ cRacklet - A boundary integral library for interfacial rupture simulations
 
    ./quickstart
    ./simulation
+   ./interface_law
    ./python_interface
    ./examples
    ./api_reference

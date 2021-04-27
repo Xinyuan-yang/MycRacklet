@@ -44,6 +44,8 @@ configure_file(cmake/cRackletConfig.cmake.in "${PROJECT_BINARY_DIR}/cRackletConf
 configure_file(cmake/cRacklet_environement.sh.in
   ${PROJECT_BINARY_DIR}/cRacklet_environement.sh  @ONLY)
 
+include(CMakePackageConfigHelpers)
+
 configure_package_config_file(cmake/cRackletConfig.cmake.in
   "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}

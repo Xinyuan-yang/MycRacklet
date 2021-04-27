@@ -86,4 +86,4 @@ pages:
         paths:
             - public
     only:
-        - readthedoc
+        - master

@@ -43,3 +43,11 @@ configure_file(cmake/cRackletConfig.cmake.in "${PROJECT_BINARY_DIR}/cRackletConf
 
 configure_file(cmake/cRacklet_environement.sh.in
   ${PROJECT_BINARY_DIR}/cRacklet_environement.sh  @ONLY)
+
+install(FILES
+  ${PROJECT_SOURCE_DIR}/cmake/Modules/FindFFTW.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/Modules/FindSphinx.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/Modules/FindGSL.cmake
+  ${PROJECT_BINARY_DIR}/cRackletConfig.cmake
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
+  COMPONENT dev)

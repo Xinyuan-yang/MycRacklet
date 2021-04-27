@@ -52,6 +52,22 @@ set(cRacklet_SRC
   simulation_driver.cc
   )
 
+set(CRACKLET_LIBRARY_PUBLIC_HDRS
+  data_register.hh
+  spectral_model.hh
+  crack_profile.hh
+  interfacer.hh
+  convolution_manager.hh
+  spectral_convolution_manager.hh
+  cohesive_law.hh
+  cohesive_law_viscoelastic.hh
+  rate_and_state_law.hh
+  coulomb_law.hh
+  regularized_coulomb_law.hh
+  data_dumper.hh
+  simulation_driver.hh
+  )
+
 set_source_files_properties(${RELEASE_FILE} PROPERTIES GENERATED 1)
 
 add_library(cRacklet ${cRacklet_SRC} ${RELEASE_FILE})
@@ -91,10 +107,19 @@ set_target_properties(cRacklet
   INTERFACE_CXX_STANDARD 14
   )
 
+if(CRACKLET_LIBRARY_PUBLIC_HDRS)
+  set_property(TARGET cRacklet PROPERTY PUBLIC_HEADER ${CRACKLET_LIBRARY_PUBLIC_HDRS})
+endif()
+
+if(CRACKLET_LIBRARY_PRIVATE_HDRS)
+  set_property(TARGET cRacklet PROPERTY PRIVATE_HEADER ${CRACKLET_LIBRARY_PRIVATE_HDRS})
+endif()
+
+
 install(TARGETS cRacklet
   EXPORT ${CRACKLET_TARGETS_EXPORT}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_LIBDIR}/cracklet/
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cracklet/
   )
 
 if("${CRACKLET_TARGETS_EXPORT}" STREQUAL "cRackletTargets")

@@ -1,4 +1,4 @@
-#include <simulation_driver.cc>
+#include <simulation_driver.hh>
 /* -------------------------------------------------------------------------- */
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>

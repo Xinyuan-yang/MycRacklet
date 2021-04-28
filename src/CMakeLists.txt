@@ -60,6 +60,7 @@ set(CRACKLET_LIBRARY_PUBLIC_HDRS
   cohesive_law_viscoelastic_inline_impl.hh
   contact_law.hh
   convolution_manager.hh
+  convolution_manager_inline_impl.hh
   coulomb_law.hh
   cRacklet_common.hh
   crack_profile.hh

@@ -57,11 +57,13 @@ set(CRACKLET_LIBRARY_PUBLIC_HDRS
   spectral_model.hh
   crack_profile.hh
   interfacer.hh
+  interface_law.hh
   convolution_manager.hh
   spectral_convolution_manager.hh
   cohesive_law.hh
   cohesive_law_viscoelastic.hh
   rate_and_state_law.hh
+  rate_and_state_formulations.hh
   coulomb_law.hh
   regularized_coulomb_law.hh
   data_dumper.hh

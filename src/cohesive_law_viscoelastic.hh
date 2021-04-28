@@ -144,6 +144,6 @@ inline CohesiveLawViscoelastic::~CohesiveLawViscoelastic(){
 }							
 
 
-#include "cohesive_law_viscoelastic_inline_impl.cc"
+#include "cohesive_law_viscoelastic_inline_impl.hh"
 
 #endif /* __COHESIVE_LAW_VISCOELASTIC__ */

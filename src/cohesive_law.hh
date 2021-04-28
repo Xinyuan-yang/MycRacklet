@@ -191,6 +191,6 @@ inline CohesiveLaw::~CohesiveLaw(){
 }							
 
 
-#include "cohesive_law_inline_impl.cc"
+#include "cohesive_law_inline_impl.hh"
 
 #endif /* __COHESIVE_LAW__ */

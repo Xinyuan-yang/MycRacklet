@@ -53,21 +53,33 @@ set(cRacklet_SRC
   )
 
 set(CRACKLET_LIBRARY_PUBLIC_HDRS
-  data_register.hh
-  spectral_model.hh
-  crack_profile.hh
-  interfacer.hh
-  interface_law.hh
-  convolution_manager.hh
-  spectral_convolution_manager.hh
   cohesive_law.hh
+  cohesive_law_inline_impl.hh
   cohesive_law_viscoelastic.hh
+  cohesive_law_viscoelastic_formulations.hh
+  cohesive_law_viscoelastic_inline_impl.hh
+  contact_law.hh
+  convolution_manager.hh
+  coulomb_law.hh
+  cRacklet_common.hh
+  crack_profile.hh
+  data_dumper.hh
+  data_dumper_inline_impl.hh
+  data_register.hh
+  data_register_inline_impl.hh
+  interface_law.hh
+  interfacer.hh
+  interfacer_inline_impl.hh
   rate_and_state_law.hh
   rate_and_state_formulations.hh
-  coulomb_law.hh
   regularized_coulomb_law.hh
-  data_dumper.hh
+  ring_buffer.hh
+  ring_buffer_inline_impl.hh
   simulation_driver.hh
+  simulation_driver_inline_impl.hh
+  spectral_convolution_manager.hh
+  spectral_model.hh
+  spectral_model_inline_impl.hh
   )
 
 set_source_files_properties(${RELEASE_FILE} PROPERTIES GENERATED 1)

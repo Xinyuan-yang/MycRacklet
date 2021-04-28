@@ -48,7 +48,7 @@ if(EXISTS "${CRACKLET_CMAKE_DIR}/CMakeCache.txt")
   include(cRackletSimulationMacros)
 else()
   # In install tree
-  set(CRACKLET_INCLUDE_DIRS "${CRACKLET_CMAKE_DIR}/../../include/cRacklet")
+  set(CRACKLET_INCLUDE_DIRS "${CRACKLET_CMAKE_DIR}/../../include/cracklet")
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CRACKLET_CMAKE_DIR}")
   include(cRackletSimulationMacros)
 endif()

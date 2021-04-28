@@ -91,6 +91,6 @@ private:
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
 
-#include "ring_buffer_inline_impl.cc"
+#include "ring_buffer_inline_impl.hh"
 
 #endif /* __RING_BUFFER__ */

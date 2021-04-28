@@ -157,6 +157,6 @@ protected:
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
 
-#include "convolution_manager_inline_impl.cc"
+#include "convolution_manager_inline_impl.hh"
 
 #endif /* __CONVOLUTION_MANAGER__ */

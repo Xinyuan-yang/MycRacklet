@@ -248,6 +248,6 @@ private:
 
 };
 
-#include "interfacer_inline_impl.cc"
+#include "interfacer_inline_impl.hh"
 
 #endif  /* __INTERFACER__ */

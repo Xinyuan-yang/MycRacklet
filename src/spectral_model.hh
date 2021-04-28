@@ -368,6 +368,6 @@ private:
   fftw_plan * plan;  
 };
 
-#include "spectral_model_inline_impl.cc"
+#include "spectral_model_inline_impl.hh"
 
 #endif /* __SPECTRAL_MODEL_H__ */

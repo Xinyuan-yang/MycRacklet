@@ -184,6 +184,6 @@ private:
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
 
-#include "simulation_driver_inline_impl.cc"
+#include "simulation_driver_inline_impl.hh"
 
 #endif /* __SIMULATION_DRIVER__ */

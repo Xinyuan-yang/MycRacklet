@@ -440,6 +440,6 @@ private:
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
 
-#include "data_register_inline_impl.cc"
+#include "data_register_inline_impl.hh"
 
 #endif /* __DATA_REGISTER_H__ */

@@ -320,6 +320,6 @@ private:
 /* inline functions                                                           */
 /* -------------------------------------------------------------------------- */
 
-#include "data_dumper_inline_impl.cc"
+#include "data_dumper_inline_impl.hh"
 
 #endif /* __DATA_DUMPER__ */

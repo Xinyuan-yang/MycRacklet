@@ -176,7 +176,7 @@ inline void Integrator::compute(Real time) {
   default:
     std::stringstream err;
     err << "*** IntegratorType (" << integ_type 
-	<< ") is not implemented in data_register_inline_impl.cc" << std::endl;
+	<< ") is not implemented in data_register_inline_impl.hh" << std::endl;
     cRacklet::error(err);
     break;
   }

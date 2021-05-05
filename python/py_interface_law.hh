@@ -3,7 +3,7 @@
 #ifndef __CRACKLET_PY_INTERFACE_LAW_HH__
 #define __CRACKLET_PY_INTERFACE_LAW_HH__
 
-namespace cRacklet{
+namespace cracklet{
 
   void register_interface_law(pybind11::module & mod);
 

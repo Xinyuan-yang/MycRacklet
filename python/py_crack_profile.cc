@@ -8,7 +8,7 @@ using namespace pybind11::literals;
 
 namespace py = pybind11;
 /* -------------------------------------------------------------------------- */
-namespace cRacklet {
+namespace cracklet {
 /* -------------------------------------------------------------------------- */
     
   void register_crack_profile(py::module& mod) {
@@ -30,4 +30,4 @@ namespace cRacklet {
 			return profile;});      
   }
   
-} // namespace cRacklet
+} // namespace cracklet

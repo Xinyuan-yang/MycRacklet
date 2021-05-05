@@ -7,7 +7,7 @@ using namespace pybind11::literals;
 
 namespace py = pybind11;
 /* -------------------------------------------------------------------------- */
-namespace cRacklet {
+namespace cracklet {
 /* -------------------------------------------------------------------------- */
     
 void register_cohesive_law_viscoelastic(py::module& mod) {
@@ -21,4 +21,4 @@ void register_cohesive_law_viscoelastic(py::module& mod) {
     .def("restart",&CohesiveLawViscoelastic::restart);      
 }
 
-} // namespace cRacklet
+} // namespace cracklet

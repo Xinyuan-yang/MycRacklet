@@ -7,7 +7,7 @@ using namespace pybind11::literals;
 
 namespace py = pybind11;
 /* -------------------------------------------------------------------------- */
-namespace cRacklet {
+namespace cracklet {
 /* -------------------------------------------------------------------------- */
     
 void register_rate_and_state_law(py::module& mod) {
@@ -24,4 +24,4 @@ void register_rate_and_state_law(py::module& mod) {
     .def("insertGaussianPerturbation",&RateAndStateLaw::insertGaussianPerturbation)
     .def("restart",&RateAndStateLaw::restart);
 }
-} // namespace cRacklet
+} // namespace cracklet

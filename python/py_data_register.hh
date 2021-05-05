@@ -3,7 +3,7 @@
 #ifndef __CRACKLET_PY_DATA_REGISTER_HH__
 #define __CRACKLET_PY_DATA_REGISTER_HH__
 
-namespace cRacklet{
+namespace cracklet{
 
   void register_data_fields(pybind11::module & mod);
   void register_integrator_types(pybind11::module & mod);

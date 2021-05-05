@@ -7,7 +7,7 @@ using namespace pybind11::literals;
 
 namespace py = pybind11;
 /* -------------------------------------------------------------------------- */
-namespace cRacklet {
+namespace cracklet {
 /* -------------------------------------------------------------------------- */
 
 void register_output_format(py::module& mod) {
@@ -45,4 +45,4 @@ void register_data_dumper(py::module& mod) {
     .def("dumpAll",&DataDumper::dumpAll);
 }
 
-} // namespace cRacklet
+} // namespace cracklet

@@ -3,7 +3,7 @@
 #ifndef __CRACKLET_PY_COULOMB_LAW_HH__
 #define __CRACKLET_PY_COULOMB_LAW_HH__
 
-namespace cRacklet{
+namespace cracklet{
 
   void register_coulomb_law(pybind11::module & mod);
 

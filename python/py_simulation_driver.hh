@@ -3,7 +3,7 @@
 #ifndef __CRACKLET_PY_SIMULATION_DRIVER_HH__
 #define __CRACKLET_PY_SIMULATION_DRIVER_HH__
 
-namespace cRacklet{
+namespace cracklet{
 
   void register_load_control_type(pybind11::module & mod);
   void register_simulation_driver(pybind11::module & mod);

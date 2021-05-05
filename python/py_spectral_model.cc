@@ -8,7 +8,7 @@ using namespace pybind11::literals;
 
 namespace py = pybind11;
 /* -------------------------------------------------------------------------- */
-namespace cRacklet {
+namespace cracklet {
 /* -------------------------------------------------------------------------- */
 
 void register_directions(py::module& mod) {
@@ -87,4 +87,4 @@ void register_spectral_model(py::module& mod) {
     .def("setInterfaceLaw",&SpectralModel::setInterfaceLaw);
 }
 
-} // namespace cRacklet
+} // namespace cracklet

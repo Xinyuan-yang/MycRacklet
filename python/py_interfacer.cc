@@ -7,7 +7,7 @@ using namespace pybind11::literals;
 
 namespace py = pybind11;
 /* -------------------------------------------------------------------------- */
-namespace cRacklet {
+namespace cracklet {
 /* -------------------------------------------------------------------------- */
 std::string FractureLawToString(FractureLawType F) {
 
@@ -105,4 +105,4 @@ void register_fracture_law_type(py::module&mod){
     
 }
   
-} // namespace cRacklet
+} // namespace cracklet

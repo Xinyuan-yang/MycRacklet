@@ -7,7 +7,7 @@ using namespace pybind11::literals;
 
 namespace py = pybind11;
 /* -------------------------------------------------------------------------- */
-namespace cRacklet {
+namespace cracklet {
   /* -------------------------------------------------------------------------- */
   
   void register_load_control_type(py::module& mod) {
@@ -29,4 +29,4 @@ namespace cRacklet {
       .def("launchCrack",&SimulationDriver::launchCrack,py::arg("crack_start"),py::arg("launched_size"),py::arg("v_init"),py::arg("one_side_propagation")=true);
   }
   
-} // namespace cRacklet
+} // namespace cracklet

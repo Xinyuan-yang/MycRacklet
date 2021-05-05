@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-namespace cRacklet{
+namespace cracklet{
 
   void register_interfacer(pybind11::module & mod);
   void register_fracture_law_type(pybind11::module & mod);

@@ -82,7 +82,7 @@ void SpectralModel::initModel(Real reset_beta, bool blank) {
   //modes
   total_nele_fft=nele_fft[0]*nele_fft[1];
 
-  it = 1;
+  it = 0;
 
   nb_kernels = 4;
 

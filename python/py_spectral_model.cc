@@ -78,6 +78,8 @@ void register_spectral_model(py::module& mod) {
     .def("getTime",&SpectralModel::getTime)
     .def("getCurrentTimeStep",&SpectralModel::getCurrentTimeStep)
     .def("getBeta",&SpectralModel::getBeta)
+    .def("getDxMin",&SpectralModel::getDxMin)
+    .def("getShearWaveSpeeds",&SpectralModel::getShearWaveSpeeds)
     .def("getElementSize",&SpectralModel::getElementSize)
     .def("getNbElements",&SpectralModel::getNbElements)
     .def("getNbTimeSteps",&SpectralModel::getNbTimeSteps)

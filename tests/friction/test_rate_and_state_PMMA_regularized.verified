@@ -5,407 +5,407 @@ Convolution kernel correctly loaded from nu_.33_h11.dat
 Convolution kernel correctly loaded from nu_.33_h22.dat
 Convolution kernel correctly loaded from nu_.33_k12.dat
 Steady-state initial velocity V=0.00193049 [m/s] with friction coefficient cf=0.34648
-Simulation at t 0 = 7.8125e-07 [sec]
+Simulation at t 0 = 3.90625e-07 [sec]
 sliding velocity at the observation point: 0
 state variable at the expected nucleation point: 1
 -> v_max-v_av = 0
-Simulation at t 50 = 2.03125e-05 [sec]
+Simulation at t 50 = 1.99219e-05 [sec]
 sliding velocity at the observation point: 1.35576e-06
 state variable at the expected nucleation point: 0.999594
 -> v_max-v_av = 1.35691e-06
-Simulation at t 100 = 3.98438e-05 [sec]
+Simulation at t 100 = 3.94531e-05 [sec]
 sliding velocity at the observation point: 1.43268e-06
 state variable at the expected nucleation point: 0.999571
 -> v_max-v_av = 1.43396e-06
-Simulation at t 150 = 5.9375e-05 [sec]
+Simulation at t 150 = 5.89844e-05 [sec]
 sliding velocity at the observation point: 1.5139e-06
 state variable at the expected nucleation point: 0.999547
 -> v_max-v_av = 1.51534e-06
-Simulation at t 200 = 7.89063e-05 [sec]
+Simulation at t 200 = 7.85156e-05 [sec]
 sliding velocity at the observation point: 1.59964e-06
 state variable at the expected nucleation point: 0.999521
 -> v_max-v_av = 1.60125e-06
-Simulation at t 250 = 9.84375e-05 [sec]
+Simulation at t 250 = 9.80469e-05 [sec]
 sliding velocity at the observation point: 1.69017e-06
 state variable at the expected nucleation point: 0.999494
 -> v_max-v_av = 1.69197e-06
-Simulation at t 300 = 0.000117969 [sec]
+Simulation at t 300 = 0.000117578 [sec]
 sliding velocity at the observation point: 1.78573e-06
 state variable at the expected nucleation point: 0.999465
 -> v_max-v_av = 1.78775e-06
-Simulation at t 350 = 0.0001375 [sec]
+Simulation at t 350 = 0.000137109 [sec]
 sliding velocity at the observation point: 1.88661e-06
 state variable at the expected nucleation point: 0.999435
 -> v_max-v_av = 1.88887e-06
-Simulation at t 400 = 0.000157031 [sec]
+Simulation at t 400 = 0.000156641 [sec]
 sliding velocity at the observation point: 1.99309e-06
 state variable at the expected nucleation point: 0.999403
 -> v_max-v_av = 1.99562e-06
-Simulation at t 450 = 0.000176563 [sec]
+Simulation at t 450 = 0.000176172 [sec]
 sliding velocity at the observation point: 2.10549e-06
 state variable at the expected nucleation point: 0.999369
 -> v_max-v_av = 2.10832e-06
-Simulation at t 500 = 0.000196094 [sec]
+Simulation at t 500 = 0.000195703 [sec]
 sliding velocity at the observation point: 2.22412e-06
 state variable at the expected nucleation point: 0.999333
 -> v_max-v_av = 2.22728e-06
-Simulation at t 550 = 0.000215625 [sec]
+Simulation at t 550 = 0.000215234 [sec]
 sliding velocity at the observation point: 2.34934e-06
 state variable at the expected nucleation point: 0.999295
 -> v_max-v_av = 2.35287e-06
-Simulation at t 600 = 0.000235156 [sec]
+Simulation at t 600 = 0.000234766 [sec]
 sliding velocity at the observation point: 2.48148e-06
 state variable at the expected nucleation point: 0.999256
 -> v_max-v_av = 2.48543e-06
-Simulation at t 650 = 0.000254688 [sec]
+Simulation at t 650 = 0.000254297 [sec]
 sliding velocity at the observation point: 2.62095e-06
 state variable at the expected nucleation point: 0.999213
 -> v_max-v_av = 2.62536e-06
-Simulation at t 700 = 0.000274219 [sec]
+Simulation at t 700 = 0.000273828 [sec]
 sliding velocity at the observation point: 2.76813e-06
 state variable at the expected nucleation point: 0.999169
 -> v_max-v_av = 2.77305e-06
-Simulation at t 750 = 0.00029375 [sec]
+Simulation at t 750 = 0.000293359 [sec]
 sliding velocity at the observation point: 2.92345e-06
 state variable at the expected nucleation point: 0.999122
 -> v_max-v_av = 2.92895e-06
-Simulation at t 800 = 0.000313281 [sec]
+Simulation at t 800 = 0.000312891 [sec]
 sliding velocity at the observation point: 3.08735e-06
 state variable at the expected nucleation point: 0.999073
 -> v_max-v_av = 3.09349e-06
-Simulation at t 850 = 0.000332812 [sec]
+Simulation at t 850 = 0.000332422 [sec]
 sliding velocity at the observation point: 3.26031e-06
 state variable at the expected nucleation point: 0.99902
 -> v_max-v_av = 3.26716e-06
-Simulation at t 900 = 0.000352344 [sec]
+Simulation at t 900 = 0.000351953 [sec]
 sliding velocity at the observation point: 3.44281e-06
 state variable at the expected nucleation point: 0.998965
 -> v_max-v_av = 3.45046e-06
-Simulation at t 950 = 0.000371875 [sec]
+Simulation at t 950 = 0.000371484 [sec]
 sliding velocity at the observation point: 3.63538e-06
 state variable at the expected nucleation point: 0.998907
 -> v_max-v_av = 3.64392e-06
-Simulation at t 1000 = 0.000391406 [sec]
+Simulation at t 1000 = 0.000391016 [sec]
 sliding velocity at the observation point: 3.83856e-06
 state variable at the expected nucleation point: 0.998845
 -> v_max-v_av = 3.84809e-06
-Simulation at t 1050 = 0.000410938 [sec]
+Simulation at t 1050 = 0.000410547 [sec]
 sliding velocity at the observation point: 4.05295e-06
 state variable at the expected nucleation point: 0.99878
 -> v_max-v_av = 4.06358e-06
-Simulation at t 1100 = 0.000430469 [sec]
+Simulation at t 1100 = 0.000430078 [sec]
 sliding velocity at the observation point: 4.27914e-06
 state variable at the expected nucleation point: 0.998712
 -> v_max-v_av = 4.291e-06
-Simulation at t 1150 = 0.00045 [sec]
+Simulation at t 1150 = 0.000449609 [sec]
 sliding velocity at the observation point: 4.51779e-06
 state variable at the expected nucleation point: 0.998639
 -> v_max-v_av = 4.53101e-06
-Simulation at t 1200 = 0.000469531 [sec]
+Simulation at t 1200 = 0.000469141 [sec]
 sliding velocity at the observation point: 4.76957e-06
 state variable at the expected nucleation point: 0.998563
 -> v_max-v_av = 4.78432e-06
-Simulation at t 1250 = 0.000489063 [sec]
+Simulation at t 1250 = 0.000488672 [sec]
 sliding velocity at the observation point: 5.0352e-06
 state variable at the expected nucleation point: 0.998482
 -> v_max-v_av = 5.05164e-06
-Simulation at t 1300 = 0.000508594 [sec]
+Simulation at t 1300 = 0.000508203 [sec]
 sliding velocity at the observation point: 5.31543e-06
 state variable at the expected nucleation point: 0.998397
 -> v_max-v_av = 5.33376e-06
-Simulation at t 1350 = 0.000528125 [sec]
+Simulation at t 1350 = 0.000527734 [sec]
 sliding velocity at the observation point: 5.61106e-06
 state variable at the expected nucleation point: 0.998308
 -> v_max-v_av = 5.6315e-06
-Simulation at t 1400 = 0.000547656 [sec]
+Simulation at t 1400 = 0.000547266 [sec]
 sliding velocity at the observation point: 5.92293e-06
 state variable at the expected nucleation point: 0.998213
 -> v_max-v_av = 5.94571e-06
-Simulation at t 1450 = 0.000567188 [sec]
+Simulation at t 1450 = 0.000566797 [sec]
 sliding velocity at the observation point: 6.25192e-06
 state variable at the expected nucleation point: 0.998113
 -> v_max-v_av = 6.27732e-06
-Simulation at t 1500 = 0.000586719 [sec]
+Simulation at t 1500 = 0.000586328 [sec]
 sliding velocity at the observation point: 6.59897e-06
 state variable at the expected nucleation point: 0.998008
 -> v_max-v_av = 6.62727e-06
-Simulation at t 1550 = 0.00060625 [sec]
+Simulation at t 1550 = 0.000605859 [sec]
 sliding velocity at the observation point: 6.96506e-06
 state variable at the expected nucleation point: 0.997896
 -> v_max-v_av = 6.9966e-06
-Simulation at t 1600 = 0.000625781 [sec]
+Simulation at t 1600 = 0.000625391 [sec]
 sliding velocity at the observation point: 7.35122e-06
 state variable at the expected nucleation point: 0.997779
 -> v_max-v_av = 7.38636e-06
-Simulation at t 1650 = 0.000645313 [sec]
+Simulation at t 1650 = 0.000644922 [sec]
 sliding velocity at the observation point: 7.75854e-06
 state variable at the expected nucleation point: 0.997655
 -> v_max-v_av = 7.79769e-06
-Simulation at t 1700 = 0.000664844 [sec]
+Simulation at t 1700 = 0.000664453 [sec]
 sliding velocity at the observation point: 8.18817e-06
 state variable at the expected nucleation point: 0.997524
 -> v_max-v_av = 8.2318e-06
-Simulation at t 1750 = 0.000684375 [sec]
+Simulation at t 1750 = 0.000683984 [sec]
 sliding velocity at the observation point: 8.64133e-06
 state variable at the expected nucleation point: 0.997386
 -> v_max-v_av = 8.68994e-06
-Simulation at t 1800 = 0.000703906 [sec]
+Simulation at t 1800 = 0.000703516 [sec]
 sliding velocity at the observation point: 9.11929e-06
 state variable at the expected nucleation point: 0.99724
 -> v_max-v_av = 9.17344e-06
-Simulation at t 1850 = 0.000723438 [sec]
+Simulation at t 1850 = 0.000723047 [sec]
 sliding velocity at the observation point: 9.6234e-06
 state variable at the expected nucleation point: 0.997087
 -> v_max-v_av = 9.68372e-06
-Simulation at t 1900 = 0.000742969 [sec]
+Simulation at t 1900 = 0.000742578 [sec]
 sliding velocity at the observation point: 1.01551e-05
 state variable at the expected nucleation point: 0.996925
 -> v_max-v_av = 1.02223e-05
-Simulation at t 1950 = 0.0007625 [sec]
+Simulation at t 1950 = 0.000762109 [sec]
 sliding velocity at the observation point: 1.07158e-05
 state variable at the expected nucleation point: 0.996754
 -> v_max-v_av = 1.07906e-05
-Simulation at t 2000 = 0.000782031 [sec]
+Simulation at t 2000 = 0.000781641 [sec]
 sliding velocity at the observation point: 1.13072e-05
 state variable at the expected nucleation point: 0.996573
 -> v_max-v_av = 1.13905e-05
-Simulation at t 2050 = 0.000801563 [sec]
+Simulation at t 2050 = 0.000801172 [sec]
 sliding velocity at the observation point: 1.19308e-05
 state variable at the expected nucleation point: 0.996383
 -> v_max-v_av = 1.20236e-05
-Simulation at t 2100 = 0.000821094 [sec]
+Simulation at t 2100 = 0.000820703 [sec]
 sliding velocity at the observation point: 1.25885e-05
 state variable at the expected nucleation point: 0.996182
 -> v_max-v_av = 1.26918e-05
-Simulation at t 2150 = 0.000840625 [sec]
+Simulation at t 2150 = 0.000840234 [sec]
 sliding velocity at the observation point: 1.3282e-05
 state variable at the expected nucleation point: 0.99597
 -> v_max-v_av = 1.33971e-05
-Simulation at t 2200 = 0.000860156 [sec]
+Simulation at t 2200 = 0.000859766 [sec]
 sliding velocity at the observation point: 1.40134e-05
 state variable at the expected nucleation point: 0.995746
 -> v_max-v_av = 1.41416e-05
-Simulation at t 2250 = 0.000879688 [sec]
+Simulation at t 2250 = 0.000879297 [sec]
 sliding velocity at the observation point: 1.47845e-05
 state variable at the expected nucleation point: 0.99551
 -> v_max-v_av = 1.49273e-05
-Simulation at t 2300 = 0.000899219 [sec]
+Simulation at t 2300 = 0.000898828 [sec]
 sliding velocity at the observation point: 1.55977e-05
 state variable at the expected nucleation point: 0.995261
 -> v_max-v_av = 1.57567e-05
-Simulation at t 2350 = 0.00091875 [sec]
+Simulation at t 2350 = 0.000918359 [sec]
 sliding velocity at the observation point: 1.64551e-05
 state variable at the expected nucleation point: 0.994998
 -> v_max-v_av = 1.66321e-05
-Simulation at t 2400 = 0.000938281 [sec]
+Simulation at t 2400 = 0.000937891 [sec]
 sliding velocity at the observation point: 1.73591e-05
 state variable at the expected nucleation point: 0.994721
 -> v_max-v_av = 1.75562e-05
-Simulation at t 2450 = 0.000957813 [sec]
+Simulation at t 2450 = 0.000957422 [sec]
 sliding velocity at the observation point: 1.83123e-05
 state variable at the expected nucleation point: 0.994428
 -> v_max-v_av = 1.85317e-05
-Simulation at t 2500 = 0.000977344 [sec]
+Simulation at t 2500 = 0.000976953 [sec]
 sliding velocity at the observation point: 1.93172e-05
 state variable at the expected nucleation point: 0.99412
 -> v_max-v_av = 1.95614e-05
-Simulation at t 2550 = 0.000996875 [sec]
+Simulation at t 2550 = 0.000996484 [sec]
 sliding velocity at the observation point: 2.03766e-05
 state variable at the expected nucleation point: 0.993794
 -> v_max-v_av = 2.06485e-05
-Simulation at t 2600 = 0.00101641 [sec]
+Simulation at t 2600 = 0.00101602 [sec]
 sliding velocity at the observation point: 2.14934e-05
 state variable at the expected nucleation point: 0.993451
 -> v_max-v_av = 2.17962e-05
-Simulation at t 2650 = 0.00103594 [sec]
+Simulation at t 2650 = 0.00103555 [sec]
 sliding velocity at the observation point: 2.26707e-05
 state variable at the expected nucleation point: 0.993088
 -> v_max-v_av = 2.30078e-05
-Simulation at t 2700 = 0.00105547 [sec]
+Simulation at t 2700 = 0.00105508 [sec]
 sliding velocity at the observation point: 2.39118e-05
 state variable at the expected nucleation point: 0.992706
 -> v_max-v_av = 2.4287e-05
-Simulation at t 2750 = 0.001075 [sec]
+Simulation at t 2750 = 0.00107461 [sec]
 sliding velocity at the observation point: 2.52199e-05
 state variable at the expected nucleation point: 0.992302
 -> v_max-v_av = 2.56376e-05
-Simulation at t 2800 = 0.00109453 [sec]
+Simulation at t 2800 = 0.00109414 [sec]
 sliding velocity at the observation point: 2.65987e-05
 state variable at the expected nucleation point: 0.991877
 -> v_max-v_av = 2.70637e-05
-Simulation at t 2850 = 0.00111406 [sec]
+Simulation at t 2850 = 0.00111367 [sec]
 sliding velocity at the observation point: 2.80519e-05
 state variable at the expected nucleation point: 0.991428
 -> v_max-v_av = 2.85695e-05
-Simulation at t 2900 = 0.00113359 [sec]
+Simulation at t 2900 = 0.0011332 [sec]
 sliding velocity at the observation point: 2.95835e-05
 state variable at the expected nucleation point: 0.990954
 -> v_max-v_av = 3.01596e-05
-Simulation at t 2950 = 0.00115312 [sec]
+Simulation at t 2950 = 0.00115273 [sec]
 sliding velocity at the observation point: 3.11975e-05
 state variable at the expected nucleation point: 0.990454
 -> v_max-v_av = 3.18388e-05
-Simulation at t 3000 = 0.00117266 [sec]
+Simulation at t 3000 = 0.00117227 [sec]
 sliding velocity at the observation point: 3.28983e-05
 state variable at the expected nucleation point: 0.989927
 -> v_max-v_av = 3.36122e-05
-Simulation at t 3050 = 0.00119219 [sec]
+Simulation at t 3050 = 0.0011918 [sec]
 sliding velocity at the observation point: 3.46905e-05
 state variable at the expected nucleation point: 0.989371
 -> v_max-v_av = 3.54851e-05
-Simulation at t 3100 = 0.00121172 [sec]
+Simulation at t 3100 = 0.00121133 [sec]
 sliding velocity at the observation point: 3.65788e-05
 state variable at the expected nucleation point: 0.988784
 -> v_max-v_av = 3.74632e-05
-Simulation at t 3150 = 0.00123125 [sec]
+Simulation at t 3150 = 0.00123086 [sec]
 sliding velocity at the observation point: 3.85683e-05
 state variable at the expected nucleation point: 0.988164
 -> v_max-v_av = 3.95527e-05
-Simulation at t 3200 = 0.00125078 [sec]
+Simulation at t 3200 = 0.00125039 [sec]
 sliding velocity at the observation point: 4.06642e-05
 state variable at the expected nucleation point: 0.987511
 -> v_max-v_av = 4.17599e-05
-Simulation at t 3250 = 0.00127031 [sec]
+Simulation at t 3250 = 0.00126992 [sec]
 sliding velocity at the observation point: 4.2872e-05
 state variable at the expected nucleation point: 0.986822
 -> v_max-v_av = 4.40916e-05
-Simulation at t 3300 = 0.00128984 [sec]
+Simulation at t 3300 = 0.00128945 [sec]
 sliding velocity at the observation point: 4.51977e-05
 state variable at the expected nucleation point: 0.986095
 -> v_max-v_av = 4.65551e-05
-Simulation at t 3350 = 0.00130938 [sec]
+Simulation at t 3350 = 0.00130898 [sec]
 sliding velocity at the observation point: 4.76471e-05
 state variable at the expected nucleation point: 0.985328
 -> v_max-v_av = 4.91579e-05
-Simulation at t 3400 = 0.00132891 [sec]
+Simulation at t 3400 = 0.00132852 [sec]
 sliding velocity at the observation point: 5.02267e-05
 state variable at the expected nucleation point: 0.984518
 -> v_max-v_av = 5.19083e-05
-Simulation at t 3450 = 0.00134844 [sec]
+Simulation at t 3450 = 0.00134805 [sec]
 sliding velocity at the observation point: 5.29431e-05
 state variable at the expected nucleation point: 0.983664
 -> v_max-v_av = 5.48147e-05
-Simulation at t 3500 = 0.00136797 [sec]
+Simulation at t 3500 = 0.00136758 [sec]
 sliding velocity at the observation point: 5.58034e-05
 state variable at the expected nucleation point: 0.982763
 -> v_max-v_av = 5.78864e-05
-Simulation at t 3550 = 0.0013875 [sec]
+Simulation at t 3550 = 0.00138711 [sec]
 sliding velocity at the observation point: 5.88147e-05
 state variable at the expected nucleation point: 0.981813
 -> v_max-v_av = 6.1133e-05
-Simulation at t 3600 = 0.00140703 [sec]
+Simulation at t 3600 = 0.00140664 [sec]
 sliding velocity at the observation point: 6.19848e-05
 state variable at the expected nucleation point: 0.98081
 -> v_max-v_av = 6.4565e-05
-Simulation at t 3650 = 0.00142656 [sec]
+Simulation at t 3650 = 0.00142617 [sec]
 sliding velocity at the observation point: 6.53216e-05
 state variable at the expected nucleation point: 0.979752
 -> v_max-v_av = 6.81932e-05
-Simulation at t 3700 = 0.00144609 [sec]
+Simulation at t 3700 = 0.0014457 [sec]
 sliding velocity at the observation point: 6.88334e-05
 state variable at the expected nucleation point: 0.978636
 -> v_max-v_av = 7.20293e-05
-Simulation at t 3750 = 0.00146563 [sec]
+Simulation at t 3750 = 0.00146523 [sec]
 sliding velocity at the observation point: 7.25289e-05
 state variable at the expected nucleation point: 0.977459
 -> v_max-v_av = 7.60858e-05
-Simulation at t 3800 = 0.00148516 [sec]
+Simulation at t 3800 = 0.00148477 [sec]
 sliding velocity at the observation point: 7.64173e-05
 state variable at the expected nucleation point: 0.976216
 -> v_max-v_av = 8.03757e-05
-Simulation at t 3850 = 0.00150469 [sec]
+Simulation at t 3850 = 0.0015043 [sec]
 sliding velocity at the observation point: 8.05079e-05
 state variable at the expected nucleation point: 0.974905
 -> v_max-v_av = 8.49133e-05
-Simulation at t 3900 = 0.00152422 [sec]
+Simulation at t 3900 = 0.00152383 [sec]
 sliding velocity at the observation point: 8.48107e-05
 state variable at the expected nucleation point: 0.973523
 -> v_max-v_av = 8.97135e-05
-Simulation at t 3950 = 0.00154375 [sec]
+Simulation at t 3950 = 0.00154336 [sec]
 sliding velocity at the observation point: 8.93359e-05
 state variable at the expected nucleation point: 0.972064
 -> v_max-v_av = 9.47921e-05
-Simulation at t 4000 = 0.00156328 [sec]
+Simulation at t 4000 = 0.00156289 [sec]
 sliding velocity at the observation point: 9.40941e-05
 state variable at the expected nucleation point: 0.970525
 -> v_max-v_av = 0.000100166
-Simulation at t 4050 = 0.00158281 [sec]
+Simulation at t 4050 = 0.00158242 [sec]
 sliding velocity at the observation point: 9.90966e-05
 state variable at the expected nucleation point: 0.968901
 -> v_max-v_av = 0.000105854
-Simulation at t 4100 = 0.00160234 [sec]
+Simulation at t 4100 = 0.00160195 [sec]
 sliding velocity at the observation point: 0.000104355
 state variable at the expected nucleation point: 0.967188
 -> v_max-v_av = 0.000111875
-Simulation at t 4150 = 0.00162188 [sec]
+Simulation at t 4150 = 0.00162148 [sec]
 sliding velocity at the observation point: 0.000109881
 state variable at the expected nucleation point: 0.96538
 -> v_max-v_av = 0.00011825
-Simulation at t 4200 = 0.00164141 [sec]
+Simulation at t 4200 = 0.00164102 [sec]
 sliding velocity at the observation point: 0.000115686
 state variable at the expected nucleation point: 0.963473
 -> v_max-v_av = 0.000125
-Simulation at t 4250 = 0.00166094 [sec]
+Simulation at t 4250 = 0.00166055 [sec]
 sliding velocity at the observation point: 0.000121785
 state variable at the expected nucleation point: 0.961462
 -> v_max-v_av = 0.00013215
-Simulation at t 4300 = 0.00168047 [sec]
+Simulation at t 4300 = 0.00168008 [sec]
 sliding velocity at the observation point: 0.00012819
 state variable at the expected nucleation point: 0.959339
 -> v_max-v_av = 0.000139724
-Simulation at t 4350 = 0.0017 [sec]
+Simulation at t 4350 = 0.00169961 [sec]
 sliding velocity at the observation point: 0.000134915
 state variable at the expected nucleation point: 0.9571
 -> v_max-v_av = 0.00014775
-Simulation at t 4400 = 0.00171953 [sec]
+Simulation at t 4400 = 0.00171914 [sec]
 sliding velocity at the observation point: 0.000141973
 state variable at the expected nucleation point: 0.954738
 -> v_max-v_av = 0.000156257
-Simulation at t 4450 = 0.00173906 [sec]
+Simulation at t 4450 = 0.00173867 [sec]
 sliding velocity at the observation point: 0.00014938
 state variable at the expected nucleation point: 0.952246
 -> v_max-v_av = 0.000165275
-Simulation at t 4500 = 0.00175859 [sec]
+Simulation at t 4500 = 0.0017582 [sec]
 sliding velocity at the observation point: 0.000157151
 state variable at the expected nucleation point: 0.949617
 -> v_max-v_av = 0.000174838
-Simulation at t 4550 = 0.00177813 [sec]
+Simulation at t 4550 = 0.00177773 [sec]
 sliding velocity at the observation point: 0.0001653
 state variable at the expected nucleation point: 0.946844
 -> v_max-v_av = 0.000184982
-Simulation at t 4600 = 0.00179766 [sec]
+Simulation at t 4600 = 0.00179727 [sec]
 sliding velocity at the observation point: 0.000173843
 state variable at the expected nucleation point: 0.943918
 -> v_max-v_av = 0.000195744
-Simulation at t 4650 = 0.00181719 [sec]
+Simulation at t 4650 = 0.0018168 [sec]
 sliding velocity at the observation point: 0.000182797
 state variable at the expected nucleation point: 0.940832
 -> v_max-v_av = 0.000207167
-Simulation at t 4700 = 0.00183672 [sec]
+Simulation at t 4700 = 0.00183633 [sec]
 sliding velocity at the observation point: 0.000192177
 state variable at the expected nucleation point: 0.937576
 -> v_max-v_av = 0.000219295
-Simulation at t 4750 = 0.00185625 [sec]
+Simulation at t 4750 = 0.00185586 [sec]
 sliding velocity at the observation point: 0.000202
 state variable at the expected nucleation point: 0.934142
 -> v_max-v_av = 0.000232174
-Simulation at t 4800 = 0.00187578 [sec]
+Simulation at t 4800 = 0.00187539 [sec]
 sliding velocity at the observation point: 0.000212283
 state variable at the expected nucleation point: 0.93052
 -> v_max-v_av = 0.000245857
-Simulation at t 4850 = 0.00189531 [sec]
+Simulation at t 4850 = 0.00189492 [sec]
 sliding velocity at the observation point: 0.000223042
 state variable at the expected nucleation point: 0.926699
 -> v_max-v_av = 0.0002604
-Simulation at t 4900 = 0.00191484 [sec]
+Simulation at t 4900 = 0.00191445 [sec]
 sliding velocity at the observation point: 0.000234295
 state variable at the expected nucleation point: 0.922669
 -> v_max-v_av = 0.000275861
-Simulation at t 4950 = 0.00193438 [sec]
+Simulation at t 4950 = 0.00193398 [sec]
 sliding velocity at the observation point: 0.000246059
 state variable at the expected nucleation point: 0.918418
 -> v_max-v_av = 0.000292306
-Simulation at t 5000 = 0.00195391 [sec]
+Simulation at t 5000 = 0.00195352 [sec]
 sliding velocity at the observation point: 0.00025835
 state variable at the expected nucleation point: 0.913936
 -> v_max-v_av = 0.000309804

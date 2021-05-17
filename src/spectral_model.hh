@@ -270,6 +270,10 @@ public:
   UInt getCurrentTimeStep() {return it;}
   /// Return stable time step ratio beta
   Real getBeta() {return beta;}
+  /// Return minimum distance between discretization points
+  Real getDxMin() {return dxmin;}
+  /// Return wave speeds
+  std::vector<Real> getShearWaveSpeeds() {return cs;}
   /// Return plane discretization
   std::vector<Real> getElementSize() {return dx;}
   /// Return the number of elements

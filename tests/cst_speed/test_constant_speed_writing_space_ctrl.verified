@@ -56,16 +56,16 @@ Rupture is currently artificially triggered with speed 0.05*c_s
 Initiation just ends...
 Crack tip at 10.9375%  and far-field loading               0           3e+06               0
 Crack tip at 14.4531%  and far-field loading               0           3e+06               0
-Initiation phase just ends -> time: 0.000581558
+Initiation phase just ends -> time: 0.000569964
 Crack tip at 20.1172%  and far-field loading               0     2.19976e+06               0
-Crack tip at 25.9766%  and far-field loading               0     1.97667e+06               0
-Crack tip at 31.6406%  and far-field loading               0     1.81719e+06               0
-Crack tip at 37.1094%  and far-field loading               0     1.80812e+06               0
-Crack tip at 42.7734%  and far-field loading               0     1.66944e+06               0
-Crack tip at 48.4375%  and far-field loading               0     1.53566e+06               0
-Crack tip at 54.1016%  and far-field loading               0     1.38593e+06               0
-Crack tip at 59.7656%  and far-field loading               0     1.23117e+06               0
-Crack tip at 65.625%  and far-field loading               0     1.17108e+06               0
+Crack tip at 25.9766%  and far-field loading               0     1.89344e+06               0
+Crack tip at 31.4453%  and far-field loading               0     1.79877e+06               0
+Crack tip at 37.1094%  and far-field loading               0     1.73844e+06               0
+Crack tip at 42.7734%  and far-field loading               0     1.68652e+06               0
+Crack tip at 48.4375%  and far-field loading               0     1.52208e+06               0
+Crack tip at 54.1016%  and far-field loading               0     1.33599e+06               0
+Crack tip at 59.7656%  and far-field loading               0     1.23935e+06               0
+Crack tip at 65.625%  and far-field loading               0     1.17458e+06               0
 Crack tip at 71.4844%  and far-field loading               0     1.12206e+06               0
 !! Stable time step reinitialized to beta = 0.2
 Convolution kernel correctly loaded from nu_.33_h11.dat
@@ -126,12 +126,12 @@ Initiation just ends...
 Crack tip at 10.9375%  and far-field loading               0           3e+06               0
 Crack tip at 14.4531%  and far-field loading               0           3e+06               0
 Crack tip at 20.1172%  and far-field loading               0     2.19976e+06               0
-Crack tip at 25.9766%  and far-field loading               0     1.97667e+06               0
-Crack tip at 31.6406%  and far-field loading               0     1.81719e+06               0
-Crack tip at 37.1094%  and far-field loading               0     1.80812e+06               0
-Crack tip at 42.7734%  and far-field loading               0     1.66944e+06               0
-Crack tip at 48.4375%  and far-field loading               0     1.53566e+06               0
-Crack tip at 54.1016%  and far-field loading               0     1.38593e+06               0
-Crack tip at 59.7656%  and far-field loading               0     1.23117e+06               0
-Crack tip at 65.625%  and far-field loading               0     1.17108e+06               0
+Crack tip at 25.9766%  and far-field loading               0     1.89344e+06               0
+Crack tip at 31.4453%  and far-field loading               0     1.79877e+06               0
+Crack tip at 37.1094%  and far-field loading               0     1.73844e+06               0
+Crack tip at 42.7734%  and far-field loading               0     1.68652e+06               0
+Crack tip at 48.4375%  and far-field loading               0     1.52208e+06               0
+Crack tip at 54.1016%  and far-field loading               0     1.33599e+06               0
+Crack tip at 59.7656%  and far-field loading               0     1.23935e+06               0
+Crack tip at 65.625%  and far-field loading               0     1.17458e+06               0
 Crack tip at 71.4844%  and far-field loading               0     1.12206e+06               0

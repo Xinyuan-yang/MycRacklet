@@ -53,16 +53,16 @@ Rupture is currently artificially triggered with speed 0.05*c_s
  Crack position is now at 0.0360479
 Initiation just ends...
 Crack tip at 9.96094%  and far-field loading           3e+06     1.83697e-10               0
-Initiation phase just ends -> time: 0.000530039
+Initiation phase just ends -> time: 0.000518266
 Crack tip at 15.625%  and far-field loading      2.5032e+06     1.53277e-10               0
-Crack tip at 21.2891%  and far-field loading     2.05609e+06     1.25899e-10               0
-Crack tip at 26.9531%  and far-field loading     1.82733e+06     1.11892e-10               0
-Crack tip at 32.6172%  and far-field loading     1.67115e+06     1.02328e-10               0
-Crack tip at 38.2812%  and far-field loading     1.54517e+06     9.46147e-11               0
-Crack tip at 43.9453%  and far-field loading     1.43427e+06      8.7824e-11               0
-Crack tip at 49.8047%  and far-field loading     1.34691e+06     8.24746e-11               0
+Crack tip at 21.2891%  and far-field loading     2.08499e+06     1.27669e-10               0
+Crack tip at 26.9531%  and far-field loading     1.91382e+06     1.17187e-10               0
+Crack tip at 32.8125%  and far-field loading      1.6661e+06     1.02019e-10               0
+Crack tip at 38.4766%  and far-field loading     1.54119e+06     9.43705e-11               0
+Crack tip at 44.1406%  and far-field loading     1.43427e+06      8.7824e-11               0
+Crack tip at 50%  and far-field loading     1.34164e+06     8.21518e-11               0
 Crack tip at 56.0547%  and far-field loading     1.26711e+06     7.75883e-11               0
-Crack tip at 62.6953%  and far-field loading     1.19813e+06     7.33643e-11               0
+Crack tip at 62.8906%  and far-field loading     1.19627e+06     7.32503e-11               0
 Crack tip at 70.1172%  and far-field loading     1.13295e+06     6.93729e-11               0
 !! Stable time step reinitialized to beta = 0.2
 Convolution kernel correctly loaded from nu_.35_h11.dat
@@ -120,12 +120,12 @@ Rupture is currently artificially triggered with speed 0.05*c_s
 Initiation just ends...
 Crack tip at 9.96094%  and far-field loading           3e+06     1.83697e-10               0
 Crack tip at 15.625%  and far-field loading      2.5032e+06     1.53277e-10               0
-Crack tip at 21.2891%  and far-field loading     2.05609e+06     1.25899e-10               0
-Crack tip at 26.9531%  and far-field loading     1.82733e+06     1.11892e-10               0
-Crack tip at 32.6172%  and far-field loading     1.67115e+06     1.02328e-10               0
-Crack tip at 38.2812%  and far-field loading     1.54517e+06     9.46147e-11               0
-Crack tip at 43.9453%  and far-field loading     1.43427e+06      8.7824e-11               0
-Crack tip at 49.8047%  and far-field loading     1.34691e+06     8.24746e-11               0
+Crack tip at 21.2891%  and far-field loading     2.08499e+06     1.27669e-10               0
+Crack tip at 26.9531%  and far-field loading     1.91382e+06     1.17187e-10               0
+Crack tip at 32.8125%  and far-field loading      1.6661e+06     1.02019e-10               0
+Crack tip at 38.4766%  and far-field loading     1.54119e+06     9.43705e-11               0
+Crack tip at 44.1406%  and far-field loading     1.43427e+06      8.7824e-11               0
+Crack tip at 50%  and far-field loading     1.34164e+06     8.21518e-11               0
 Crack tip at 56.0547%  and far-field loading     1.26711e+06     7.75883e-11               0
-Crack tip at 62.6953%  and far-field loading     1.19813e+06     7.33643e-11               0
+Crack tip at 62.8906%  and far-field loading     1.19627e+06     7.32503e-11               0
 Crack tip at 70.1172%  and far-field loading     1.13295e+06     6.93729e-11               0

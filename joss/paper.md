@@ -46,14 +46,12 @@ cRacklet allows for planar rupture interface simulations loaded in any combinati
 
 - Slip-weakening laws [@ida_cohesive_1972] [@palmer_growth_1973]. This behavior can be coupled with a classical Coulomb friction law or a regularized one [@prakash_frictional_1998] to handle friction emerging from the contact of the two surfaces.
 
-- Rate and state dependant friction laws, including the original formulation by [@dieterich_modeling_1979] and [@ruina_slip_1983]. More novel formulations such as N-shaped law (see [@barsinai_2014]) are also available.
+- Rate and state dependant friction laws, including the original formulation by [@dieterich_modeling_1979] and [@ruina_slip_1983]. More novel formulations such as rate and state friction with velocity-strenghtening behaviors (i.e. N-shaped) are also available, see [@barsinai_2014] for example.
 
 
 # Performance
 
 ![Time required to solve $1e5$ time step with $2^{15}$ discretization points, as a function of the number of threads. Computation were run using the computational facilities of EPFL, here on a node composed of 2 Intel Broadwell processors running at $2.6 GHz$ with 14 cores each.](scalability.png){ width=80% }
-
-Comparison with Akantu?
 
 # Example
 

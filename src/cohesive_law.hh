@@ -110,6 +110,10 @@ public:
   UInt getNbCohesiveNodes(){return std::count(this->ind_crack.begin(),this->ind_crack.end(),1);};
   // Count the number of elements being part of the process zone (ind_crack = 2)
   UInt getNbBrokenNodes(){return std::count(this->ind_crack.begin(),this->ind_crack.end(),2);};
+
+  /** Correct velocities by adding a field (For coupling procedure) */
+  // The boolean indicate if only the top field has to be corrected... Maybe for now it is better to correct both field to avoid any discrepancy between the two fields. Ultimately it would be better to have a SINGLE boundary !
+  void correctVelocities(std::vector<Real> vel_correction);
   
 protected:
 

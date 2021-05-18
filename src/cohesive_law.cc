@@ -175,3 +175,20 @@ void CohesiveLaw::computeVelocities(){
   }
 }
 
+
+/* -------------------------------------------------------------------------- */
+void CohesiveLaw::correctVelocities(std::vector<Real> vel_correction){
+  
+  for (UInt i = 0; i < n_ele[0]; ++i) {
+    for (UInt j = 0; j < n_ele[1]; ++j) {
+      for (UInt d = 0; d < dim; ++d) {
+	(*velocities[0])[(i+j*n_ele[0])*dim+d] += vel_correction[(i+j*n_ele[0])*dim+d];
+      }
+    }
+  }
+
+  // Change also the bottom velocities
+  (*velocities[1])=(*velocities[0]); 
+  
+}
+/* -------------------------------------------------------------------------- */

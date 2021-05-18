@@ -18,6 +18,8 @@ void register_cohesive_law(py::module& mod) {
     .def("restart",&CohesiveLaw::restart)
     .def("preventSurfaceOverlapping",&CohesiveLaw::preventSurfaceOverlapping)
 
+    .def("correctVelocities",&CohesiveLaw::correctVelocities)
+    
     // Accessor
     
     .def("getNbCohesiveNodes",&CohesiveLaw::getNbCohesiveNodes)

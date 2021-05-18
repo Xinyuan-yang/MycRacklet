@@ -51,7 +51,7 @@ cRacklet allows for planar rupture interface simulations loaded in any combinati
 
 # Performance
 
-![Time required to solve $1e5$ time step with $2^{15}$ discretization points, as a function of the number of threads. Computation were run using the computational facilities of EPFL, here on a node composed of 2 Intel Broadwell processors running at $2.6 GHz$ with 14 cores each.](.scalability.png){ width=20% }
+![Time required to solve $1e5$ time step with $2^{15}$ discretization points, as a function of the number of threads. Computation were run using the computational facilities of EPFL, here on a node composed of 2 Intel Broadwell processors running at $2.6 GHz$ with 14 cores each.](scalability.png){ width=20% }
 
 Comparison with Akantu?
 

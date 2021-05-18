@@ -20,7 +20,7 @@ The rate and state framework involve two functionnals: one for the friction coef
 Pure Weakening Formulation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This formulation is based on the one originaly proposed by Dieterich and Ruina :
+This formulation is based on the one originaly proposed by `Dieterich (1979) <https://doi.org/10.1029/JB084iB05p02161>`_ and `Ruina (1983) <https://doi.org/10.5194/npg-15-1-2008>`_ :
 
 .. math::
    f(v,\phi) = f_0 + a \log \left(v/v_* \right) + b f_0 \log \left(\phi / \phi_* \right)
@@ -28,7 +28,7 @@ This formulation is based on the one originaly proposed by Dieterich and Ruina :
 Standard Formulation
 ^^^^^^^^^^^^^^^^^^^^
 
-This formulation is a modified version of the original formulation proposed by Dieterich and Ruina.
+This formulation is a modified version of the original formulation proposed by `Dieterich (1979) <https://doi.org/10.1029/JB084iB05p02161>`_ and `Ruina (1983) <https://doi.org/10.5194/npg-15-1-2008>`_ , with the addition of :math:`+1` in the logarithm.
 
 .. math::
    f(v,\phi) = f_0 + a \log \left(1+v/v_* \right) + b f_0 \log \left(1 + \phi / \phi_* \right)
@@ -36,7 +36,7 @@ This formulation is a modified version of the original formulation proposed by D
 Regularized Formulation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-This formulation is a generic N-shape friction law, as suggested by experimental observations (Bar-Sinai 2014). The steady-state friction is strenghtening at low and high velocities, and has a velocity-weakening branch at intermediate velocities.
+This formulation is a generic N-shape friction law, as supported by experimental observations `Bar-Sinai & al. (2014) <https://doi.org/10.1002/2013JB010586>`_ . See `Brener & al. (2018) <https://doi.org/10.1103/PhysRevLett.121.234302>`_ for a discussion of the physical sense of each term and the comparison with more conventional rate and state friction law.. The steady-state friction is strenghtening at low and high velocities, and has a velocity-weakening branch at intermediate velocities.
 
 .. math::
    f(v,\phi) = \left( 1 + b \log \left(1+ \frac{\phi}{\phi_*} \right) \right) \left( \frac{f_0}{  \sqrt{\left(  1+v_0^2 / v^2 \right)} } + a \log \left( 1+\frac{v}{v_*} \right) \right)
@@ -52,11 +52,15 @@ This formulation is derived from the N-shape one, with the omission of the :math
 Aging Law
 ^^^^^^^^^
 
+The original aging law proposed by `Dieterich (1979) <https://doi.org/10.1029/JB084iB05p02161>`_.
+
 .. math::
    g(\phi) = 1 - \frac{v \phi}{D}
 
 Regularized Aging Law
 ^^^^^^^^^^^^^^^^^^^^^
+
+A regularization of the slip law, ensuring that for vanishingly small steady-state velocity the value of the state :math:`\phi` saturates to a finite value :math:`D / v_*` after long times instead of diverging.
 
 .. math::
    g(\phi) = 1 - \frac{v \phi}{D} \sqrt{1 + \left(\frac{v_*}{v}\right)^2}
@@ -64,10 +68,12 @@ Regularized Aging Law
 Slip Law
 ^^^^^^^^
 
+The slip law proposed by `Ruina (1983) <https://doi.org/10.5194/npg-15-1-2008>`_.
+
 .. math::
    g(\phi) = - \frac{v \phi}{D} \log \left( \frac{v \phi}{D} \right)
+
+:cpp:enum:`FractureLawType <_rate_and_state>`
    
 Friction law
 ------------
-
-

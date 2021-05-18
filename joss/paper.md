@@ -46,9 +46,8 @@ cRacklet allows for planar rupture interface simulations loaded in any combinati
 
 - Slip-weakening laws [@ida_cohesive_1972] [@palmer_growth_1973]. This behavior can be coupled with a classical Coulomb friction law or a regularized one [@prakash_frictional_1998] to handle friction emerging from the contact of the two surfaces.
 
-- Rate and state dependant friction laws, including the original formulation by [@dieterich_modeling_1979] and [@ruina_slip_1983] and the N-shape formulation proposed in [@aldam_critical_2017]
+- Rate and state dependant friction laws, including the original formulation by [@dieterich_modeling_1979] and [@ruina_slip_1983]. More novel formulations such as a generic N-shape law as proposed by [@bar-sinai] are also available.
 
-Existing softwares dealing with interfacial rupture are based on a simplified formulation, known as the quasi-dynamic approximation [@qdyn]. We are not aware of any public software package including the implementation of the full elastodynamics equations using the so-called boundary integral spectral method.
 
 # Performance
 
@@ -73,6 +72,10 @@ The following publications have been made possible with cRacklet:
 - @barras_emergence_2020
 
 - @fekak_crack_2020
+
+- @lebihain_2021
+
+- @roch_2021
 
 # Acknowledgments
 

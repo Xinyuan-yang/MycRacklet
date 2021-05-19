@@ -34,29 +34,32 @@ bibliography: paper.bib
 
 # Summary
 
-The study of dynamically propagating rupture along faults is of prime importance in fields ranging from engineering to geosciences. Numerical simulations of these phenomena are computationally costly and challenging: a fine discretization in time and space is required to accurately represent the singularities associated with the rupture edges. At the same time, the problems of interest usually involve a larger length scale along which rupture will propagate (i.e. a tectonic fault), consequently leading to a large domain of study requiring a fine discretization. In addition, the behavior of such interfaces can be highly non-linear thus increasing the problem complexity. Conventional numerical approaches for fracture problems, for instance, the use of cohesive elements in the finite-element method [@ortiz_finite-deformation_1999], requires discretizing the whole body containing the fault and is consequently computationally expensive. The use of boundary integral methods, reducing the dimensionality of the problem, enable to focus the computational efforts on the fracture plane and allows for a detailed description of the interfacial field's evolution.
+The study of dynamically propagating rupture along faults is of prime importance in fields ranging from engineering to geosciences. Numerical simulations of these phenomena are computationally costly and challenging. A fine spatial discretization is needed to represent accurately the singular fields associated with the rupture edges. Besides, the problems of interest usually involve a larger length scale along which rupture will propagate (i.e. a tectonic fault). The physical phenomena in play also occur at different timescale, from the slow process or rupture nucleation to the fast travel of crack front close the elastic wave speeds. Large and finely discretized spatio-temporal domains are required, which are computationally costly. In addition, the behavior of such interfaces can be highly non-linear thus increasing the problem complexity. 
+Conventional numerical approaches for fracture problems, for example, the use of cohesive elements in the finite-element method [@ortiz_finite-deformation_1999], requires discretizing the whole body containing the fracture plane. The use of boundary integral methods reduces the dimensionality of the problem. This enables to focus the computational efforts on the fracture plane and allows for a detailed description of the interfacial field's evolution.
 
 # Statement of need
 
-`cRacklet` is a C++ library with a Python interface [@pybind11] developed as a collaboration between the Computational Solid Mechanics Laboratory at EPFL and the Department of Aerospace Engineering of the University of Illinois at Urbana-Champaign that implements a spectral formulation of the elastodynamics boundary integral relations between the displacements and the corresponding traction stress acting at a planar interface between two homogeneous elastic solids [@geubelle_spectral_1995], [@breitenfeld_numerical_1998]. The stresses acting on the interfaces are partly computed with a convolution of the history of the interfacial displacement in the Fourier domain. The convolutions are computed within a shared-memory parallel framework using FFTW3/OpenMP. The prescription of an interfacial behavior allows solving for the equilibrium at a given time step. Time integration is achieved using an explicit time-stepping scheme. cRacklet is aimed at researchers interested in interfacial dynamics, ranging from nucleation problems to dynamic propagation of rupture fronts.
+`cRacklet` is a C++ library with a Python interface [@pybind11] developed as a collaboration between the Computational Solid Mechanics Laboratory at EPFL and the Department of Aerospace Engineering of the University of Illinois at Urbana-Champaign.  `cRacklet` implements a spectral formulation of the elastodynamics boundary integral relations between the displacements and the corresponding traction stress acting at a planar interface between two homogeneous elastic solids [@geubelle_spectral_1995], [@breitenfeld_numerical_1998]. The formulation implemented is the *independent* one, which considers the top and bottom solids separately [@breitenfeld_numerical_1998]. The stresses acting on the interfaces are connected to the history of the displacement on the interface in the Fourier domain via a convolution. The convolutions are efficiently computed within a shared-memory parallel framework using FFTW3/OpenMP. The prescription of an interfacial behavior allows solving for the equilibrium of the interface. Time integration is achieved using an explicit time-stepping scheme. cRacklet is aimed at researchers interested in interfacial dynamics, ranging from nucleation problems to dynamic propagation of rupture fronts.
+
+While the spectral boundary integral formulation is not novel and is already used and cited in the scientific literature, we believe that cRacklet will be a useful addition to the community. cRacklet is efficient, accessible (C++ or Python), and suited to study a broad class of problems (fracture and friction).
 
 # Features
 
-cRacklet allows for planar rupture interface simulations loaded in any combination of normal traction, in-plane, and out-of-plane shear solicitations.  cRacklet handles the simulation of interfaces bonded between dissimilar elastic solids. Any stress or material heterogeneity along the fracture plane can be resolved using cRacklet. Several interfacial behaviors are included in the library, such as:
+cRacklet allows for planar rupture interface simulations (in 2D or 3D) loaded in any combination of normal traction, in-plane, and out-of-plane shear solicitations. cRacklet handles the simulation of interfaces bonded between dissimilar elastic solids. Any stress or material heterogeneity along the fracture plane can be resolved using cRacklet. Several interfacial behaviors are included in the library, such as:
 
-- Slip-weakening law [@ida_cohesive_1972] [@palmer_growth_1973]: the cohesive strength is a linearly decreasing function of the opening gap. This law can be coupled with a friction law to handle surface interactions when they come into contact. Two implementations are available, the classical Coulomb friction law and a regularized one [@prakash_frictional_1998].
+- Slip-weakening law [@ida_cohesive_1972] [@palmer_growth_1973]: the cohesive strength is a linearly decreasing function of the opening gap. This law can be coupled with a friction law to handle surface interactions in the case of contact between the solids. Two implementations are available, the classical Coulomb friction law and a regularized one [@prakash_frictional_1998].
 
 - Rate and state dependant friction laws: the frictional resistance is a function of the slip velocity and the history of the interface (the state variable). Several formulations are implemented, including the original ones by [@dieterich_modeling_1979] and [@ruina_slip_1983]. More novel formulations such as rate and state friction with velocity-strengthening behaviors (i.e. N-shaped) are also available, see [@barsinai_2014] for example.
 
 # Performance
 
-Add comments on Amdahl's law and Gustavson law.
-
-![Time required to solve $1e5$ time step with $2^{15}$ discretization points, as a function of the number of threads. Computations were run using the computational facilities of EPFL, here on a node composed of 2 Intel Broadwell processors running at $2.6 GHz$ with 14 cores each.](scalability.png){ width=80% }
+We illustrate in Figure \autoref{fig:scalability} the scaling capability of cRacklet and compare it to Amdahl's law. The scaling study shows that approximately $80$ to $85$ of the program is parallelized (this corresponds to FFT computation and convolution operations).
+ 
+![Time required to solve $1e5$ time step with $2^{15}$ discretization points, as a function of the number of threads. Computations run using the computational facilities of EPFL, here on a node composed of 2 Intel Broadwell processors running at $2.6 GHz$ with 14 cores each. The dashed grey lines correspond to Amdahl's law for the theoretical speedup, respectively with $85%$ (upper bound) and $80%$ (lower bound) of the program parallelized.\label{fig:scalability}](scalability.png){ width=80% }
 
 # Example
 
-Add a nice figure with interesting behavior... (Space-time diagram of something...)
+Add a nice figure!
 
 # Publications
 
@@ -79,7 +82,6 @@ The following publications have been made possible with cRacklet:
 - @lebihain_instability_2021
 
 - @roch_velocity_2021
-
 
 # Acknowledgments
 

@@ -6,14 +6,39 @@ cRacklet has several interfacial behavior implemented which are described in thi
 Mixed-mode cohesive law
 -----------------------
 
-This cohesive law has its strength decreasing linearly with the opening. The opening considered here is the norm of the opening displacement, thus taking into account both normal and shear componenets. The critical displacement :math:`\delta_c` is the critical displacement required to transition from the peak stress :math:`\tau_c` to the residual value :math:`\tau_r` (By default is 0). The shear and normal components can be prescribed independantly. While the norm of the opening :math:`||delta||` is lower than :math:`\delta_c`, the strength is given by:  
+This cohesive law has its strength decreasing linearly with the opening. The opening considered here is the norm of the opening displacement, thus taking into account both normal and shear componenets. The critical displacement :math:`\delta_c` is the critical displacement required to transition from the peak stress :math:`\tau_c` to the residual value :math:`\tau_r` (By default is 0). The shear and normal components can be prescribed independantly. While the norm of the opening :math:`||\delta||` is lower than :math:`\delta_c`, the strength is given by:  
 
 .. math::
-   \tau = \tau_c \left(1- ||\delta||/\delta_c \right)
+   \tau^{str} = \tau_c \left(1- ||\delta||/\delta_c \right)
 
+Friction law for cohesive law
+-----------------------------
 
-Rate and state
---------------
+In addition to the mixed-mode cohesive law, one can defined a friction law to handle cases when the surfaces are in contact with each others. 
+
+Coulomb friction
+^^^^^^^^^^^^^^^^
+
+The shear strength is given by the normal stress :math:`\sigma_{yy}` multiplied by a constant friction coefficient :math:`\mu`
+
+.. math::
+   \tau^{str} = \sigma_{yy} \mu
+   
+Regularized Coulomb friction
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The classical formulation of Coulomb friction might result in ill-posedness of the friction problem. A simplified regularization is thus implemented, based on `Prakash (1998) <https://asmedigitalcollection.asme.org/tribology/article/120/1/97/439195/Frictional-Response-of-Sliding-Interfaces>`_ and `Rubin and Ampuero (2007) <https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2006JB004337>`_ . The contact pressure is regularized as:
+
+.. math::
+   \frac{\tilde{\sigma}_{yy}}{dt} = -\frac{1}{t^*}\left(\tilde{\sigma}_{yy} - \sigma{yy} \right)
+
+with :math:`t^*` a regularization parameter. The strength is computed as
+
+.. math::
+   \tau^{str} = \tilde{sigma}_{yy} \mu
+
+Rate and state friction
+-----------------------
 
 The rate and state framework involve two functionnals: one for the friction coefficient :math:`f(v,\phi)` and one evolution law for the state variable :math:`\dot\phi = g(v,\phi)`. Several variations of the friction law and the evolution law are available in cRacklet. Their exact formulations are summarized here: 
 
@@ -66,8 +91,4 @@ Slip Law
 
 .. math::
    g(\phi) = - \frac{v \phi}{D} \log \left( \frac{v \phi}{D} \right)
-   
-Friction law
-------------
-
 

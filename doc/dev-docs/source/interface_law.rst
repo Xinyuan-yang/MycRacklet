@@ -6,7 +6,7 @@ cRacklet has several interfacial behavior implemented which are described in thi
 Mixed-mode cohesive law
 -----------------------
 
-This cohesive law has its strength decreasing linearly with the opening. The opening considered here is the norm of the opening displacement, thus taking into account both normal and shear componenets. The critical displacement :math:`\delta_c` is the critical displacement required to transition from the peak stress :math:`\tau_c` to the residual value :math:`\tau_r` (By default is 0). The shear and normal components can be prescribed independantly. While the norm of the opening :math:`||delta||` is lower than :math:`\delta_c`, the strength is given by:  
+This cohesive law has its strength decreasing linearly with the opening. The opening considered here is the norm of the opening displacement, thus taking into account both normal and shear componenets. The critical displacement :math:`\delta_c` is the critical displacement required to transition from the peak stress :math:`\tau_c` to the residual value :math:`\tau_r` (By default is 0). The shear and normal components can be prescribed independantly. While the norm of the opening :math:`||\delta||` is lower than :math:`\delta_c`, the strength is given by:  
 
 .. math::
    \tau = \tau_c \left(1- ||\delta||/\delta_c \right)

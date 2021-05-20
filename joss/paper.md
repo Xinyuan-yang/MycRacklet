@@ -67,6 +67,8 @@ The following publications have been made possible with cRacklet:
 
 - @barras_interplay_2017
 
+- @barras_supershear_2018
+
 - @brener_unstable_2018
 
 - @barras_emergence_2019
@@ -74,6 +76,8 @@ The following publications have been made possible with cRacklet:
 - @barras_emergence_2020
 
 - @fekak_crack_2020
+
+- @rezakhani_finite_2020
 
 - @brener_unconventional_2021
 

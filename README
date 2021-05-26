@@ -52,8 +52,7 @@ You can compile cRacklet using cMake:
 cRacklet requires the installation of the external library FFTW3 (http://www.fftw.org)
 and the GNU Scientific Library GSL (https://www.gnu.org/software/gsl/).
 
-cRacklet optionally supports the usage of OpenMP API (http://www.openmp.org/) for multi-threaded parallel computing
-and LibSurfer to generate fractal interfaces (available on request).
+cRacklet optionally supports the usage of OpenMP API (http://www.openmp.org/) for multi-threaded parallel computing.
 
 ==================================================================================================
 * DOCUMENTATION

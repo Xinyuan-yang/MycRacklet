@@ -94,10 +94,6 @@ target_include_directories(cRacklet PUBLIC ${FFTW_INCLUDE_PATH})
 
 target_include_directories(cRacklet PUBLIC ${GSL_INCLUDE_PATH})
 
-if(CRACKLET_USE_LIBSURFER)
-  target_link_libraries(cRacklet PUBLIC ${LIBSURFER_LIBRARIES})
-endif()
-
 if(CRACKLET_MULTI_THREADED)
   add_definitions(${OpenMP_CXX_FLAGS})
   target_link_libraries(cRacklet PUBLIC ${FFTW_OPENMP_LIBRARY} ${OpenMP_CXX_FLAGS})

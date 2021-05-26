@@ -45,10 +45,6 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
-#ifdef CRACKLET_USE_LIBSURFER
-#include "surface_generator_filter_fft.hh"
-#include "surface_statistics.hh"
-#endif
 /* -------------------------------------------------------------------------- */
 
 /// Help to use names for directions when calling the dumpers
@@ -210,10 +206,6 @@ public:
   void sinusoidalLoading(Real min);
   // Read a spatial loading from file
   void readSpatialLoadingFromFile(std::string loading_file);
-  // Set a brownian distributed loading
-  // rms=root mean square, hurst=hurst exponent, q0=low cut_off, q1=roll_off, q2=high cut_off
-  // !!! Required LibSurfer as an external library
-  void brownianHeterogLoading(Real rms, long int seed, Real hurst, UInt q0,UInt q1, UInt q2);
   /** Definition of the loading case
       @param load_in : (Real) Norm of the loading vector
       @param psi : (Real) Angle of the loading with respect to the x axis

@@ -35,7 +35,8 @@ bibliography: paper.bib
 # Summary
 
 The study of dynamically propagating rupture along faults is of prime importance in fields ranging from engineering to geosciences. Numerical simulations of these phenomena are computationally costly and challenging. A fine spatial discretization is needed to represent accurately the singular fields associated with the rupture edges. Besides, the problems of interest usually involve a larger length scale along which rupture will propagate (i.e. a tectonic fault). The physical phenomena in play also occur at different timescale, from the slow process or rupture nucleation to the fast travel of crack front close the elastic wave speeds. Large and finely discretized spatio-temporal domains are required, which are computationally costly. In addition, the behavior of such interfaces can be highly non-linear thus increasing the problem complexity. 
-Conventional numerical approaches for fracture problems, for example, the use of cohesive elements in the finite-element method [@ortiz_finite-deformation_1999], requires discretizing the whole body containing the fracture plane. The use of boundary integral methods reduces the dimensionality of the problem. This enables to focus the computational efforts on the fracture plane and allows for a detailed description of the interfacial field's evolution.
+[//]: # Conventional numerical approaches for fracture problems, for example, the use of cohesive elements in the finite-element method [@ortiz_finite-deformation_1999], requires discretizing the whole body containing the fracture plane.
+The use of boundary integral methods reduces the dimensionality of the problem. This enables to focus the computational efforts on the fracture plane and allows for a detailed description of the interfacial field's evolution.
 
 # Statement of need
 
@@ -51,7 +52,7 @@ cRacklet allows for planar rupture interface simulations (in 2D or 3D) loaded in
 
 # Performance
 
-We illustrate in \autoref{fig:scalability} the scaling capability of cRacklet and compare it to Amdahl's law. The scaling study shows that approximately $80$ to $85$ of the program is parallelized (this include the computation of the Fourier transform of the displacements, the convolution and the invert transform of the stresses back to the real domain.).
+We illustrate in \autoref{fig:scalability} the scaling capability of cRacklet and compare it to Amdahl's law. The scaling study shows that approximately $80$ to $85$ of the program is parallelized (this includes the computation of the Fourier transform of the displacements, the convolution and the invert transform of the stresses back to the real domain.).
  
 ![Time required to solve $1e5$ time step with $2^{15}$ discretization points, as a function of the number of threads. Computations run using the computational facilities of EPFL, here on a node composed of 2 Intel Broadwell processors running at $2.6 GHz$ with 14 cores each. The dashed grey lines correspond to Amdahl's law for the theoretical speedup, respectively with $85%$ (upper bound) and $80%$ (lower bound) of the program parallelized.\label{fig:scalability}](scalability.png){ width=80% }
 
@@ -87,6 +88,6 @@ The following publications have been made possible with cRacklet:
 
 # Acknowledgments
 
-We acknowledge the financial support of the Swiss National Science Foundation (grants #162569 and ...)
+F. B. and J-F. M. acknowledge the financial support of the Swiss National Science Foundation (grants #162569) and 
 
 # References

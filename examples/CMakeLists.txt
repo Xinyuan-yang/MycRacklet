@@ -38,6 +38,7 @@ option(CRACKLET_EXAMPLES_3D_ASPERTITY "Activate 3-D interface with asperities si
 option(CRACKLET_EXAMPLES_CRACK_FRONT_WAVES "Activate simulations of the crack front waves study" OFF) 
 option(CRACKLET_EXAMPLES_FRICTION "Activate simulation of frictional contact problems" OFF)
 option(CRACKLET_EXAMPLES_VISCOELASTIC "Activate simulation of viscoelastic interfaces" OFF)
+option(CRACKLET_EXAMPLES_ROUGH_SURFACES "Activate simulation of microcontacts failure" OFF)
 option(CRACKLET_EXAMPLES_PROFILING "Executables to analyze code performance" OFF)
 
 if(CRACKLET_EXAMPLES_BIMATERIAL)
@@ -62,6 +63,10 @@ endif()
 
 if(CRACKLET_EXAMPLES_VISCOELASTIC)
   add_subdirectory(006_viscoelastic)
+endif()
+
+if(CRACKLET_EXAMPLES_ROUGH_SURFACES)
+  add_subdirectory(007_rough_surfaces)
 endif()
 
 if(CRACKLET_EXAMPLES_PROFILING)

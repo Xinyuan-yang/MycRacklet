@@ -56,11 +56,6 @@ void register_spectral_model(py::module& mod) {
     .def("restartModel",&SpectralModel::restartModel)
     .def("sinusoidalLoading",&SpectralModel::sinusoidalLoading)
     .def("readSpatialLoadingFromFile",&SpectralModel::readSpatialLoadingFromFile)
-
-#ifdef CRACKLET_USE_LIBSURFER
-    .def("brownianHeterogLoading",&SpectralModel::brownianHeterogLoading)
-#endif
-
     .def("setLoadingCase",&SpectralModel::setLoadingCase,py::arg("load_in"),py::arg("psi"),py::arg("phi"),py::arg("write")=true)
     .def("setLoadingShape",&SpectralModel::setLoadingShape)
     .def("incrementLoad",&SpectralModel::incrementLoad)

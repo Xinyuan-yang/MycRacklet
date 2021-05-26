@@ -35,10 +35,6 @@
 #include "spectral_model.hh"
 #include "interface_law.hh"
 #include "rate_and_state_law.hh"
-#ifdef CRACKLET_USE_LIBSURFER
-#include "surface_generator_filter_fft.hh"
-#include "surface_statistics.hh"
-#endif
 /* -------------------------------------------------------------------------- */
 enum FractureLawType {
   _linear_coupled_cohesive,
@@ -128,27 +124,6 @@ public:
 					Real max_nor_strength, 
 					Real max_shr_strength,
 					Real stddev, Real seed);
-  /** Create an heterogeneous interface with a brownian distribution of strength.
-      Required LibSurfer as an external library !!!
-      @param crit_nor_opening : Reference critical normal opening of the cohesive
-      @param crit_shr_opening : Reference critical normal opening of the cohesive law
-      @param max_nor_strength : Reference maximum normal strength of the cohesive law
-      @param max_shr_strength : Reference maximum shear strength of the cohesive law
-      @param rms : Root mean square
-      @param seed : Seed for the random generator
-      @param hurst : hurst exponent
-      @param q0 : low cut off
-      @param q1 : roll off
-      @param q2 : high cut off
-  */
-  void createBrownianHeterogInterface(Real crit_nor_opening, 
-				      Real crit_shr_opening, 
-				      Real max_nor_strength, 
-				      Real max_shr_strength,
-				      Real rms, long int seed,
-				      Real hurst=0.8, UInt q0=4,
-				      UInt q1=4, UInt q2=32);
-
   /** For the linear coupled cohesive law: create a z-invariant(="through") area between x=start and x=end of given 
       cracking_index and with properties given by
       new_prop = ratio*current_prop, if variation_rather_than_ratio=0,

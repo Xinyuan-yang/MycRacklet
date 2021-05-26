@@ -9,7 +9,12 @@ Mixed-mode cohesive law
 This cohesive law has its strength decreasing linearly with the opening. The opening considered here is the norm of the opening displacement, thus taking into account both normal and shear componenets. The critical displacement :math:`\delta_c` is the critical displacement required to transition from the peak stress :math:`\tau_c` to the residual value :math:`\tau_r` (By default is 0). The shear and normal components can be prescribed independantly. While the norm of the opening :math:`||\delta||` is lower than :math:`\delta_c`, the strength is given by:  
 
 .. math::
-   \tau^{str} = \tau_c \left(1- ||\delta||/\delta_c \right)
+   \tau^{str} = \left( \tau_c - \tau_r \right) \left(1- ||\delta||/\delta_c \right)
+
+If :math:`||\delta||` is larger than :math:`\delta_c`, the strength is given by:
+
+.. math::
+   \tau^{str} = \tau_r
 
 Friction law for cohesive law
 -----------------------------
@@ -35,7 +40,7 @@ The classical formulation of Coulomb friction might result in ill-posedness of t
 with :math:`t^*` a regularization parameter. The strength is computed as
 
 .. math::
-   \tau^{str} = \tilde{sigma}_{yy} \mu
+   \tau^{str} = \tilde{\sigma}_{yy} \mu
 
 Rate and state friction
 -----------------------
@@ -97,4 +102,3 @@ Original slip law  proposed by `Ruina (1983) <https://agupubs.onlinelibrary.wile
 
 .. math::
    g(\phi) = - \frac{v \phi}{D} \log \left( \frac{v \phi}{D} \right)
-

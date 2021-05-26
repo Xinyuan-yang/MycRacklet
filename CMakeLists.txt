@@ -71,23 +71,13 @@ mark_as_advanced(uuencode_exec)
 #===============================================================================
 # External Library
 #===============================================================================
-option(CRACKLET_USE_LIBSURFER "Use LibSurfer tools to generate fractal surfaces" OFF)
 option(CRACKLET_MULTI_THREADED "Use multi-threaded version of cRacklet using OpenMP" OFF)
-
-set(LIBSURFER_FOLDER /home/fabarras/Softwares/LibSurfer)
-set(LIBSURFER_BINARIES /home/fabarras/Softwares/LibSurfer/build)
 
 find_package(GSL REQUIRED)
 find_package(FFTW REQUIRED)
 
 include_directories(${GSL_INCLUDE_PATH})
 include_directories(${FFTW_INCLUDE_PATH})
-
-if(CRACKLET_USE_LIBSURFER)
-  add_definitions(-DCRACKLET_USE_LIBSURFER)
-  find_package(LIBSURFER REQUIRED)
-  include_directories(${LIBSURFER_INCLUDE_DIRS})
-endif()
 
 if(CRACKLET_MULTI_THREADED)
   add_definitions(-DCRACKLET_USE_OPENMP)

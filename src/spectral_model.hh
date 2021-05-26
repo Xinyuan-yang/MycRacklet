@@ -282,8 +282,10 @@ public:
   Real getNbTimeSteps() {return ntim;}
   /// Return model dimension
   UInt getDim() {return dim;}
-  /// Return uniform loading vector used to set average interface loading conditions
+  /// Return uniform loading vector used to set average interface loading conditions (size=dim)
   std::vector<Real> & getUniformLoading() {return uniform_loading;}
+  /// Return spatial variations of the loading conditions (size=total_n_ele)
+  std::vector<Real> & getLoadingRatio() {return loading_ratio;}
   /// Get reference to the FractureLaw
   InterfaceLaw& getInterfaceLaw() {return *interface_law;}
 

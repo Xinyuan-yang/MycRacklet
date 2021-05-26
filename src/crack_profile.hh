@@ -76,6 +76,7 @@ public:
   void backwardFFT(Real * input, UInt stride);
   // return the array of values
   std::vector<Real> & getValues(){return heights;}
+  const std::vector<Real> & getValues() const {return heights;}
   // access to the i-th value in the array
   inline Real & operator[](UInt i);
   inline const Real & operator[](UInt i) const;

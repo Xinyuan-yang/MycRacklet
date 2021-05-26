@@ -149,25 +149,13 @@ inline void Interfacer<_linear_coupled_cohesive>::insertPatternfromFile(std::str
     std::stringstream sstr(line);
     for (UInt z = 0; z < n_ele[1]; ++z ) {
       sstr >> ratio;
-      //(*shr_strength)[x+z*n_ele[0]]*= ratio;
-      //(*nor_strength)[x+z*n_ele[0]]*= ratio;
-      if(ratio==0) {
-	(*ind_crack)[x+z*n_ele[0]] = 0;
-	(*shr_strength)[x+z*n_ele[0]] *= 0.75;
-	(*nor_strength)[x+z*n_ele[0]] *= 0.75;
-	(*crit_s_open)[x+z*n_ele[0]] /= 0.75;
-	(*crit_n_open)[x+z*n_ele[0]] /= 0.75;
-	
-      }
-      //else if(ratio<1)
-      //	(*ind_crack)[x+z*n_ele[0]] = 0;
+      (*shr_strength)[x+z*n_ele[0]]*= ratio;
+      (*nor_strength)[x+z*n_ele[0]]*= ratio;
     }
   }
   out_summary << "/* -------------------------------------------------------------------------- */ "
 	      << std::endl
 	      << " TOUGHNESS PATTERN INSERTED FROM FILE " << std::endl
-	      << "* Residual normal strength: " << 0 << std::endl
-	      << "* Residual shear strength: " << 0 << std::endl
 	      << "* Filename: " << filename << std::endl
 	      << std::endl;	
 }

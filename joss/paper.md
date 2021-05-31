@@ -58,7 +58,7 @@ We illustrate in \autoref{fig:scalability} the scaling capability of `cRacklet` 
 
 The successive panels of \autoref{fig:evolution} illustrate the nucleation and propagation of a frictional crack at the interface between two solids with a spatially heterogeneous strength. In \autoref{fig:evolution} (a), the initial configuration of the system is shown: the areas in white are sticking (i.e. no velocity) while colored area are sliding (blue is for low slip velocity and red for larger ones). The shear load is increased with time in the following panels. The slip velocity increases and previously sticking part of the interface starts sliding. In \autoref{fig:evolution} (d), the expansion of frictional cracks has broken almost the entire interface.
 
-![Snapshot of the slip velocity at the interface between two elastic solids under shear loading. The initial strength is highly heterogeneous. Loading and time has increased between the snapshots, starting from (a) to (d). White area correspond to sticking condition (no velocity) while colored ones are sliding. Low velocities are in blue and large ones in red.](evolution.png){ width=100% }
+![Snapshot of the slip velocity at the interface between two elastic solids under shear loading. The initial strength is highly heterogeneous. Loading and time has increased between the snapshots, starting from (a) to (d). White area correspond to sticking condition (no velocity) while colored ones are sliding. Low velocities are in blue and large ones in red.\label{fig:evolution}](evolution.png){ width=90% }
 
 # Publications
 

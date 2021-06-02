@@ -56,7 +56,7 @@ The study of dynamically propagating rupture along faults is of prime importance
 
 We illustrate in \autoref{fig:scalability} the scaling capability of `cRacklet` and compare it to Amdahl's law. The scaling study shows that approximately $85%$ to $90%$ of the program is parallelized : this includes the computation of the Fourier transform of the displacements, the convolution, and the invert transform of the stresses back to the real domain.
  
-![Time required to solve $1e5$ time step with $2^{15}$ discretization points, as a function of the number of threads. Computations run using the computational facilities of EPFL, here on a node composed of 2 Intel Broadwell processors running at $2.6 GHz$ with 14 cores each. The dashed grey lines correspond to Amdahl's law for the theoretical speedup, respectively with $90%$ (upper bound) and $85%$ (lower bound) of the program parallelized. The deviation for $n_{t}$ is explained by the cores are not on the same processor.\label{fig:scalability}](scalability.png){ width=80% }
+![Time required to solve $1e5$ time step with $2^{12}$ discretization points, as a function of the number of threads. Computations run using the computational facilities of EPFL, here on a node composed of 2 Intel Broadwell processors running at $2.6 GHz$ with 14 cores each. The dashed grey lines correspond to Amdahl's law for the theoretical speedup, respectively with $90%$ (upper bound) and $85%$ (lower bound) of the program parallelized. The deviation for $n_{t}$ is explained by the cores are not on the same processor.\label{fig:scalability}](scalability.png){ width=80% }
 
 # Example
 

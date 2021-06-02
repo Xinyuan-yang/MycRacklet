@@ -15,6 +15,11 @@ void RateAndStateLaw::initRegularizedStateEvolution(Real v0) {
 }
 
 /* -------------------------------------------------------------------------- */
+void RateAndStateLaw::initSlipStateEvolution() {
+  state_evol = std::make_shared<SlipStateEvolution>();
+}
+
+/* -------------------------------------------------------------------------- */
 void RateAndStateLaw::initStandardFormulation() {
   formulation = std::make_shared<RandSFormulation>();
 }

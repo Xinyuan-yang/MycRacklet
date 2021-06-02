@@ -120,6 +120,9 @@ public:
   /** Init Regularized state evolution
    */
   void initRegularizedStateEvolution(Real v0);
+  /** Init the slip state evolution law
+   */
+  void initSlipStateEvolution();
   /** Init a given R&S formulation and state evolution
       standard rate and state formulation */
   void initStandardFormulation();

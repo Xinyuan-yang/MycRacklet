@@ -30,13 +30,13 @@ void RateAndStateLaw::initVelocityWeakeningFormulation() {
 }
 
 /* -------------------------------------------------------------------------- */
-void RateAndStateLaw::initRegularizedFormulation(Real v0, Real theta, Real xi) {
-  formulation = std::make_shared<RegularizedRandSFormulation>(v0,theta,xi);
+void RateAndStateLaw::initRegularizedFormulation(Real v0) {
+  formulation = std::make_shared<RegularizedRandSFormulation>(v0);
 }
 
 /* -------------------------------------------------------------------------- */
-void RateAndStateLaw::initRegularizedWeakeningFormulation(Real v0, Real theta, Real xi) {
-  formulation = std::make_shared<RegularizedWeakeningRandSFormulation>(v0,theta,xi);
+void RateAndStateLaw::initRegularizedWeakeningFormulation(Real v0) {
+  formulation = std::make_shared<RegularizedWeakeningRandSFormulation>(v0);
 }
 
 /* -------------------------------------------------------------------------- */

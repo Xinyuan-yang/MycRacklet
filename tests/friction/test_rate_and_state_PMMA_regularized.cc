@@ -45,14 +45,12 @@ int main(int argc, char *argv[]){
   Real k=1.0;
   Real epsilon=1e-7;
   Real D=5e-7;
-  Real f_0=0.285;
-  Real a=0.005;
+  Real f_0=5./18.;
+  Real a=0.0055;
   Real b=0.075;
   Real v_star=1e-7;
   Real phi_star=0.00033;
   Real load = 1.005*0.34475668e6;
-  Real theta = 5./18.;
-  Real xi = 0.0055;
   Real v0 = 1e-9;
   // Geometry description 
   Real nu =  0.33;
@@ -86,8 +84,6 @@ int main(int argc, char *argv[]){
   DataRegister::registerParameter("v_star_hom",v_star);
   DataRegister::registerParameter("phi_star_hom",phi_star);
   DataRegister::registerParameter("sigma_0",sigma_0);
-  DataRegister::registerParameter("theta",theta);
-  DataRegister::registerParameter("xi",xi);
   DataRegister::registerParameter("v0",v0);
   
   Interfacer<_regularized_rate_and_state> interfacer(model);

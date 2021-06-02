@@ -42,15 +42,17 @@ The study of dynamically propagating rupture along faults is of prime importance
 
 # Features
 
-`cRacklet` allows for planar rupture interface simulations (in 2D or 3D) loaded in any combination of normal traction, in-plane, and out-of-plane shear solicitations. `cRacklet` handles the simulation of interfaces bonded between dissimilar elastic solids. Any stress or material heterogeneity along the fracture plane can be resolved using `cRacklet`. Several interfacial behaviors are included in the library, such as:
+`cRacklet` provides access through both its C++ and Python API to several options to design simulations focused on the behavior of an interface between two semi-infinite solids. The code is particularly suited to study planar dynamic fracture and friction. The interface can be either between two or three dimensional solids. It can be loaded in any combination of normal traction, in-plane, and out-of-plane shear solicitations. `cRacklet` handles the simulation of interfaces bonded between dissimilar elastic solids. Any stress or material heterogeneity along the fracture plane can be resolved using `cRacklet`. Several interfacial behaviors are included in the library, such as:
 
 - Slip-weakening law [@ida_cohesive_1972] [@palmer_growth_1973]: the cohesive strength is a linearly decreasing function of the opening gap. This law can be coupled with a friction law to handle surface interactions in the case of contact between the solids. Two implementations are available, the classical Coulomb friction law and a regularized one [@prakash_frictional_1998].
 
 - Rate and state dependant friction laws: the frictional resistance is a function of the slip velocity and the history of the interface (the state variable). Several formulations are implemented, including the original ones by [@dieterich_modeling_1979] and [@ruina_slip_1983]. More novel formulations such as rate and state friction with velocity-strengthening behaviors (i.e. N-shaped) are also available, see [@barsinai_2014] for example.
 
+`cRacklet` is also adaptable: it is simple to implement additional behavior for the interface without interacting with the technical core of the code that handles the computation of the stresses in the Fourrier domain. `cRacklet` can also easily interact with other computational methods as all the fields are accessible from the interface.
+
 # Performance
 
-We illustrate in \autoref{fig:scalability} the scaling capability of `cRacklet` and compare it to Amdahl's law. The scaling study shows that approximately $80$ to $85$ of the program is parallelized (this includes the computation of the Fourier transform of the displacements, the convolution and the invert transform of the stresses back to the real domain.).
+We illustrate in \autoref{fig:scalability} the scaling capability of `cRacklet` and compare it to Amdahl's law. The scaling study shows that approximately $80$ to $85$ of the program is parallelized (this includes the computation of the Fourier transform of the displacements, the convolution and the invert transform of the stresses back to the real domain.). The strong scaling of `cRacklet` is limited by the one of 
  
 ![Time required to solve $1e5$ time step with $2^{15}$ discretization points, as a function of the number of threads. Computations run using the computational facilities of EPFL, here on a node composed of 2 Intel Broadwell processors running at $2.6 GHz$ with 14 cores each. The dashed grey lines correspond to Amdahl's law for the theoretical speedup, respectively with $85%$ (upper bound) and $80%$ (lower bound) of the program parallelized.\label{fig:scalability}](scalability.png){ width=80% }
 

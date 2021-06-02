@@ -50,6 +50,8 @@ The study of dynamically propagating rupture along faults is of prime importance
 
 `cRacklet` is also adaptable: it is simple to implement additional behavior for the interface without interacting with the technical core of the code that handles the computation of the stresses in the Fourrier domain. `cRacklet` can also easily interact with other computational methods as all the fields are accessible from the interface.
 
+`cRacklet` also has tutorials available on [@binder] which allows for a fast and simple introduction to its functionality.
+
 # Performance
 
 We illustrate in \autoref{fig:scalability} the scaling capability of `cRacklet` and compare it to Amdahl's law. The scaling study shows that approximately $80$ to $85$ of the program is parallelized (this includes the computation of the Fourier transform of the displacements, the convolution and the invert transform of the stresses back to the real domain.).

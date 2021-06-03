@@ -61,13 +61,11 @@ inline void Interfacer<_weakening_rate_and_state>::createUniformInterface() {
 template<>
 inline void Interfacer<_regularized_rate_and_state>::createUniformInterface() {
 
-  Real theta = DataRegister::getParameter<Real>("theta");
-  Real xi = DataRegister::getParameter<Real>("xi");
   Real v0 = DataRegister::getParameter<Real>("v0");
    
   createHomogeneousRateandStateIntfc();
   std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(interface_law);
-  r_and_s->initRegularizedFormulation(v0,theta,xi);
+  r_and_s->initRegularizedFormulation(v0);
   
 }
 

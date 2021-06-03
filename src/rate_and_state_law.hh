@@ -131,10 +131,10 @@ public:
   void initVelocityWeakeningFormulation();
   /** Init rate and state formulation with a regularized stick-to-slip transition
    */
-  void initRegularizedFormulation(Real v0, Real theta, Real xi);
+  void initRegularizedFormulation(Real v0);
   /** Init rate and state formulation with a regularized stick-to-slip transition and weakening behavior at high velocities
    */
-  void initRegularizedWeakeningFormulation(Real v0, Real theta, Real xi);
+  void initRegularizedWeakeningFormulation(Real v0);
   /** Define the velocity prediction for each component (used before searching the initial steady state)
       @param v_0_pred : predictor of the velocity
    */ 

@@ -4,7 +4,7 @@ API Reference
 Python API
 ----------
 
-.. automodule:: py_cRacklet
+.. automodule:: cracklet
    :members:
 
 cRacklet C++ bindings

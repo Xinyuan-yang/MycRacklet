@@ -10,16 +10,18 @@ During configuration, activate CRACKLET_PYTHON_INTERFACE. Running::
 
   make
 
-in **build** folder will compile the python library called py_cRacklet in **build/python/** folder. Please add this path to your python path.
+in **build** folder will compile the python library called py_cRacklet in **build/python/** folder. Please add this path to your python path. Otherwise you can do ::
 
-You can activate the python example with the option **CRACKLET_EXAMPLES_PYTHON**.
+  make install
+  
+You can activate the python examples with the option **CRACKLET_EXAMPLES_PYTHON**.
 
 Use the python interface
 ------------------------
 
 Once the library is compiled and its path added to your python path, you can import cRacklet with::
 
-  import py_cRacklet
+  import cracklet
 
 One can run a complete simulation using the python interface. The required steps to run a simulation are identical to the **c++** counterpart. First a :py:class:`SpectralModel <py_cRacklet.SpectralModel>` needs to be created::
 
@@ -27,14 +29,14 @@ One can run a complete simulation using the python interface. The required steps
 
 A :py:class:`SimulationDriver <py_cRacklet.SimulationDriver>` can then be associated to the model::
 
-  sim_driver = py_cRacklet.SimulationDriver(model)
+  sim_driver = cracklet.SimulationDriver(model)
   
 The parameters can be registered using :py:func:`registerParameterReal <py_cRacklet.DataRegister::registerParameterReal>`, and the :py:class:`Interfacer <py_cRacklet.InterfacerLinearCoupledCohesive>` can then be used to create the interface (here, an example with an homogeneous interface following a linear coupled cohesive law, with a broken area)::
 
-  py_cRacklet.DataRegister.registerParameterReal("critical_normal_opening",crit_n_open)
-  py_cRacklet.DataRegister.registerParameterReal("critical_shear_opening",crit_s_open)
-  py_cRacklet.DataRegister.registerParameterReal("max_normal_strength",max_n_str)
-  py_cRacklet.DataRegister.registerParameterReal("max_shear_strength",max_s_str)
+  cracklet.DataRegister.registerParameterReal("critical_normal_opening",crit_n_open)
+  cracklet.DataRegister.registerParameterReal("critical_shear_opening",crit_s_open)
+  cracklet.DataRegister.registerParameterReal("max_normal_strength",max_n_str)
+  cracklet.DataRegister.registerParameterReal("max_shear_strength",max_s_str)
   interfacer = py_cRacklet.InterfacerLinearCoupledCohesive(model)    
   interfacer.createUniformInterface()
   interfacer.createThroughCrack(crack_start,crack_end)

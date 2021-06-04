@@ -286,7 +286,7 @@ public:
   /* ------------------------------------------------------------------------ */
   
   /** Set reference to the FractureLaw
-      @param itf_law : (shared pointer to <InterfaceLaw>)
+      @param itf_law : (shared pointer to InterfaceLaw)
    */
   void setInterfaceLaw(std::shared_ptr<InterfaceLaw> itf_law){ this->interface_law = itf_law;};
   

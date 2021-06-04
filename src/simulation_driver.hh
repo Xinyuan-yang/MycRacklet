@@ -117,7 +117,7 @@ public:
       @param average_max_stress : (Real) Maximum possible value for the remote loading
       @param spont_crack_length : (Real) spontaneous crack length
       @param load_control : (LoadControlType) Either _time_control (loading is linked to time) or _space_control (loading is associated to a crack position
-      @param max_average_stress : (Real) Upper bound of the applied far-field loading. Can be defined as a fraction of average_max_stress
+      @param load_upper_bound : (Real) Upper bound of the applied far-field loading. Can be defined as a fraction of average_max_stress
       @param griffith_length : (Real) largest static crack size used to define the minimum applied far-field loading
   */
   void initConstantSpeed(Real initial_loading, Real psi, Real phi, Real average_max_stress, 
@@ -131,7 +131,7 @@ public:
   void writeLoading(std::string load_file);
   /** Launching artificially a through crack from position crack_start up to a given launched_size by artificially growing it at speed v_init*cs
       @param crack_start: (Real) initial crack position 
-      @param lauched_size: (Real) end position of the target crack      
+      @param launched_size: (Real) end position of the target crack      
       @param v_init: (string) growth velocity, multiplied by cs the shear wave speed
       @param one_side_propagation: (bool) one side propagation, by default is True
    */

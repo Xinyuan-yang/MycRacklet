@@ -57,12 +57,13 @@ cRacklet optionally supports the usage of OpenMP API (http://www.openmp.org/) fo
 ==================================================================================================
 * DOCUMENTATION
 
-Source code documentation can be generated using sphinx and doxygen. You first have to activate the option CRACKLET_DOCUMENTATION with cmake. Then go inside build/ and run
+Online documentation is available at https://cracklet.gitlab.io/cracklet/ .
+
+You can generate the documentation locally using sphinx and doxygen. You first have to activate the option CRACKLET_DOCUMENTATION with cmake. Then go inside build/ and run
 
 > make dev_doc
 
 The documentation will be generated in html format and store inside build/doc/html
-
 
 ==================================================================================================
 * USAGE

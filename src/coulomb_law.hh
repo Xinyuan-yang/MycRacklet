@@ -8,6 +8,7 @@
  * cRacklet - A spectral boundary integral method for interface fracture simulation
  * Copyright (©) 2012 - 2013 Fabian Barras
  *               2014 EPFL (Ecole Polytechnique Fédérale de Lausanne)
+ *               Laboratory (LSMS - Laboratoire de Simulation en Mécanique des Solides)
  * 
  * cRacklet is the result of a collaboration between the Computational Solid Mechanics 
  * Laboratory (LSMS) of Ecole Polytechnique Fédérale de Lausanne (EPFL), Switzerland 

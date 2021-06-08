@@ -13,9 +13,15 @@ namespace cracklet {
 void register_rate_and_state_law(py::module& mod) {
   py::class_<RateAndStateLaw,InterfaceLaw>(mod, "RateAndStateLaw")
     .def(py::init<>())
+    // Init the friction laws
     .def("initStandardFormulation",&RateAndStateLaw::initStandardFormulation)
     .def("initVelocityWeakeningFormulation",&RateAndStateLaw::initVelocityWeakeningFormulation)
     .def("initRegularizedFormulation",&RateAndStateLaw::initRegularizedFormulation)
+    // Init the state laws
+    .def("initStateEvolution",&RateAndStateLaw::initStateEvolution)
+    .def("initRegularizedStateEvolution",&RateAndStateLaw::initRegularizedStateEvolution)
+    .def("initStateEvolution",&RateAndStateLaw::initStateEvolution)
+
     .def("setVelocityPredictor",&RateAndStateLaw::setVelocityPredictor)
     .def("initInterfaceConditions",&RateAndStateLaw::initInterfaceConditions)
     .def("updateInterfaceConditions",&RateAndStateLaw::updateInterfaceConditions)

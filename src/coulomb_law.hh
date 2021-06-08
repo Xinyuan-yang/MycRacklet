@@ -58,7 +58,8 @@ public:
   /** Compute the frictionnal strength with the normal compressive stress
       @param norm_comp_stress: (Real) value of the compressive stress
       @param strength: (Real) strength
-      @param  i and it are unused
+      @param i : unused
+      @param it : unused
    */
   void computeFricStrength(Real & norm_comp_stress, Real & strength, UInt i, UInt it);
   /// Method used in restart framework but no history-dependant variable within this law

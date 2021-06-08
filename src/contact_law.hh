@@ -1,5 +1,5 @@
 /**
- * @file   material.hh
+ * @file   contact_law.hh
  * @author Fabian Barras <fabian.barras@epfl.ch>
  * @date   Mon Jan  7 10:05:32 2013
  *

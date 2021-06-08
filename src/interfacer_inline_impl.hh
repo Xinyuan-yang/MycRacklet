@@ -61,13 +61,11 @@ inline void Interfacer<_weakening_rate_and_state>::createUniformInterface() {
 template<>
 inline void Interfacer<_regularized_rate_and_state>::createUniformInterface() {
 
-  Real theta = DataRegister::getParameter<Real>("theta");
-  Real xi = DataRegister::getParameter<Real>("xi");
   Real v0 = DataRegister::getParameter<Real>("v0");
    
   createHomogeneousRateandStateIntfc();
   std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(interface_law);
-  r_and_s->initRegularizedFormulation(v0,theta,xi);
+  r_and_s->initRegularizedFormulation(v0);
   
 }
 
@@ -149,25 +147,13 @@ inline void Interfacer<_linear_coupled_cohesive>::insertPatternfromFile(std::str
     std::stringstream sstr(line);
     for (UInt z = 0; z < n_ele[1]; ++z ) {
       sstr >> ratio;
-      //(*shr_strength)[x+z*n_ele[0]]*= ratio;
-      //(*nor_strength)[x+z*n_ele[0]]*= ratio;
-      if(ratio==0) {
-	(*ind_crack)[x+z*n_ele[0]] = 0;
-	(*shr_strength)[x+z*n_ele[0]] *= 0.75;
-	(*nor_strength)[x+z*n_ele[0]] *= 0.75;
-	(*crit_s_open)[x+z*n_ele[0]] /= 0.75;
-	(*crit_n_open)[x+z*n_ele[0]] /= 0.75;
-	
-      }
-      //else if(ratio<1)
-      //	(*ind_crack)[x+z*n_ele[0]] = 0;
+      (*shr_strength)[x+z*n_ele[0]]*= ratio;
+      (*nor_strength)[x+z*n_ele[0]]*= ratio;
     }
   }
   out_summary << "/* -------------------------------------------------------------------------- */ "
 	      << std::endl
 	      << " TOUGHNESS PATTERN INSERTED FROM FILE " << std::endl
-	      << "* Residual normal strength: " << 0 << std::endl
-	      << "* Residual shear strength: " << 0 << std::endl
 	      << "* Filename: " << filename << std::endl
 	      << std::endl;	
 }
@@ -324,73 +310,6 @@ inline void Interfacer<_linear_coupled_cohesive>::createHeterogeneousInterface(s
 	      << std::endl;
 }
 
-/* -------------------------------------------------------------------------- */
-#ifdef CRACKLET_USE_LIBSURFER
-template<>
-inline void Interfacer<_linear_coupled_cohesive>::createBrownianHeterogInterface(Real crit_nor_opening, 
-										 Real crit_shr_opening, 
-										 Real max_nor_strength, 
-										 Real max_shr_strength,
-										 Real rms, long int seed,
-										 Real hurst, UInt q0,
-										 UInt q1, UInt q2){
-
-  std::vector<Real> * nor_strength = datas[_normal_strength];
-  std::vector<Real> * shr_strength = datas[_shear_strength];
-  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
-  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
-  std::vector<Real> * res_n_strength = datas[_residual_normal_strength];
-  std::vector<Real> * res_s_strength = datas[_residual_shear_strength];
-
-  std::fill(res_n_strength->begin(),  res_n_strength->end(), 0);
-  std::fill(res_s_strength->begin(),  res_s_strength->end(), 0);
-  
-  SurfaceGeneratorFilterFFT surf_gen;
-  int & grid_size = surf_gen.getGridSize();
-  grid_size = std::max(n_ele[0],n_ele[1]);
-  Real & Hurst = surf_gen.getHurst();
-  Hurst = hurst;
-  Real & RMS = surf_gen.getRMS();
-  RMS = rms;
-  int & Q0 = surf_gen.getQ0();
-  Q0 = q0;
-  int & Q1 = surf_gen.getQ1();
-  Q1 = q1;
-  int & Q2 = surf_gen.getQ2();
-  Q2 = q2;
-  long int & Seed = surf_gen.getRandomSeed();
-  Seed = seed;
-  surf_gen.Init();
-  Surface<Real> & surface = surf_gen.buildSurface();
-  std::cout << "Successfully generated surface with an RMS of " << SurfaceStatistics::computeStdev(surface) << std::endl;
-
-  for (UInt ix = 0; ix < n_ele[0]; ++ix) {
-    for (UInt iz = 0; iz < n_ele[1]; ++iz) {
-      
-      UInt index = ix+iz*n_ele[0];
-      (*nor_strength)[index] = max_nor_strength+surface(ix,iz);      
-      (*shr_strength)[index] = max_shr_strength+surface(ix,iz);      
-      (*crit_n_open)[index]  = crit_nor_opening;
-      (*crit_s_open)[index]  = crit_shr_opening;
-    }
-  }
-  out_summary << "/* -------------------------------------------------------------------------- */ "
-	      << std::endl
-	      << " BROWNIAN HETEROGENEOUS INTERFACE " << std::endl
-	      << "* Hurst exponent: " << hurst << std::endl
-	      << "* Root mean square " << rms << std::endl
-	      << "* q0: " << q0 << std::endl
-	      << "* q1: " << q1 << std::endl
-    	      << "* q2: " << q2 << std::endl
-    	      << "* Seed: " << seed << std::endl
-	      << std::endl;
-  out_parameters << "delta_c_nor " << crit_nor_opening << std::endl
-		 << "delta_c_shr " << crit_shr_opening << std::endl
-		 << "tau_max_nor " << max_nor_strength << std::endl
-		 << "tau_max_shr " << max_shr_strength << std::endl;  
-}
-
-#endif
 /* -------------------------------------------------------------------------- */
 template<>inline
 void Interfacer<_linear_coupled_cohesive>::createNormalDistributedInterface(Real crit_nor_opening, 

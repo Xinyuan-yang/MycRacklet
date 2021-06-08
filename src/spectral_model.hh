@@ -45,10 +45,6 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
-#ifdef CRACKLET_USE_LIBSURFER
-#include "surface_generator_filter_fft.hh"
-#include "surface_statistics.hh"
-#endif
 /* -------------------------------------------------------------------------- */
 
 /// Help to use names for directions when calling the dumpers
@@ -210,10 +206,6 @@ public:
   void sinusoidalLoading(Real min);
   // Read a spatial loading from file
   void readSpatialLoadingFromFile(std::string loading_file);
-  // Set a brownian distributed loading
-  // rms=root mean square, hurst=hurst exponent, q0=low cut_off, q1=roll_off, q2=high cut_off
-  // !!! Required LibSurfer as an external library
-  void brownianHeterogLoading(Real rms, long int seed, Real hurst, UInt q0,UInt q1, UInt q2);
   /** Definition of the loading case
       @param load_in : (Real) Norm of the loading vector
       @param psi : (Real) Angle of the loading with respect to the x axis
@@ -282,8 +274,10 @@ public:
   Real getNbTimeSteps() {return ntim;}
   /// Return model dimension
   UInt getDim() {return dim;}
-  /// Return uniform loading vector used to set average interface loading conditions
+  /// Return uniform loading vector used to set average interface loading conditions (size=dim)
   std::vector<Real> & getUniformLoading() {return uniform_loading;}
+  /// Return spatial variations of the loading conditions (size=total_n_ele)
+  std::vector<Real> & getLoadingRatio() {return loading_ratio;}
   /// Get reference to the FractureLaw
   InterfaceLaw& getInterfaceLaw() {return *interface_law;}
 
@@ -292,7 +286,7 @@ public:
   /* ------------------------------------------------------------------------ */
   
   /** Set reference to the FractureLaw
-      @param itf_law : (shared pointer to <InterfaceLaw>)
+      @param itf_law : (shared pointer to InterfaceLaw)
    */
   void setInterfaceLaw(std::shared_ptr<InterfaceLaw> itf_law){ this->interface_law = itf_law;};
   

@@ -314,13 +314,6 @@ void SpectralModel::setLoadingCase(Real load, Real psi, Real phi, bool write) {
 }
 
 /* -------------------------------------------------------------------------- */
-void SpectralModel::setLoadingShape(std::vector<Real> shape) {
-
-  loading_ratio = shape;
-
-}
-
-/* -------------------------------------------------------------------------- */
 void SpectralModel::incrementLoad(Real increment, UInt loading_direction) {
   
   for (UInt x = 0; x < n_ele[0]; ++x) {
@@ -377,39 +370,6 @@ void SpectralModel::readSpatialLoadingFromFile(std::string loading_file) {
     }
   }
 }
-
-/* -------------------------------------------------------------------------- */
-#ifdef CRACKLET_USE_LIBSURFER 
-void SpectralModel::brownianHeterogLoading(Real rms, long int seed,
-					   Real hurst, UInt q0,
-					   UInt q1, UInt q2){
-  
-  SurfaceGeneratorFilterFFT surf_gen;
-  int & grid_size = surf_gen.getGridSize();
-  grid_size = std::max(4*n_ele[0],4*n_ele[1]);
-  Real & Hurst = surf_gen.getHurst();
-  Hurst = hurst;
-  Real & RMS = surf_gen.getRMS();
-  RMS = rms;
-  int & Q0 = surf_gen.getQ0();
-  Q0 = q0;
-  int & Q1 = surf_gen.getQ1();
-  Q1 = q1;
-  int & Q2 = surf_gen.getQ2();
-  Q2 = q2;
-  long int & Seed = surf_gen.getRandomSeed();
-  Seed = seed;
-  surf_gen.Init();
-  Surface<Real> & surface = surf_gen.buildSurface();
-  std::cout << "Successfully generated loading distribution with an RMS of " << SurfaceStatistics::computeStdev(surface) << std::endl;
-
-  for (UInt ix = 0; ix < n_ele[0]; ++ix) {
-    for (UInt iz = 0; iz < n_ele[1]; ++iz) {
-      loading_ratio[ix+iz*n_ele[0]] = surface(ix,iz);      
-    }
-  }
-}
-#endif
 
 /* -------------------------------------------------------------------------- */
 void SpectralModel::initInterfaceFields() {

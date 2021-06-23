@@ -101,6 +101,18 @@ inline void Interfacer<_regularized_rate_and_state>::createUniformInterface() {
 
 /* -------------------------------------------------------------------------- */
 template<>
+inline void Interfacer<_regularized_rate_and_state>::createHeterogeneousInterface(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star) {
+
+  Real v0 = DataRegister::getParameter<Real>("v0");
+   
+  createHeterogeneousRateandStateIntfc(vec_D,vec_f0,vec_a,vec_b,vec_v_star,vec_phi_star);
+  std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(interface_law);
+  r_and_s->initRegularizedFormulation(v0);
+  
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
 inline void Interfacer<_linear_coupled_cohesive>::createUniformInterface() {
 
   Real crit_nor_opening = DataRegister::getParameter<Real>("critical_normal_opening");

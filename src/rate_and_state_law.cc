@@ -88,16 +88,33 @@ void RateAndStateLaw::setV0(std::vector<Real> v_0) {
 
   std::cout << "SETTING V0" << std::endl;
 
-  for (UInt dir=0; dir < dim; ++dir) {
-    V_0[dir] = v_0[dir];
+  for (UInt h = 0; h < n_ele[0]; ++h) {
+    for (UInt j = 0; j < n_ele[1]; ++j) {
+      for (UInt dir=0; dir < dim; ++dir) {
+      	UInt i=h+j*n_ele[0];
+	V_0[i*2+dir] = v_0[dir];
+      }
+    }
   }
 
   Real V_norm = sqrt(V_0[0]*V_0[0]+V_0[1]*V_0[1]);
-  std::cout << "Steady-state initial velocity V="<< V_norm<< std::endl;
+  std::cout << "Steady-state initial velocity of the first element V="<< V_norm<< std::endl;
   DataRegister::out_parameters << std::setprecision(15) << "V0 " << V_norm << std::endl;
 
+  saveV0();
+  
 }
+/* -------------------------------------------------------------------------- */
+void RateAndStateLaw::saveV0() {
 
+  std::cout << "Saving V0 to a file"<<std::endl;
+  
+  std::string output_v0 = output_dir+"v0_profile.cra";
+  std::ofstream outFile(output_v0);
+  for (std::vector<Real>::iterator it = V_0.begin(); it != V_0.end(); ++it){
+    outFile << *it << "\n";
+  }
+}
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::initInterfaceConditions() {
 
@@ -149,16 +166,20 @@ void RateAndStateLaw::computeSteadyStateSliding() {
     for (UInt s = 0; s < 2; ++s) {
       (*dot_u_top)[i*3+2*s] = 0.;
       (*dot_u_bot)[i*3+2*s] = 0.;
-      V_0[s] = rate*shear_ratio[s];
       (*intfc_trac)[3*i+2*s] = stress*shear_ratio[s];
+
+      V_0[i*2+s] = rate*shear_ratio[s];
     }
     
     fric_strength[i] = sigma_0*cf[i];
   }
   Real V_norm = sqrt(V_0[0]*V_0[0]+V_0[1]*V_0[1]);
-  std::cout << "Steady-state initial velocity V="<<V_norm<<" [m/s] with friction coefficient cf="
+  std::cout << "Steady-state initial velocity of the first element V="<< V_norm<<" [m/s] with friction coefficient cf="
 	    << cf[0] << std::endl;
   DataRegister::out_parameters << "V0 " << V_norm << std::endl;
+
+  saveV0();
+  
 }
 
 /* -------------------------------------------------------------------------- */
@@ -175,10 +196,11 @@ std::vector<Real> RateAndStateLaw::computeNextAverageVelocity() {
   CrackProfile shear_stress = tau_x*tau_x + tau_z*tau_z;
   shear_stress.squareRoot();
 
-  Real V0 = sqrt(V_0[0]*V_0[0]+V_0[1]*V_0[1]);
   
   for (UInt i = 0; i < n_ele; ++i) {     
 
+    Real V0 = sqrt(V_0[i*2+0]*V_0[i*2+0]+V_0[i*2+1]*V_0[i*2+1]);
+    
     Real delta_cf,K;
     Real gamma = 0.1;
     UInt nb_t_stp = 1;
@@ -240,7 +262,7 @@ std::vector<Real> RateAndStateLaw::computeNextAverageVelocity() {
     } 
     
     for (UInt s = 0; s < 2; ++s) {
-      av_vel[s] += 0.5*(rate*shear_ratio[s]-V_0[s]);
+      av_vel[s] += 0.5*(rate*shear_ratio[s]-V_0[i*2+s]);
     }
   }      
   
@@ -263,10 +285,11 @@ void RateAndStateLaw::updateInterfaceConditions() {
   CrackProfile shear_stress = tau_x*tau_x + tau_z*tau_z;
   shear_stress.squareRoot();
 
-  Real V0 = sqrt(V_0[0]*V_0[0]+V_0[1]*V_0[1]);
   
   for (UInt i = 0; i < n_ele; ++i) {     
 
+    Real V0 = sqrt(V_0[i*2+0]*V_0[i*2+0]+V_0[i*2+1]*V_0[i*2+1]);
+    
     Real delta_cf,K;
     Real gamma = 0.1;
     UInt nb_t_stp = 1;
@@ -329,9 +352,9 @@ void RateAndStateLaw::updateInterfaceConditions() {
     } 
 
     for (UInt s = 0; s < 2; ++s) {
-      (*dot_u_top)[i*3+2*s] = 0.5*(rate*shear_ratio[s]-V_0[s]);
-      (*dot_u_bot)[i*3+2*s] = -0.5*(rate*shear_ratio[s]-V_0[s]);
-      (*intfc_trac)[3*i+2*s] = stress*shear_ratio[s] - accoust*(rate*shear_ratio[s]-V_0[s])/2;
+      (*dot_u_top)[i*3+2*s] = 0.5*(rate*shear_ratio[s]-V_0[i*2+s]);
+      (*dot_u_bot)[i*3+2*s] = -0.5*(rate*shear_ratio[s]-V_0[i*2+s]);
+      (*intfc_trac)[3*i+2*s] = stress*shear_ratio[s] - accoust*(rate*shear_ratio[s]-V_0[i*2+s])/2;
     }
 
     fric_strength[i] = sigma_0*cf[i];
@@ -359,10 +382,10 @@ void RateAndStateLaw::insertPerturbationPatch(std::vector<UInt> patch_limits, Re
   
   for (UInt i = patch_limits[0]; i < patch_limits[1]; ++i) {     
 
-    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1]);
-    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1]);
+    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[i*2+1]);
+    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[i*2+1]);
 
-    Real tractions = (*stresses)[i*3+2] - accoust*(new_rate-V_0[1])/2;
+    Real tractions = (*stresses)[i*3+2] - accoust*(new_rate-V_0[i*2+1])/2;
     
     phi[i] = formulation->getStableState(tractions,sigma_0,new_rate,a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);
     if (phi[0]<0)
@@ -380,12 +403,12 @@ void RateAndStateLaw::insertGaussianPerturbation(Real std_dev, Real amplitude) {
   for (UInt i = 0; i < n_ele; ++i) {     
 
     Real gauss = exp(-0.5*((i-mu)/std_dev)*((i-mu)/std_dev));
-    Real new_rate = amplitude*gauss+V_0[1];
+    Real new_rate = amplitude*gauss+V_0[i*2+1];
 
-    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1]);
-    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1]);
+    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[i*2+1]);
+    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[i*2+1]);
 
-    Real tractions = (*stresses)[i*3+2] - accoust*(new_rate-V_0[1])/2;
+    Real tractions = (*stresses)[i*3+2] - accoust*(new_rate-V_0[i*2+1])/2;
     
     phi[i] = formulation->getStableState(tractions,sigma_0,new_rate,a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);
     if (phi[0]<0)

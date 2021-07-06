@@ -104,7 +104,7 @@ public:
       cRacklet::error("Rate and state law is only implemented for homogeneous elastic properties");
     
     delta_t = beta*dxmin/c_s;
-    V_0.resize(2,0.);
+    V_0.resize(2*total_n_ele,0.);
   };
 
   /// Default destructor
@@ -143,6 +143,9 @@ public:
   /** Set the initial steady state velocity, if know a priori, for example in case of a restart. 
    */
   void setV0(std::vector<Real> v_0);
+  /** Save the initial V0 profile
+   */
+  void saveV0();
   /** Initialize interface fields
    */
   void initInterfaceConditions();

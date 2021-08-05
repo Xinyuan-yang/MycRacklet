@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <random>
 #include <iomanip>
+#include <math.h>
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::initStateEvolution() {
   state_evol = std::make_shared<StateEvolution>();
@@ -385,6 +386,41 @@ void RateAndStateLaw::insertGaussianPerturbation(Real std_dev, Real amplitude) {
     (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1]);
     (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1]);
 
+    Real tractions = (*stresses)[i*3+2] - accoust*(new_rate-V_0[1])/2;
+    
+    phi[i] = formulation->getStableState(tractions,sigma_0,new_rate,a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);
+    if (phi[0]<0)
+      cRacklet::error("The amplitude of the gaussian perturbation implies negative value of phi !");
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+void RateAndStateLaw::insertSkewedPerturbation(Real std_dev, Real amplitude, Real alpha) {
+  
+  UInt n_ele = D.size();
+  Real mu = n_ele/2.;
+  CrackProfile * stresses = datas[_top_dynamic_stress];
+
+  std::vector<Real> skew_perturbation(n_ele); 
+  
+  for (UInt i = 0; i < n_ele; ++i) {     
+    Real normal_pdf = exp(-0.5*((i-mu)/std_dev)*((i-mu)/std_dev));
+    Real skew_cdf = 0.5*(1 + erf(alpha*(i-mu)/std_dev/sqrt(2)));
+    skew_perturbation[i] = normal_pdf*skew_cdf;
+  }
+
+  // Compute max of the distribution
+
+  Real max_skew = *std::max_element(skew_perturbation.begin(),skew_perturbation.end());
+  
+  // Second loop, add the perturbation
+  for (UInt i = 0; i < n_ele; ++i) {     
+    
+    Real new_rate = amplitude*skew_perturbation[i]/max_skew+V_0[1];
+    
+    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1]);
+    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1]);
+    
     Real tractions = (*stresses)[i*3+2] - accoust*(new_rate-V_0[1])/2;
     
     phi[i] = formulation->getStableState(tractions,sigma_0,new_rate,a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);

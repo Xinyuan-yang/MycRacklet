@@ -26,8 +26,9 @@ build:docker:
   variables:
     IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - echo $IMAGE_TAG
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_TAG || true
     - docker build --cache-from $IMAGE_TAG -t $IMAGE_TAG .
     - docker push $IMAGE_TAG
 
@@ -64,7 +65,11 @@ build:docker:
   stage: test
   script:
     - cd build
-    - ctest -T test --no-compress-output --timeout 1800
+    - ctest -T test --no-compress-output --timeout 1800 --output-junit junit-report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: build/junit-report.xml
 
 configure:ubuntu:
   extends:

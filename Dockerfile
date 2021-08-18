@@ -11,12 +11,13 @@ ENV DEBCONF_NONINTERACTIVE_SEEN true
 # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
 RUN apt-get -qq update && apt-get -y -qq install \
     clang \
-    cmake \
     g++ \
     gfortran \
     curl \
     doxygen \
     git \
+    gpg \
+    wget \
     libgsl-dev \
     libfftw3-dev \
     python3-pip \
@@ -30,4 +31,12 @@ RUN apt-get -qq update && apt-get -y -qq install \
     python3-sphinx-rtd-theme \
     && rm -rf /var/lib/apt/lists/*
 
-# apt-get on one line due to https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
+# https://apt.kitware.com/
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null \
+    && echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null \
+    && apt-get update \
+    && rm /usr/share/keyrings/kitware-archive-keyring.gpg \
+    && apt-get install -y \
+    kitware-archive-keyring \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*

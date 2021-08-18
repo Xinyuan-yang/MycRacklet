@@ -33,8 +33,6 @@ build:docker:
 
 .configure:
   stage: configure
-  except:
-    - tags
   script:
     - cmake -E make_directory build
     - cd build
@@ -65,14 +63,12 @@ build:docker:
 .tests:
   stage: test
   script:
-  - cd build
-  - ctest -T test --no-compress-output --timeout 1800
+    - cd build
+    - ctest -T test --no-compress-output --timeout 1800
 
 configure:ubuntu:
   extends:
     - .configure
-  cache:
-    policy: pull-push
 
 build:ubuntu:
   extends:

@@ -8,6 +8,7 @@ ENV LC_ALL C.UTF-8
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 
+# https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run
 RUN apt-get -qq update && apt-get -y -qq install \
     clang \
     cmake \

@@ -51,6 +51,7 @@ void register_rate_and_state_law(py::module& mod) {
     .def("perturbState",&RateAndStateLaw::perturbState)
     .def("insertPerturbationPatch",&RateAndStateLaw::insertPerturbationPatch)
     .def("insertGaussianPerturbation",&RateAndStateLaw::insertGaussianPerturbation)
+    .def("insertSkewedPerturbation",&RateAndStateLaw::insertSkewedPerturbation)
     .def("restart",&RateAndStateLaw::restart);
 }
 } // namespace cracklet

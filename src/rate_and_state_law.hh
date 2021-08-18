@@ -166,6 +166,9 @@ public:
   /** insert gaussian perturbation in the velocity field 
    */
   void insertGaussianPerturbation(Real std_dev, Real amplitude);
+  /** insert a skewed perturbation in the velocity field. The maximum of the perturbation is givenby the amplitude
+   */
+  void insertSkewedPerturbation(Real std_dev, Real amplitude, Real alpha);
   /** insert gaussian noise in the state field
    */
   void addGaussianNoiseToStateField(Real std_dev);

@@ -60,7 +60,7 @@ The onset of sliding between two rough surfaces in frictional contact is an illu
 
 The successive panels of \autoref{fig:evolution} illustrate the nucleation and propagation of a frictional rupture at the interface between two solids, from the individual failure of the microcontacts in pannel (b) to the propagation of a macroscopic circular rupture in panel (d). The spatially heterogeneous strength used in this example is a representation of the heterogeneous map of contact between two rough surfaces. In \autoref{fig:evolution} (a), the initial configuration of the system is shown. The areas in white are sticking (i.e. no velocity) and correspond to asperities in contact. Colored areas are sliding (blue is for low slip velocity and red for larger ones). The shear load is increased with time in the following panels. The slip velocities increase and previously sticking parts of the interface start sliding (micro-contacts are broken). The inset of \autoref{fig:evolution} (b) is a zoomed view of the interface where rupture starts at the asperity scale. In \autoref{fig:evolution} (d), frictional cracks have expanded over almost the entire interface.
 
-![Snapshot of the slip velocity at the interface between two elastic solids under shear loading. The initial strength is highly heterogeneous. Loading and time have increased between the snapshots, starting from (a) to (d). White areas correspond to sticking conditions (no velocity) while colored ones are sliding. Low velocities are in blue and large ones in red. This simulation involve $2^{24}$ points. It ran on .... \label{fig:evolution}](evolution.png){ width=95% }
+![Snapshot of the slip velocity at the interface between two elastic solids under shear loading. The initial strength is highly heterogeneous. Loading and time have increased between the snapshots, starting from (a) to (d). White areas correspond to sticking conditions (no velocity) while colored ones are sliding. Low velocities are in blue and large ones in red. This simulation involve $2^{24}$ points and was run on one node (with two 16-core Intel E5-2683v4 2.1 GHz and 512 GiB RAM) of the computing cluster \textit{Fram} from the Norwegian e-infrastructure for research and education. \label{fig:evolution}](evolution.png){ width=95% }
 
 # Publications
 
@@ -90,6 +90,6 @@ The following publications have been made possible with `cRacklet`:
 
 # Acknowledgments
 
-T.R, F. B., and J-F. M. acknowledge the financial support from the Swiss National Science Foundation (grants #162569 "Contact mechanics of rough surfaces) and from the Rothschild Caesarea Foundation. F.B. acknowledges  support  of  the  Swiss  National  Science  Foundation through the fellowship No. P2ELP2/188034. P. H. G. acknowledges the financial support from...
+T.R, F. B., and J-F. M. acknowledge the financial support from the Swiss National Science Foundation (grants #162569 "Contact mechanics of rough surfaces) and from the Rothschild Caesarea Foundation. F.B. acknowledges  support  of  the  Swiss  National  Science  Foundation through the fellowship No. P2ELP2/188034. F.B. acknowledges the Norwegian e-infrastructure for research and education (UNINETT Sigma2) for computing resources through grant NN9814K.
 
 # References

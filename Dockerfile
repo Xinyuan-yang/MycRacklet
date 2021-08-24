@@ -40,3 +40,5 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
     kitware-archive-keyring \
     cmake \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install gcovr

@@ -66,10 +66,13 @@ build:docker:
   script:
     - cd build
     - ctest -T test --no-compress-output --timeout 1800 --output-junit junit-report.xml
+    - gcovr --xml-pretty --exclude-unreachable-branches --print-summary -o coverage.xml --root ${CI_PROJECT_DIR}
+  coverage: /^\s*lines:\s*\d+.\d+\%/
   artifacts:
     when: always
     reports:
       junit: build/junit-report.xml
+      cobertura: build/coverage.xml
 
 configure:ubuntu:
   extends:

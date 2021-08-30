@@ -1,89 +1,126 @@
 stages:
-    - configure
-    - build
-    - test
-    - deploy
+  - configure
+  - build
+  - test
+  - deploy
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+variables:
+  SAST_EXCLUDED_PATHS: build
 
 default:
   image: registry.gitlab.com/cracklet/cracklet
 
+build:docker:
+  image: docker:19.03.12
+  stage: .pre
+  services:
+    - docker:19.03.12-dind
+  only:
+    refs:
+      - branches
+    changes:
+      - Dockerfile
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
+  script:
+    - echo $IMAGE_TAG
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_TAG || true
+    - docker build --cache-from $IMAGE_TAG -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+
 .configure:
-    stage: configure
-    except:
-        - tags
-    script:
-        - cmake -E make_directory build
-        - cd build
-        - cmake -DCRACKLET_TESTS:BOOL=TRUE
-                -DCRACKLET_EXAMPLES:BOOL=TRUE
-                -DCRACKLET_MULTI_THREADED:BOOL=TRUE
-                -DCRACKLET_PYTHON_INTERFACE:BOOL=TRUE
-                -DCMAKE_BUILD_TYPE:STRING=Release ..
-    artifacts:
-        when: on_success
-        paths:
-          - build
-        expire_in: 10h
+  stage: configure
+  script:
+    - cmake -E make_directory build
+    - cd build
+    - cmake -DCRACKLET_TESTS:BOOL=TRUE
+        -DCRACKLET_EXAMPLES:BOOL=TRUE
+        -DCRACKLET_MULTI_THREADED:BOOL=TRUE
+        -DCRACKLET_PYTHON_INTERFACE:BOOL=TRUE
+        -DCMAKE_BUILD_TYPE:STRING=Release ..
+  artifacts:
+    when: on_success
+    paths:
+      - build
+    expire_in: 10h
 
 .build:
-    stage: build
-    script:
-        - cmake --build build/src > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
-        - cmake --build build/examples > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
-        - cmake --build build/tests > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
-        - cmake --build build/python > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
-    artifacts:
-        when: on_success
-        paths:
-          - build
-        expire_in: 10h
+  stage: build
+  script:
+    - cmake --build build/src > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+    - cmake --build build/examples > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+    - cmake --build build/tests > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+    - cmake --build build/python > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
+  artifacts:
+    when: on_success
+    paths:
+      - build
+    expire_in: 10h
 
 .tests:
   stage: test
   script:
     - cd build
-    - ctest -T test --no-compress-output --timeout 1800
+    - ctest -T test --no-compress-output --timeout 1800 --output-junit junit-report.xml
+    - gcovr --xml-pretty --exclude-unreachable-branches --print-summary -o coverage.xml --root ${CI_PROJECT_DIR}
+  coverage: /^\s*lines:\s*\d+.\d+\%/
+  artifacts:
+    when: always
+    reports:
+      junit: build/junit-report.xml
+      cobertura: build/coverage.xml
 
 configure:ubuntu:
-    extends:
-        - .configure
-    cache:
-        policy: pull-push
+  extends:
+    - .configure
 
 build:ubuntu:
-    extends:
-        - .build
-    dependencies:
-        - configure:ubuntu
+  extends:
+    - .build
+  dependencies:
+    - configure:ubuntu
 
 build:test_documentation:
-    stage: build
-    script:
-        - cd build
-        - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
-        - make dev_doc
-    artifacts:
-        paths:
-            - build/doc/html
+  stage: build
+  script:
+    - cd build
+    - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
+    - make dev_doc
+  artifacts:
+    paths:
+      - build/doc/html
 
 test:ubuntu:
   extends:
-    - .tests
+  - .tests
   dependencies:
-    - build:ubuntu
+  - build:ubuntu
 
 # ----------------------------------------------------------------------------------------
 pages:
-    stage: deploy
-    dependencies:
-        - build:ubuntu
-    script:
-        - cd build
-        - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
-        - make dev_doc
-        - mv doc/html ../public
-    artifacts:
-        paths:
-            - public
-    only:
-        - master
+  stage: deploy
+  dependencies:
+    - build:ubuntu
+  script:
+    - cd build
+    - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
+    - make dev_doc
+    - mv doc/html ../public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+
+# SAST https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST.gitlab-ci.yml
+flawfinder-sast:
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      exists:
+        - '**/*.c'
+        - '**/*.cpp'
+        - '**/*.cc'

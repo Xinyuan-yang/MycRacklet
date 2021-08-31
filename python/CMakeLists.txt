@@ -56,7 +56,11 @@ target_include_directories(py11_cracklet
   PRIVATE ${PYTHON_INCLUDE_DIRS})
 
 target_link_libraries(py11_cracklet PUBLIC cRacklet)
-set_target_properties(py11_cracklet PROPERTIES DEBUG_POSTIFX "")
+set_target_properties(py11_cracklet PROPERTIES
+  DEBUG_POSTIFX ""
+  LIBRARY_OUTPUT_DIRECTORY cracklet)
+
+file(COPY cracklet DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 set(_python_install_dir
   ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages)

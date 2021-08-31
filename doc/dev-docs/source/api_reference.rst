@@ -4,88 +4,88 @@ API Reference
 Python API
 ----------
 
-cRacklet C++ bindings
+cracklet C++ bindings
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: py11_cracklet.SpectralModel
+.. autoclass:: cracklet.SpectralModel
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
 
-.. autoclass:: py11_cracklet.SimulationDriver
+.. autoclass:: cracklet.SimulationDriver
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
       
-py11_cracklet Interface Laws
+cracklet Interface Laws
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: py11_cracklet.CohesiveLaw
+.. autoclass:: cracklet.CohesiveLaw
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
 
-.. autoclass:: py11_cracklet.InterfacerLinearCoupledCohesive
+.. autoclass:: cracklet.InterfacerLinearCoupledCohesive
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
       
-.. autoclass:: py11_cracklet.RateAndStateLaw
+.. autoclass:: cracklet.RateAndStateLaw
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
 
-py11_cracklet Interfacer
+cracklet Interfacer
 ^^^^^^^^^^^^^^^^^^^^^^^^
       
-.. autoclass:: py11_cracklet.InterfacerRateAndState
+.. autoclass:: cracklet.InterfacerRateAndState
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
 
-.. autoclass:: py11_cracklet.InterfacerRegularizedRateAndState
+.. autoclass:: cracklet.InterfacerRegularizedRateAndState
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
 
-.. autoclass:: py11_cracklet.InterfacerWeakeningRateAndState
+.. autoclass:: cracklet.InterfacerWeakeningRateAndState
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
       
-py11_cracklet Contact Laws
+cracklet Contact Laws
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
       
-.. autoclass:: py11_cracklet.CoulombLaw
+.. autoclass:: cracklet.CoulombLaw
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
 
-.. autoclass:: py11_cracklet.RegularizedCoulombLaw
+.. autoclass:: cracklet.RegularizedCoulombLaw
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
 
-py11_cracklet Dumper and Data Management
+cracklet Dumper and Data Management
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: py11_cracklet.DataRegister
+.. autoclass:: cracklet.DataRegister
    :members:
    :undoc-members:
    :show-inheritance:
    :inherited-members:
 
-.. autoclass:: py11_cracklet.DataDumper
+.. autoclass:: cracklet.DataDumper
    :members:
    :undoc-members:
    :show-inheritance:

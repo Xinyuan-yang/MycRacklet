@@ -31,12 +31,7 @@
 
 import numpy as np
 
-from py_cRacklet import SpectralModel
-from py_cRacklet import RegularizedCoulombLaw
-from py_cRacklet import InterfacerLinearCoupledCohesive
-from py_cRacklet import CohesiveLaw
-from py_cRacklet import DataDumper
-from py_cRacklet import DataFields
+import cracklet as cra
 
 def main():
 
@@ -77,11 +72,11 @@ def main():
     regularized_time_scale = 0.1
     coef_frict = 0.25
 
-    contact_law = RegularizedCoulombLaw(coef_frict,regularized_time_scale,nb_elements)
+    contact_law = cra.RegularizedCoulombLaw(coef_frict,regularized_time_scale,nb_elements)
 
     # Creating the model
     
-    model = SpectralModel(nb_elements,nb_time_steps,dom_size,nu_mtl,nu_poly,E_mtl,E_poly,cs_mtl,cs_poly,tcut_mtl,tcut_poly,"Mixed-mode debonding at Aluminium Homalite interface")
+    model = cra.SpectralModel(nb_elements,nb_time_steps,dom_size,nu_mtl,nu_poly,E_mtl,E_poly,cs_mtl,cs_poly,tcut_mtl,tcut_poly,"Mixed-mode debonding at Aluminium Homalite interface")
 
     # Stable time step coefficient
     
@@ -90,7 +85,7 @@ def main():
     model.initModel(beta)
     model.setLoadingCase(load,psi,phi)
 
-    interfacer = InterfacerLinearCoupledCohesive(model)
+    interfacer = cra.InterfacerLinearCoupledCohesive(model)
     interfacer.createThroughCenteredCrack(crack_size,crit_n_open,crit_s_open,max_n_str,max_s_str)
 
     cohesive_law = model.getInterfaceLaw()
@@ -101,7 +96,7 @@ def main():
 
     # Dumper configuration
     
-    dumper = DataDumper(model)
+    dumper = cra.DataDumper(model)
     
     st_diag_id = 'ST_Diagram_id.cra'
     st_diag_nor_trac = 'ST_Diagram_normal_tractions.cra'
@@ -114,12 +109,12 @@ def main():
 
     energy = 'Energy.cra'
     
-    dumper.initVectorDumper(st_diag_nor_trac,DataFields._interface_tractions,1)
-    dumper.initDumper(st_diag_shear_velo,DataFields._shear_velocity_jumps)
-    dumper.initDumper(st_diag_id,DataFields._id_crack)
-    dumper.initDumper(top_u,DataFields._top_displacements)
-    dumper.initDumper(bot_u,DataFields._bottom_displacements)  
-    dumper.initDumper(tractions,DataFields._interface_tractions)  
+    dumper.initVectorDumper(st_diag_nor_trac,cra.DataFields._interface_tractions,1)
+    dumper.initDumper(st_diag_shear_velo,cra.DataFields._shear_velocity_jumps)
+    dumper.initDumper(st_diag_id,cra.DataFields._id_crack)
+    dumper.initDumper(top_u,cra.DataFields._top_displacements)
+    dumper.initDumper(bot_u,cra.DataFields._bottom_displacements)  
+    dumper.initDumper(tractions,cra.DataFields._interface_tractions)  
     dumper.initPointsDumper(point_his,points_int)  
     dumper.initIntegratorsDumper(energy)  
 

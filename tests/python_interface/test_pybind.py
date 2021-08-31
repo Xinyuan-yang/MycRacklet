@@ -36,7 +36,7 @@
 import sys
 import pytest
 import numpy as np
-import py_cRacklet as cra
+import cracklet as cra
 
 # Create a fixture model class
 @pytest.fixture

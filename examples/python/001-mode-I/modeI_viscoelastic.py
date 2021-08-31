@@ -35,13 +35,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
 
-from py_cRacklet import SpectralModel
-from py_cRacklet import InterfacerCohesiveViscoelastic
-from py_cRacklet import CohesiveLawViscoelastic
-from py_cRacklet import DataDumper
-from py_cRacklet import DataRegister
-from py_cRacklet import DataFields
-from py_cRacklet import SimulationDriver
+import cracklet as cra
 
 def main():
 
@@ -96,7 +90,7 @@ def main():
     
     # Creating the model
     
-    model = SpectralModel(nb_elements,nb_time_steps,dom_size,nu,E,cs,tcut,"Mode I debonding at Homalite-Homalite interface")
+    model = cra.SpectralModel(nb_elements,nb_time_steps,dom_size,nu,E,cs,tcut,"Mode I debonding at Homalite-Homalite interface")
 
     # Simulation driver
 
@@ -105,13 +99,13 @@ def main():
     model.initModel(beta)
     model.setLoadingCase(load[t],psi,phi)
     
-    interfacer = InterfacerCohesiveViscoelastic(model)
+    interfacer = cra.InterfacerCohesiveViscoelastic(model)
     
-    DataRegister.registerParameterReal("critical_normal_opening",crit_n_open)
-    DataRegister.registerParameterReal("critical_shear_opening",crit_s_open)
-    DataRegister.registerParameterReal("max_normal_strength",max_n_str)
-    DataRegister.registerParameterReal("max_shear_strength",max_s_str)
-    DataRegister.registerParameterReal("lim_velocity",lim_vel)
+    cra.DataRegister.registerParameterReal("critical_normal_opening",crit_n_open)
+    cra.DataRegister.registerParameterReal("critical_shear_opening",crit_s_open)
+    cra.DataRegister.registerParameterReal("max_normal_strength",max_n_str)
+    cra.DataRegister.registerParameterReal("max_shear_strength",max_s_str)
+    cra.DataRegister.registerParameterReal("lim_velocity",lim_vel)
     
     interfacer.createUniformInterface()
 
@@ -126,17 +120,17 @@ def main():
     
     # Dumper configuration
     
-    dumper = DataDumper(model)
+    dumper = cra.DataDumper(model)
     
     st_diag_id = 'ST_Diagram_id.cra'
     st_diag_nor_trac = 'ST_Diagram_normal_tractions.cra'
     st_diag_nor_velo = 'ST_Diagram_normal_velocity_jumps.cra'
     top_u = 'top_displ_snapshot.cra'
     
-    dumper.initVectorDumper(st_diag_nor_trac,DataFields._interface_tractions,1)
-    dumper.initDumper(st_diag_nor_velo,DataFields._normal_velocity_jumps)
-    dumper.initDumper(st_diag_id,DataFields._id_crack)
-    dumper.initDumper(top_u,DataFields._top_displacements)
+    dumper.initVectorDumper(st_diag_nor_trac,cra.DataFields._interface_tractions,1)
+    dumper.initDumper(st_diag_nor_velo,cra.DataFields._normal_velocity_jumps)
+    dumper.initDumper(st_diag_id,cra.DataFields._id_crack)
+    dumper.initDumper(top_u,cra.DataFields._top_displacements)
 
     print_freq = 0.001 * nb_time_steps
 

@@ -214,6 +214,10 @@ public:
       @param write : (bool) By default is true. Save a file with the loading
   */
   void setLoadingCase(Real load_in, Real psi, Real phi, bool write=true);
+  /** Set loading from vector, the vector should have a size 3*nb_el
+      @param loading : (array<Real>) loading
+  */
+  void setLoadingFromVector(std::vector<Real> loading);
   /** Spatial enveloppe to modifiy the loading shape
       @param shape : (array<Real>) spatial profile of the loading
   */

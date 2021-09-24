@@ -376,6 +376,20 @@ void SpectralModel::updateLoads(Real * loading_per_dim) {
 }
 
 /* -------------------------------------------------------------------------- */
+void SpectralModel::setLoadingFromVector(std::vector<Real> loading) {
+    
+  for (UInt x = 0; x < n_ele[0]; ++x) {
+    for (UInt z = 0; z < n_ele[1]; ++z) {
+      for (UInt side = 0; side < 2; ++side) {
+	for (UInt j = 0; j < dim; ++j) {
+	  loads[side][(x*dim+j)+z*n_ele[0]*dim] = loading[(x*dim+j)+z*n_ele[0]*dim];
+	}
+      }
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
 void SpectralModel::updateLoads() {
 
   updateLoads(&uniform_loading[0]);

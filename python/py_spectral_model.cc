@@ -88,6 +88,7 @@ void register_spectral_model(py::module& mod) {
     .def("initInterfaceFields",&SpectralModel::initInterfaceFields)
     .def("increaseTimeStep",&SpectralModel::increaseTimeStep)	  
     .def("updateDisplacements",&SpectralModel::updateDisplacements)
+    .def("setDisplacements",&SpectralModel::setDisplacements)
     .def("computeInterfaceFields",&SpectralModel::computeInterfaceFields)
     .def("fftOnDisplacements",&SpectralModel::fftOnDisplacements)
     .def("computeStress",&SpectralModel::computeStress)

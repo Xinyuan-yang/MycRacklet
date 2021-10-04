@@ -254,6 +254,10 @@ public:
   const CrackProfile * getNormalDisplacementJumps();
   /// Direct access to interface tractions
   const CrackProfile * getInterfaceTractions();
+  /// Direct access to top dynamic stresses (f)
+  const CrackProfile * getTopDynamicStresses();
+  /// Direct access to bot dynamic stresses (f)
+  const CrackProfile * getBotDynamicStresses();
 
 protected:
  

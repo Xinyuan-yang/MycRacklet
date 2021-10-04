@@ -457,3 +457,21 @@ const CrackProfile * DataRegister::getInterfaceTractions(){
   return itf_tractions;
   
 }
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getTopDynamicStresses(){
+  
+  const CrackProfile * top_dyn_stresses = DataRegister::readData(_top_dynamic_stress);
+
+  return top_dyn_stresses;
+  
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getBotDynamicStresses(){
+  
+  const CrackProfile * bot_dyn_stresses = DataRegister::readData(_bottom_dynamic_stress);
+
+  return bot_dyn_stresses;
+  
+}

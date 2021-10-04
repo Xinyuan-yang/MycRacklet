@@ -99,7 +99,10 @@ void register_data_register(py::module& mod) {
     .def("getBotDisplacements",&DataRegister::getBotDisplacements,py::return_value_policy::reference)
     .def("getShearDisplacementJumps",&DataRegister::getShearDisplacementJumps,py::return_value_policy::reference)
     .def("getNormalDisplacementJumps",&DataRegister::getNormalDisplacementJumps,py::return_value_policy::reference)
-    .def("getInterfaceTractions",&DataRegister::getInterfaceTractions,py::return_value_policy::reference);
+    .def("getInterfaceTractions",&DataRegister::getInterfaceTractions,py::return_value_policy::reference)
+    .def("getTopDynamicStresses",&DataRegister::getTopDynamicStresses,py::return_value_policy::reference)
+    .def("getBotDynamicStresses",&DataRegister::getBotDynamicStresses,py::return_value_policy::reference)
+;
   
 }
 

@@ -440,6 +440,24 @@ void SpectralModel::updateDisplacements() {
 }
 
 /* -------------------------------------------------------------------------- */
+void SpectralModel::setDisplacements(std::vector<Real> displ) {
+  
+  for (UInt i = 0; i < n_ele[0]; ++i) {
+    for (UInt j = 0; j < n_ele[1]; ++j) {
+      for (UInt d = 0; d < dim; ++d) {
+	displacements[0][(i+j*n_ele[0])*dim+d] = displ[(i+j*n_ele[0])*dim+d];
+      }
+    }
+  }
+  
+  // Set also the bottom displacements, might not be necessary..
+  displacements[1]=displacements[0]; 
+
+  displ_jump->computeJumpFields(); 
+}
+
+
+/* -------------------------------------------------------------------------- */
 void SpectralModel::computeInterfaceFields(){
 
   interface_law->updateInterfaceConditions();

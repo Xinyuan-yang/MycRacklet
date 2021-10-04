@@ -240,6 +240,8 @@ public:
   void increaseTimeStep();
   /// Update displacements with velocities 
   void updateDisplacements();
+  /// Set displacements to a given value (for coupling) 
+  void setDisplacements(std::vector<Real> displ);
   /** Compute interface fields (strength,traction,velocities)
       using the interface conditions given in the associated InterfaceLaw
   */

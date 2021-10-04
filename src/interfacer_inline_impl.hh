@@ -113,6 +113,18 @@ inline void Interfacer<_regularized_rate_and_state>::createHeterogeneousInterfac
 
 /* -------------------------------------------------------------------------- */
 template<>
+inline void Interfacer<_regularized_weakening_rate_and_state>::createUniformInterface() {
+
+  Real v0 = DataRegister::getParameter<Real>("v0");
+   
+  createHomogeneousRateandStateIntfc();
+  std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(interface_law);
+  r_and_s->initRegularizedWeakeningFormulation(v0);
+  
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
 inline void Interfacer<_regularized_weakening_rate_and_state>::createHeterogeneousInterface(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star) {
 
   Real v0 = DataRegister::getParameter<Real>("v0");

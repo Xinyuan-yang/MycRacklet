@@ -395,10 +395,10 @@ void RateAndStateLaw::insertGaussianPerturbation(Real std_dev, Real amplitude) {
 }
 
 /* -------------------------------------------------------------------------- */
-void RateAndStateLaw::insertSkewedPerturbation(Real std_dev, Real amplitude, Real alpha) {
+void RateAndStateLaw::insertSkewedPerturbation(Real std_dev, Real amplitude, Real alpha, Real rel_loc) {
   
   UInt n_ele = D.size();
-  Real mu = n_ele/2.;
+  Real mu = n_ele*rel_loc;
   CrackProfile * stresses = datas[_top_dynamic_stress];
 
   std::vector<Real> skew_perturbation(n_ele); 
@@ -417,6 +417,50 @@ void RateAndStateLaw::insertSkewedPerturbation(Real std_dev, Real amplitude, Rea
   for (UInt i = 0; i < n_ele; ++i) {     
     
     Real new_rate = amplitude*skew_perturbation[i]/max_skew+V_0[1];
+    
+    (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1]);
+    (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1]);
+    
+    Real tractions = (*stresses)[i*3+2] - accoust*(new_rate-V_0[1])/2;
+    
+    phi[i] = formulation->getStableState(tractions,sigma_0,new_rate,a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);
+    if (phi[0]<0)
+      cRacklet::error("The amplitude of the gaussian perturbation implies negative value of phi !");
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+void RateAndStateLaw::insertSkewedPerturbation(std::vector<Real> std_dev, std::vector<Real> amplitude, std::vector<Real> alpha, std::vector<Real> rel_loc) {
+
+  // This function adds several perturbations on top of each other
+  
+  UInt n_ele = D.size();
+  std::vector<Real> mu = rel_loc;
+  std::transform(mu.begin(), mu.end(), mu.begin(), [n_ele](Real &c){ return c*n_ele; });
+  CrackProfile * stresses = datas[_top_dynamic_stress];
+
+  std::vector<Real> total_skew_perturbation(n_ele); 
+  
+  for (UInt j = 0; j < std_dev.size(); ++j){
+    std::vector<Real> skew_perturbation(n_ele); 
+    for (UInt i = 0; i < n_ele; ++i) {     
+      Real normal_pdf = exp(-0.5*((i-mu[j])/std_dev[j])*((i-mu[j])/std_dev[j]));
+      Real skew_cdf = 0.5*(1 + erf(alpha[j]*(i-mu[j])/std_dev[j]/sqrt(2)));
+      skew_perturbation[i] = normal_pdf*skew_cdf;
+    }
+    Real max_skew = *std::max_element(skew_perturbation.begin(),skew_perturbation.end());
+
+    // Normalize the perturbation
+    std::transform(skew_perturbation.begin(), skew_perturbation.end(), skew_perturbation.begin(), [j,amplitude,max_skew](Real &c){ return c*amplitude[j]/max_skew;});
+
+    // Add to the total profile
+    std::transform(total_skew_perturbation.begin(),total_skew_perturbation.end(),skew_perturbation.begin(),total_skew_perturbation.begin(),std::plus<Real>());
+  }
+
+  // Second loop, add the perturbation
+  for (UInt i = 0; i < n_ele; ++i) {     
+    
+    Real new_rate = total_skew_perturbation[i]+V_0[1];
     
     (*dot_u_top)[i*3+2] = 0.5*(new_rate-V_0[1]);
     (*dot_u_bot)[i*3+2] = -0.5*(new_rate-V_0[1]);

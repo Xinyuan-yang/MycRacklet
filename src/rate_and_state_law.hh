@@ -157,6 +157,10 @@ public:
       @param k : perturbation spatial frequency
    */
   void perturbState(Real epsilon, Real k);
+  /** perturbe the state variable by adding a vector to it
+      @param perturbation : perturbation vector
+   */
+  void perturbState(std::vector<Real> perturbation);
   /** insert gaussian perturbation patch in the velocity field
    */
   void insertPerturbationPatch(std::vector<UInt> patch_limits, Real new_rate);

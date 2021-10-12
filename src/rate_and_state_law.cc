@@ -350,6 +350,16 @@ void RateAndStateLaw::perturbState(Real epsilon, Real k) {
 }
 
 /* -------------------------------------------------------------------------- */
+void RateAndStateLaw::perturbState(std::vector<Real> perturbation) {
+  
+  UInt n_ele = D.size();
+
+  for (UInt i = 0; i < n_ele; ++i) {     
+    phi[i] += perturbation[i];
+  }
+}
+
+/* -------------------------------------------------------------------------- */
 void RateAndStateLaw::insertPerturbationPatch(std::vector<UInt> patch_limits, Real new_rate) {
   
   UInt n_ele = D.size();

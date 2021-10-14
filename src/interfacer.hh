@@ -198,13 +198,24 @@ public:
   
   // For the linear coupled cohesive law: create an interface without initial cohesion between top and bottom solids
   void createIncohIntfc();
-
+  
 private:
 
   // initialize corresponding interface_law pointer
   void initInterfaceLaw();
   // 
   void createHomogeneousRateandStateIntfc();
+
+  /** For rate and state laws: Create an heterogeneous interface from vectors
+      @param vec_D : Vector of the characteristic slip distance
+      @param vec_f0 : Vector of f0 the reference friction 
+      @param vec_a : Vector of a 
+      @param vec_b : Vector of b
+      @param vec_v_star : Vector of v_star
+      @param vec_phi_star : Vector of phi_star
+  */
+  void createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star);
+
   
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */

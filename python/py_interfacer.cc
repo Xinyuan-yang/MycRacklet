@@ -55,6 +55,10 @@ std::string FractureLawToString(FractureLawType F) {
       name = "RegularizedRateAndState"; 
       break;
 
+    case _regularized_weakening_rate_and_state:
+      name = "RegularizedWeakeningRateAndState"; 
+      break;
+      
     case _weakening_rate_and_state:
       name = "WeakeningRateAndState";  
       break;
@@ -70,6 +74,7 @@ void register_fracture_law_type(py::module&mod){
     .value("_viscoelastic_coupled_cohesive",FractureLawType::_viscoelastic_coupled_cohesive)
     .value("_rate_and_state",FractureLawType::_rate_and_state)
     .value("_regularized_rate_and_state",FractureLawType::_regularized_rate_and_state)
+    .value("_regularized_weakening_rate_and_state",FractureLawType::_regularized_weakening_rate_and_state)
     .value("_weakening_rate_and_state",FractureLawType::_weakening_rate_and_state);
   }
   
@@ -121,6 +126,7 @@ void register_fracture_law_type(py::module&mod){
     wrap_interfacer_viscoelastic<_viscoelastic_coupled_cohesive>(mod);
     wrap_interfacer_RANDS<_rate_and_state>(mod);
     wrap_interfacer_RANDS<_regularized_rate_and_state>(mod);
+    wrap_interfacer_RANDS<_regularized_weakening_rate_and_state>(mod);
     wrap_interfacer_RANDS<_weakening_rate_and_state>(mod);
     
 }

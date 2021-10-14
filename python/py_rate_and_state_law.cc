@@ -55,7 +55,8 @@ void register_rate_and_state_law(py::module& mod) {
     .def("perturbState",py::overload_cast<std::vector<Real>>(&RateAndStateLaw::perturbState))
     .def("insertPerturbationPatch",&RateAndStateLaw::insertPerturbationPatch)
     .def("insertGaussianPerturbation",&RateAndStateLaw::insertGaussianPerturbation)
-    .def("insertSkewedPerturbation",&RateAndStateLaw::insertSkewedPerturbation)
+    .def("insertSkewedPerturbation",py::overload_cast<Real, Real, Real, Real>(&RateAndStateLaw::insertSkewedPerturbation))
+    .def("insertSkewedPerturbation",py::overload_cast<std::vector<Real>,std::vector<Real>,std::vector<Real>,std::vector<Real> >(&RateAndStateLaw::insertSkewedPerturbation))
     .def("restart",&RateAndStateLaw::restart);
 }
 } // namespace cracklet

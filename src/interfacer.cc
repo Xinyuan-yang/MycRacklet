@@ -31,10 +31,20 @@
 /* -------------------------------------------------------------------------- */
 #include "interfacer.hh"
 /* -------------------------------------------------------------------------- */
+
+// Homogeneous rate and state friction interfaces
+
 template void Interfacer<_rate_and_state>::createHomogeneousRateandStateIntfc();
 template void Interfacer<_weakening_rate_and_state>::createHomogeneousRateandStateIntfc();
 template void Interfacer<_regularized_rate_and_state>::createHomogeneousRateandStateIntfc();
 template void Interfacer<_regularized_weakening_rate_and_state>::createHomogeneousRateandStateIntfc();
+
+// Heterogeneous rate and state friction interfaces
+
+template void Interfacer<_rate_and_state>::createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star);
+template void Interfacer<_weakening_rate_and_state>::createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star);
+template void Interfacer<_regularized_rate_and_state>::createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star);
+template void Interfacer<_regularized_weakening_rate_and_state>::createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star);
 
 template<FractureLawType F>
 void Interfacer<F>::createHomogeneousRateandStateIntfc() {
@@ -80,4 +90,35 @@ void Interfacer<F>::createHomogeneousRateandStateIntfc() {
 		 << "v_star " << v_star_value << std::endl
 		 << "phi_star " << phi_star_value << std::endl
 		 << "sigma_0 " << sigma_0 << std::endl;
+}
+
+
+template<FractureLawType F>
+void Interfacer<F>::createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star) {
+    
+  std::vector<Real> * D = datas[_rands_D];
+  std::vector<Real> * f_0 = datas[_rands_f_0];
+  std::vector<Real> * a = datas[_rands_a];
+  std::vector<Real> * b = datas[_rands_b];
+  std::vector<Real> * v_star = datas[_rands_v_star];
+  std::vector<Real> * phi_star = datas[_rands_phi_star];
+
+  for (UInt x = 0; x < n_ele[0]; ++x) {
+    for (UInt z = 0; z < n_ele[1]; ++z ) {
+      (*D)[x+z*n_ele[0]] = vec_D[x+z*n_ele[0]];
+      (*f_0)[x+z*n_ele[0]] = vec_f0[x+z*n_ele[0]];
+      (*a)[x+z*n_ele[0]] = vec_a[x+z*n_ele[0]];
+      (*b)[x+z*n_ele[0]] = vec_b[x+z*n_ele[0]];
+      (*v_star)[x+z*n_ele[0]] = vec_v_star[x+z*n_ele[0]];
+      (*phi_star)[x+z*n_ele[0]] = vec_phi_star[x+z*n_ele[0]];
+    }
+  }
+  
+  Real sigma_0 = DataRegister::getParameter<Real>("sigma_0");
+  
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " HETEROGENEOUS RATE AND STATE FRICTIONAL INTERFACE!! " << std::endl
+	      << "* Uniform contact pressure: " << sigma_0 << std::endl
+	      << std::endl;	
 }

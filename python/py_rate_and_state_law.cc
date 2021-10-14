@@ -48,6 +48,9 @@ void register_rate_and_state_law(py::module& mod) {
     .def("setVelocityPredictor",&RateAndStateLaw::setVelocityPredictor)
     .def("initInterfaceConditions",&RateAndStateLaw::initInterfaceConditions)
     .def("updateInterfaceConditions",&RateAndStateLaw::updateInterfaceConditions)
+    // Compute the next velocity for imposed vBC
+    .def("computeNextAverageVelocity",&RateAndStateLaw::computeNextAverageVelocity)
+
     .def("perturbState",py::overload_cast<Real,Real>(&RateAndStateLaw::perturbState))
     .def("perturbState",py::overload_cast<std::vector<Real>>(&RateAndStateLaw::perturbState))
     .def("insertPerturbationPatch",&RateAndStateLaw::insertPerturbationPatch)

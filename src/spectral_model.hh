@@ -242,6 +242,7 @@ public:
   void updateDisplacements();
   /// Set displacements to a given value (for coupling) 
   void setDisplacements(std::vector<Real> displ);
+  void setVelocities(std::vector<Real> vel);
   /** Compute interface fields (strength,traction,velocities)
       using the interface conditions given in the associated InterfaceLaw
   */

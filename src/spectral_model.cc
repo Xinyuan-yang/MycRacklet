@@ -440,37 +440,27 @@ void SpectralModel::updateDisplacements() {
 }
 
 /* -------------------------------------------------------------------------- */
-void SpectralModel::setDisplacements(std::vector<Real> displ) {
+void SpectralModel::setDisplacements(std::vector<Real> displ,UInt side) {
   
   for (UInt i = 0; i < n_ele[0]; ++i) {
     for (UInt j = 0; j < n_ele[1]; ++j) {
       for (UInt d = 0; d < dim; ++d) {
-	displacements[0][(i+j*n_ele[0])*dim+d] = displ[(i+j*n_ele[0])*dim+d];
+	displacements[side][(i+j*n_ele[0])*dim+d] = displ[(i+j*n_ele[0])*dim+d];
       }
     }
-  }
-  
-  // Set also the bottom displacements, might not be necessary..
-  displacements[1]=displacements[0]; 
-
-  displ_jump->computeJumpFields(); 
+  }  
 }
 
 /* -------------------------------------------------------------------------- */
-void SpectralModel::setVelocities(std::vector<Real> vel) {
+void SpectralModel::setVelocities(std::vector<Real> vel,UInt side) {
   
   for (UInt i = 0; i < n_ele[0]; ++i) {
     for (UInt j = 0; j < n_ele[1]; ++j) {
       for (UInt d = 0; d < dim; ++d) {
-	velocities[0][(i+j*n_ele[0])*dim+d] = vel[(i+j*n_ele[0])*dim+d];
+	velocities[side][(i+j*n_ele[0])*dim+d] = vel[(i+j*n_ele[0])*dim+d];
       }
     }
   }
-  
-  // Set also the bottom displacements, might not be necessary..
-  velocities[1]=velocities[0]; 
-
-  veloc_jump->computeJumpFields();
 }
 
 /* -------------------------------------------------------------------------- */

@@ -258,6 +258,10 @@ public:
   const CrackProfile * getTopDynamicStresses();
   /// Direct access to bot dynamic stresses (f)
   const CrackProfile * getBotDynamicStresses();
+  /// Direct access to top loading (\tau_0)
+  const CrackProfile * getTopLoading();
+  /// Direct access to bot loading (\tau_0)
+  const CrackProfile * getBotLoading();
 
 protected:
  

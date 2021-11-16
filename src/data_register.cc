@@ -475,3 +475,18 @@ const CrackProfile * DataRegister::getBotDynamicStresses(){
   return bot_dyn_stresses;
   
 }
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getTopLoading(){
+  
+  const CrackProfile * top_loading = DataRegister::readData(_top_loading);
+
+  return top_loading;
+  
+}
+
+/* -------------------------------------------------------------------------- */
+const CrackProfile * DataRegister::getBotLoading(){
+  const CrackProfile * bot_loading = DataRegister::readData(_bottom_loading);
+  return bot_loading;
+}

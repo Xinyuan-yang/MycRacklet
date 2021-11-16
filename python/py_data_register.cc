@@ -102,6 +102,8 @@ void register_data_register(py::module& mod) {
     .def("getInterfaceTractions",&DataRegister::getInterfaceTractions,py::return_value_policy::reference)
     .def("getTopDynamicStresses",&DataRegister::getTopDynamicStresses,py::return_value_policy::reference)
     .def("getBotDynamicStresses",&DataRegister::getBotDynamicStresses,py::return_value_policy::reference)
+    .def("getTopLoading",&DataRegister::getTopLoading,py::return_value_policy::reference)
+    .def("getBotLoading",&DataRegister::getBotLoading,py::return_value_policy::reference)
 ;
   
 }

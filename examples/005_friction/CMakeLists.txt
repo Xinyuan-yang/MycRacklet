@@ -39,6 +39,7 @@ add_cracklet_simulation(mode_II_rate_and_state mode_II_rate_and_state.cc
 add_cracklet_simulation(mode_III_rate_and_state mode_III_rate_and_state.cc)
 
 add_cracklet_simulation(travelling_pulse travelling_pulse.cc)
+copy_input_file(input_pulse_PMMA.dat)
 
 add_cracklet_simulation(mode_II_slip_weakening mode_II_slip_weakening.cc)
 

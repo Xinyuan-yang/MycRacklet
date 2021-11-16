@@ -47,57 +47,57 @@ int main(int argc, char *argv[]){
   // Note : Construct the pre-integrated material kernels before running this simulation
   // Use "invert_serial.f" to construct kernel files
 
-  std::cout << "./travelling_pulse [ <output_folder_name>='./' <nb_elements>=1024 <dom_size>=20 <patch_size/dom_size>=0.5 <load x tau_m>=1.044 <vm>=0.01 ]"
+  std::cout << "./travelling_pulse [ <output_folder_name>='./' <nb_elements>=8192 <nb_time_steps>=50000 <dom_size>=320 <load x tau_min>=1.0425 <std_dev/dom_size>=0.016 <vm>=0.001 ]"
 	    << std::endl;
 
   std::string sim_name = "searching pulse solutions";
   std::string output_folder = "./";
-  Real load = 0.36e6; //0.575e6;
-  Real dom_size = 20.;
-  UInt nb_elements = 1024;
-  Real vm = 0.01;
-  Real patch_size = 0.5;
+  Real load = 1.0425;
+  Real dom_size = 320.;
+  UInt nb_elements = 8192;
+  Real vm = 0.001;
+  Real std_dev = 0.016;
+  UInt nb_simu_steps = 50000;
   
   if(argc > 1)
     output_folder = argv[1];
   if(argc > 2)
     nb_elements = std::atof(argv[2]);  
   if(argc > 3)
-    dom_size = std::atof(argv[3]);    
+    nb_simu_steps = std::atof(argv[3]);  
   if(argc > 4)
-    patch_size = std::atof(argv[4]);    
+    dom_size = std::atof(argv[4]);    
   if(argc > 5)
-    load = std::atof(argv[5])*0.34649e6;      
+    std_dev = std::atof(argv[5]);    
   if(argc > 6)
-    vm = std::atof(argv[6]);    
+    load = std::atof(argv[6]);    
+  if(argc > 7)
+    vm = std::atof(argv[7]);    
 
+  load *= 0.340668e6;
+  
   // Geometry description 
   Real mu = 9e9;
   Real nu =  0.33;
   Real E = 2*mu*(1+nu);
-  //  Real cs = 1200;
   Real cs = 2738.6;
-
-  //Perturbation patch
-  std::vector<UInt> limits = {(UInt)((0.5-0.5*patch_size)*nb_elements),(UInt)((0.5+0.5*patch_size)*nb_elements)};
-  
-  Real std_dev = patch_size*nb_elements/5.;
 
   // Cut of the loaded material kernels
   UInt tcut = 100;
-
-  UInt nb_simu_steps = 15*nb_elements; //rule of thumb
-  
+ 
   // Loading case
   Real psi = 90;
   Real phi = 90;
+
+  // Time step (dt = beta*dx/cs)
+  Real beta = 0.1;
       
   /* -------------------------------------------------------------------------- */
 
-  SpectralModel model(nb_elements, 0, dom_size,
+  SpectralModel model(nb_elements, nb_simu_steps, dom_size,
 		      nu, E, cs, tcut, sim_name, output_folder);
   
-  model.initModel(0.1);
+  model.initModel(beta);
   model.readInputFile("input_pulse_PMMA.dat");
 
   Real v_predictor = DataRegister::getParameter<Real>("v0_predictor");
@@ -105,9 +105,8 @@ int main(int argc, char *argv[]){
 
   std::cout << "Input parameters summary : "<< std::endl
 	    << "Output directory : " << output_folder << std::endl
-	    << "Standard deviation : " << patch_size*dom_size/5. << std::endl
-	    << "Patch size : " << patch_size << std::endl
-	    << "Number of time steps : " << nb_simu_steps << std::endl
+    	    << "Number of time steps : " << nb_simu_steps << std::endl
+	    << "Standard deviation : " << std_dev*dom_size << std::endl
 	    << "Patch velocity vm : " << vm << std::endl;
 
   Interfacer<_regularized_rate_and_state> interfacer(model);
@@ -134,9 +133,7 @@ int main(int argc, char *argv[]){
   r_and_s.setVelocityPredictor({0.,0.,v_predictor});
   
   Real v_av,v_5;
-  bool dynamic = false;
 
-  //  while (v_25*cs<v_min_fric) {
   while (t<nb_simu_steps) {
 
     model.updateDisplacements();
@@ -151,21 +148,18 @@ int main(int argc, char *argv[]){
     model.increaseTimeStep();
 
     if (t==5)
-      r_and_s.insertGaussianPerturbation(std_dev,vm);
-      //r_and_s->insertPerturbationPatch(limits,vm);
+      r_and_s.insertGaussianPerturbation(std_dev*nb_elements,vm);
 
-    if ((t%t_char==0)||((dynamic)&&(t%5==0))||(t==5))
+    if ((t%t_char==0)||(t==5)){
       dumper.dumpAll();
     
-    if (t%(3*t_char)==0){
-
       v_av = (*shear_velo_jump)[0];
       v_5 = (*shear_velo_jump)[(int)(0.5*nb_elements)];
 
-      std::cout << "Simulation at t " << t << " = " << model.getTime()*dom_size/cs << " [sec]"<< std::endl
-		<< "sliding velocity at the center point: " << v_5*cs << std::endl
-		<< "sliding velocity at an edge point: " << v_av*cs << std::endl;
-      }
+      std::cout << "Simulation at t " << t << " = " << model.getTime() << " [sec]"<< std::endl
+		<< "sliding velocity at the center point: " << v_5 << std::endl
+		<< "sliding velocity at an edge point: " << v_av << std::endl;
+    }
     ++t;
   }
   return 0;

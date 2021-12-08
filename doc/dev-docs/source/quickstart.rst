@@ -8,19 +8,29 @@ Installation from source
 
 The following dependencies are required for cRacklet:
 
-- a **C++ compiler**
-- **cMake**
-- **FFTW3**
-- **GSL** library
+ - a **C++ compiler**
+ - **CMake**
+ - **FFTW3**
+ - **GSL** library
+
+If you have Debian/Ubuntu based system you can install them with::
+
+  apt install cmake gcc libfftw3-dev libgsl-dev
+
+If you have a MacOS::
+
+  brew install cmake gcc fftw gsl
+
+f you have a windows system you can use windows sub system Linux and check apt instruction.
   
 Optional dependencies are:
 
-- **pybind11** (for python binding, automatically installed)
-- **python3** (for python binding)
-- **OpenMP** (for multi-threaded parallel computing)
-- **pytest** (for tests)
-- **Doxygen** and **Sphinx** (for documentation)
-- a **Fortran** compiler to generate new kernels
+ - **pybind11** (for python binding, automatically installed)
+ - **python3** (for python binding)
+ - a compiler that supports **OpenMP** (for multi-threaded parallel computing)
+ - **pytest** (for tests)
+ - **Doxygen** and **Sphinx** (for documentation)
+ - a **Fortran** compiler to generate new kernels
   
 First clone the git repository::
 
@@ -28,21 +38,23 @@ First clone the git repository::
   
 You can then compile cRacklet using cMake::
 
+  cd cracklet
   mkdir build
   cd build
-  ccmake ..
+  ccmake .. or cmake ..
+  [ Set the options that you need ]
   make
   
 Building the docs
 -----------------
 
-To build the documentation locally, activate the documentation option with **cMake** (CRACKLET_DOCUMENTATION). Then from the build directory::
+To build the documentation locally, activate the documentation option with **CMake** (CRACKLET_DOCUMENTATION). Then from the build directory::
   
   make dev_doc
 
 Running the test
 ----------------
 
-You need to activate the test options with cMake (CRACKLET_TESTS). You can then run the test with::
+You need to activate the test options with **CMake** (CRACKLET_TESTS). You can then run the test with::
 
   make test

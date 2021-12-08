@@ -34,7 +34,7 @@ You can compile cRacklet using cMake:
 
     mkdir build
     cd build
-    ccmake ..
+    ccmake .. or cmake ..
     make
 
 ## Tests

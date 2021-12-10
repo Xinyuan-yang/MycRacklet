@@ -89,7 +89,7 @@ build:test_documentation:
   script:
     - cd build
     - make
-    - source cRacklet_environement.sh
+    - export PYTHONPATH="$PWD/python/cracklet"
     - python -c "import sys; print('\n'.join(sys.path))"
     - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
     - make dev_doc

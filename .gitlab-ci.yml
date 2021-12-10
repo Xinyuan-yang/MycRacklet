@@ -90,6 +90,7 @@ build:test_documentation:
     - cd build
     - make
     - source cRacklet_environement.sh
+    - python -c "import sys; print('\n'.join(sys.path))"
     - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
     - make dev_doc
   artifacts:

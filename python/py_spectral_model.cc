@@ -41,7 +41,7 @@ void register_directions(py::module& mod) {
     .value("_z",SpatialDirection::_z);
   }
   
-void register_spectral_model(py::module& mod) {      
+void register_spectral_model(py::module& mod) {
   py::class_<SpectralModel,DataRegister>(mod, "SpectralModel")
     .def(py::init<>())
     .def(py::init<UInt, UInt, Real,
@@ -50,7 +50,8 @@ void register_spectral_model(py::module& mod) {
 	 py::arg("nele"), py::arg("nb_time_steps"),
 	 py::arg("dom_size"), py::arg("nu"),
 	 py::arg("E"), py::arg("cs"), py::arg("tcut"),
-	 py::arg("simulation_summary"), py::arg("output_dir")="./" )
+	 py::arg("simulation_summary"), py::arg("output_dir")="./",
+	 "Constructor for 1D (line) interface between similar bodies")
     .def(py::init<UInt, UInt, Real,
 	 Real, Real, Real, Real, Real, Real, UInt, UInt,
 	 const std::string, const std::string>(),
@@ -58,14 +59,16 @@ void register_spectral_model(py::module& mod) {
 	 py::arg("dom_size"), py::arg("nu_top"), py::arg("nu_bot"),
 	 py::arg("E_top"), py::arg("E_bot"), py::arg("cs_top"),
 	 py::arg("cs_bot"), py::arg("tcut_top"), py::arg("tcut_bot"),
-	 py::arg("simulation_summary"), py::arg("output_dir")="./" )
+	 py::arg("simulation_summary"), py::arg("output_dir")="./",
+	 "Constructor for 1D (line) interface between dissimilar bodies")
     .def(py::init< std::vector<UInt>, UInt, std::vector<Real>,
 	 Real, Real, Real, UInt,
 	 const std::string, const std::string>(),
 	 py::arg("nele"), py::arg("nb_time_steps"),
 	 py::arg("dom_size"), py::arg("nu"),
 	 py::arg("E"), py::arg("cs"), py::arg("tcut"),
-	 py::arg("simulation_summary"), py::arg("output_dir")="./" )
+	 py::arg("simulation_summary"), py::arg("output_dir")="./",
+	 "Constructor for 2D (plane) interface between similar bodies")
     .def(py::init< std::vector<UInt>, UInt, std::vector<Real>,
 	 Real, Real, Real, Real, Real, Real, UInt, UInt,
 	 const std::string, const std::string>(),
@@ -73,11 +76,17 @@ void register_spectral_model(py::module& mod) {
 	 py::arg("dom_size"), py::arg("nu_top"), py::arg("nu_bot"),
 	 py::arg("E_top"), py::arg("E_bot"), py::arg("cs_top"),
 	 py::arg("cs_bot"), py::arg("tcut_top"), py::arg("tcut_bot"),
-	 py::arg("simulation_summary"), py::arg("output_dir")="./" )
-    .def("initModel",&SpectralModel::initModel,py::arg("beta")=0,py::arg("blank")=false)
-    .def("pauseModel",&SpectralModel::pauseModel)
-    .def("restartModel",&SpectralModel::restartModel)
-    .def("sinusoidalLoading",&SpectralModel::sinusoidalLoading)
+	 py::arg("simulation_summary"), py::arg("output_dir")="./",
+	 "Constructor for 2D (plane) interface between dissimilar bodies")
+    
+    .def("initModel",&SpectralModel::initModel,py::arg("beta")=0,py::arg("blank")=false,
+	 "Init the model")
+    .def("pauseModel",&SpectralModel::pauseModel,
+	 "Pause the model")
+    .def("restartModel",&SpectralModel::restartModel,
+	 "Restart model from restart files")
+    .def("sinusoidalLoading",&SpectralModel::sinusoidalLoading,py::arg("min"),
+	 "Set the loading to a sinusoidale shape with the period being the length of the interface")
     .def("readSpatialLoadingFromFile",&SpectralModel::readSpatialLoadingFromFile)
     .def("setLoadingCase",&SpectralModel::setLoadingCase,py::arg("load_in"),py::arg("psi"),py::arg("phi"),py::arg("write")=true)
     .def("setLoadingFromVector",&SpectralModel::setLoadingFromVector)

@@ -4,62 +4,49 @@ API Reference
 Python API
 ----------
 
-cracklet C++ bindings
-^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: cracklet.SpectralModel
+.. autoclass:: py11_cracklet.SpectralModel
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
+
+   .. automethod:: __init__
 
 .. autoclass:: cracklet.SimulationDriver
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
+
+   .. automethod:: __init__
       
 cracklet Interface Laws
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: cracklet.CohesiveLaw
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
 
+   .. automethod:: __init__
+      
 .. autoclass:: cracklet.InterfacerLinearCoupledCohesive
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
       
 .. autoclass:: cracklet.RateAndStateLaw
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
-
+      
 cracklet Interfacer
 ^^^^^^^^^^^^^^^^^^^^^^^^
       
 .. autoclass:: cracklet.InterfacerRateAndState
-   :members:
-   :undoc-members:
+   :members: createUniformInterface
    :show-inheritance:
-   :inherited-members:
 
 .. autoclass:: cracklet.InterfacerRegularizedRateAndState
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
-
+      
 .. autoclass:: cracklet.InterfacerWeakeningRateAndState
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
       
 cracklet Contact Laws
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -90,7 +77,7 @@ cracklet Dumper and Data Management
    :undoc-members:
    :show-inheritance:
    :inherited-members:
-      
+
 C++ API
 -------
 
@@ -142,5 +129,55 @@ cRacklet Dumper and Data Management
    :members:
 
 .. doxygenenum:: DataFields
+		   
+C++ API
+-------
 
+.. doxygenclass:: SpectralModel
+   :members:
+
+.. doxygenclass:: SimulationDriver
+   :members:
+
+cracklet Interface Laws
+^^^^^^^^^^^^^^^^^^^^^^^^^^
       
+.. doxygenclass:: InterfaceLaw
+   :members:
+
+.. doxygenenum:: FractureLawType
+		 
+.. doxygenclass:: CohesiveLaw
+   :members:
+
+.. doxygenclass:: RateAndStateLaw
+   :members:
+
+cRacklet Interfacer
+^^^^^^^^^^^^^^^^^^^      
+
+.. doxygenclass:: Interfacer
+   :members:
+      
+cRacklet Contact Laws
+^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: ContactLaw
+   :members:
+
+.. doxygenclass:: CoulombLaw
+   :members:
+
+.. doxygenclass:: RegularizedCoulombLaw
+   :members:
+
+cRacklet Dumper and Data Management
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: DataRegister
+   :members:
+
+.. doxygenclass:: DataDumper
+   :members:
+
+.. doxygenenum:: DataFields

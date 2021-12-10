@@ -88,6 +88,7 @@ build:test_documentation:
   stage: build
   script:
     - cd build
+    - export PYTHONPATH="$PWD/python/cracklet/"
     - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
     - make dev_doc
   artifacts:

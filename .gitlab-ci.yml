@@ -89,6 +89,7 @@ build:test_documentation:
   script:
     - cd build
     - make install
+    - python3 -c "import cracklet"
     - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
     - make dev_doc
   artifacts:

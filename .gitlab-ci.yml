@@ -88,6 +88,7 @@ build:test_documentation:
   stage: build
   script:
     - cd build
+    - make
     - source cRacklet_environement.sh
     - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
     - make dev_doc

@@ -84,11 +84,19 @@ build:ubuntu:
   dependencies:
     - configure:ubuntu
 
-build:test_documentation:
-  stage: build
+test:ubuntu:
+  extends:
+  - .tests
+  dependencies:
+  - build:ubuntu
+
+# ----------------------------------------------------------------------------------------
+deploy:test_documentation:
+  stage: deploy
+  dependencies:
+    - build:ubuntu
   script:
     - cd build
-    - make
     - export PYTHONPATH="$PWD/python/cracklet"
     - python -c "import sys; print('\n'.join(sys.path))"
     - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
@@ -97,13 +105,6 @@ build:test_documentation:
     paths:
       - build/doc/html
 
-test:ubuntu:
-  extends:
-  - .tests
-  dependencies:
-  - build:ubuntu
-
-# ----------------------------------------------------------------------------------------
 pages:
   stage: deploy
   dependencies:

@@ -51,8 +51,8 @@ set(PYCRACKLET_SRCS
 pybind11_add_module(py11_cracklet ${PYCRACKLET_SRCS})
 target_include_directories(py11_cracklet
   SYSTEM BEFORE
-  PRIVATE ${PYBIND11_INCLUDE_DIR}                                                           
-  PRIVATE ${pybind11_INCLUDE_DIR}                                                           
+  PRIVATE ${PYBIND11_INCLUDE_DIR}
+  PRIVATE ${pybind11_INCLUDE_DIR}
   PRIVATE ${PYTHON_INCLUDE_DIRS})
 
 target_link_libraries(py11_cracklet PUBLIC cRacklet)

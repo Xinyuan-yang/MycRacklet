@@ -57,7 +57,9 @@ build:docker:
     - cmake --build build/python > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
     - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE
     - cd build
+    - python -c "import sys; print('\n'.join(sys.path))"
     - source cRacklet_environement.sh
+    - python -c "import sys; print('\n'.join(sys.path))"
     - python -c "import cracklet"    
     - make dev_doc
   artifacts:

@@ -87,36 +87,65 @@ void register_spectral_model(py::module& mod) {
 	 "Restart model from restart files")
     .def("sinusoidalLoading",&SpectralModel::sinusoidalLoading,py::arg("min"),
 	 "Set the loading to a sinusoidale shape with the period being the length of the interface")
-    .def("readSpatialLoadingFromFile",&SpectralModel::readSpatialLoadingFromFile)
-    .def("setLoadingCase",&SpectralModel::setLoadingCase,py::arg("load_in"),py::arg("psi"),py::arg("phi"),py::arg("write")=true)
-    .def("setLoadingFromVector",&SpectralModel::setLoadingFromVector)
-    .def("setLoadingShape",&SpectralModel::setLoadingShape)
-    .def("incrementLoad",&SpectralModel::incrementLoad)
-    .def("updateLoads",py::overload_cast<>(&SpectralModel::updateLoads))
-    .def("updateLoads",py::overload_cast<Real *>(&SpectralModel::updateLoads))
-    .def("initInterfaceFields",&SpectralModel::initInterfaceFields)
-    .def("increaseTimeStep",&SpectralModel::increaseTimeStep)	  
-    .def("updateDisplacements",&SpectralModel::updateDisplacements)
-    .def("setDisplacements",&SpectralModel::setDisplacements)
-    .def("setVelocities",&SpectralModel::setVelocities)
-    .def("computeInterfaceFields",&SpectralModel::computeInterfaceFields)
-    .def("fftOnDisplacements",&SpectralModel::fftOnDisplacements)
-    .def("computeStress",&SpectralModel::computeStress)
-    .def("printSelfLoad",&SpectralModel::printSelfLoad)
-    .def("printSel",&SpectralModel::printSelf)
+    .def("readSpatialLoadingFromFile",&SpectralModel::readSpatialLoadingFromFile,py::arg("loading_file"),
+	 "Read loading from a file")
+    .def("setLoadingCase",&SpectralModel::setLoadingCase,py::arg("load_in"),py::arg("psi"),py::arg("phi"),py::arg("write")=true,
+	 "Set the loading based on the norm, and the angles phi (in the plane x,y) and psi (in the plane,x,z)")
+    .def("setLoadingFromVector",&SpectralModel::setLoadingFromVector,py::arg("loading"),
+	 "Set loading from a vector")
+    .def("setLoadingShape",&SpectralModel::setLoadingShape,py::arg("shape"),
+	 "Spatial enveloppe to modifiy the loading shape")
+    .def("incrementLoad",&SpectralModel::incrementLoad,py::arg("increment"),py::arg("loading_direction"),
+	 "Increment uniformly the load in a given direction")
+    .def("updateLoads",py::overload_cast<>(&SpectralModel::updateLoads),
+	 "Update loading case")
+    .def("updateLoads",py::overload_cast<Real *>(&SpectralModel::updateLoads),
+	 "Update point-wise loading conidtions using an uniform constant value per dimension")
+    .def("initInterfaceFields",&SpectralModel::initInterfaceFields,
+	 "Set the initial values of interface fields (strength,traction,velocities) using the interface conditions given in the associated InterfaceLaw")
+    .def("increaseTimeStep",&SpectralModel::increaseTimeStep,
+	 "Launch the registered computers for current time step and increases time step number")	  
+    .def("updateDisplacements",&SpectralModel::updateDisplacements,
+	 "Update displacements with velocities")
+    .def("setDisplacements",&SpectralModel::setDisplacements,py::arg("displ"),py::arg("side"),
+	 "Set displacements fields of one side to a given value")
+    .def("setVelocities",&SpectralModel::setVelocities,py::arg("displ"),py::arg("side"),
+	 "Set displacements fields of one side to a given value")
+    .def("computeInterfaceFields",&SpectralModel::computeInterfaceFields,
+	 "Compute interface fields (strength,traction,velocities) using the interface conditions given in the associated InterfaceLaw")
+    .def("fftOnDisplacements",&SpectralModel::fftOnDisplacements,
+	 "Compute FFT on displacement fields")
+    .def("computeStress",&SpectralModel::computeStress,
+	 "Compute stresses convolution terms by Backward FFT")
+    .def("printSelfLoad",&SpectralModel::printSelfLoad,py::arg("load"),py::arg("psi"),py::arg("phi"),
+	 "Dump the load parameters to simulation summary file")
+    .def("printSelf",&SpectralModel::printSelf,
+	 "Dump the model parameters to simulation summary file")
     // Accessors
-    .def("getTime",&SpectralModel::getTime)
-    .def("getCurrentTimeStep",&SpectralModel::getCurrentTimeStep)
-    .def("getBeta",&SpectralModel::getBeta)
-    .def("getDxMin",&SpectralModel::getDxMin)
-    .def("getShearWaveSpeeds",&SpectralModel::getShearWaveSpeeds)
-    .def("getElementSize",&SpectralModel::getElementSize)
-    .def("getNbElements",&SpectralModel::getNbElements)
-    .def("getNbTimeSteps",&SpectralModel::getNbTimeSteps)
-    .def("getDim",&SpectralModel::getDim)
-    .def("getUniformLoading",&SpectralModel::getUniformLoading)
-    .def("getInterfaceLaw",&SpectralModel::getInterfaceLaw,py::return_value_policy::reference)
-    .def("setInterfaceLaw",&SpectralModel::setInterfaceLaw);
+    .def("getTime",&SpectralModel::getTime,
+	 "Return the current simulation time")
+    .def("getCurrentTimeStep",&SpectralModel::getCurrentTimeStep,
+	 "Return the current simulation time step")
+    .def("getBeta",&SpectralModel::getBeta,
+	 "Return stable time step ratio beta")
+    .def("getDxMin",&SpectralModel::getDxMin,
+	 "Return minimum distance between discretization points")
+    .def("getShearWaveSpeeds",&SpectralModel::getShearWaveSpeeds,
+	 "Return shear wave speeds of the top and bottom material")
+    .def("getElementSize",&SpectralModel::getElementSize,
+	 "Return plane discretization")
+    .def("getNbElements",&SpectralModel::getNbElements,
+	 "Return the number of elements")
+    .def("getNbTimeSteps",&SpectralModel::getNbTimeSteps,
+	 "Return the number of time steps")
+    .def("getDim",&SpectralModel::getDim,
+	 "Return model dimension")
+    .def("getUniformLoading",&SpectralModel::getUniformLoading,
+	 "Return uniform loading vector used to set average interface loading conditions (size=dim)")
+    .def("getInterfaceLaw",&SpectralModel::getInterfaceLaw,py::return_value_policy::reference,
+	 "Get reference to the FractureLaw")
+    .def("setInterfaceLaw",&SpectralModel::setInterfaceLaw,py::arg("itf_law"),
+	 "Set reference to the FractureLaw");
 }
 
 } // namespace cracklet

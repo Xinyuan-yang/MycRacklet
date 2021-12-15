@@ -36,17 +36,17 @@ namespace cracklet {
 void register_cohesive_law(py::module& mod) {
   py::class_<CohesiveLaw,InterfaceLaw>(mod, "CohesiveLaw")
     .def(py::init<>())
-    .def("initInterfaceConditions",&CohesiveLaw::initInterfaceConditions)
-    .def("updateInterfaceConditions",&CohesiveLaw::updateInterfaceConditions)
-    .def("restart",&CohesiveLaw::restart)
-    .def("preventSurfaceOverlapping",&CohesiveLaw::preventSurfaceOverlapping)
+    .def("initInterfaceConditions",&CohesiveLaw::initInterfaceConditions,"Initialize interface fields")
+    .def("updateInterfaceConditions",&CohesiveLaw::updateInterfaceConditions,"Compute interface tractions and velocities in function of the new strength profile")
+    .def("restart",&CohesiveLaw::restart,py::arg("pausing"),py::arg("nele_2d"),"Method used in restart framework but no history-dependant variable within this law")
+    .def("preventSurfaceOverlapping",&CohesiveLaw::preventSurfaceOverlapping,py::arg("contactlaw"),"Prevent the overlapping of the two surfaces and associate a ContactLaw")
 
     .def("correctVelocities",&CohesiveLaw::correctVelocities)
     
     // Accessor
     
-    .def("getNbCohesiveNodes",&CohesiveLaw::getNbCohesiveNodes)
-    .def("getNbBrokenNodes",&CohesiveLaw::getNbBrokenNodes);
+    .def("getNbCohesiveNodes",&CohesiveLaw::getNbCohesiveNodes,"Count the number of elements being part of the process zone (ind_crack = 1)")
+    .def("getNbBrokenNodes",&CohesiveLaw::getNbBrokenNodes,"Count the number of elements being part of the process zone (ind_crack = 2)");
   
 }
 

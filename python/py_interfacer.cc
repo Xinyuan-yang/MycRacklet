@@ -83,7 +83,7 @@ void register_fracture_law_type(py::module&mod){
     std::string class_name = FractureLawToString(F);
     py::class_<Interfacer<F>,DataRegister>(mod,class_name.c_str())
       .def(py::init<SpectralModel&>())
-      .def("createUniformInterface",&Interfacer<F>::createUniformInterface);
+      .def("createUniformInterface",&Interfacer<F>::createUniformInterface,"Create a uniform layer on the entire interface. Required parameters should be registered through the simulation parameters.");
   }
   
   
@@ -92,20 +92,41 @@ void register_fracture_law_type(py::module&mod){
     std::string class_name = FractureLawToString(F);
     py::class_<Interfacer<F>,DataRegister>(mod,class_name.c_str())
       .def(py::init<SpectralModel&>())
-      .def("createUniformInterface",&Interfacer<F>::createUniformInterface)
+      .def("createUniformInterface",&Interfacer<F>::createUniformInterface,"Create a uniform layer on the entire interface. Required parameters should be registered through the simulation parameters.")
       
-      .def("insertPatternfromFile",py::overload_cast<std::string, UInt>(&Interfacer<F>::insertPatternfromFile))
-      .def("insertPatternfromFile",py::overload_cast<std::string, std::string,std::string>(&Interfacer<F>::insertPatternfromFile)) // Create an interface based on three files: one for the strength, the other for the opening, one for the residual (If provided)
-      .def("createNormalDistributedInterface",&Interfacer<F>::createNormalDistributedInterface)
-      .def("createHeterogeneousInterface",&Interfacer<F>::createHeterogeneousInterface,py::arg("crit_nor_opening"),py::arg("max_nor_strength"),py::arg("res_nor_strength")=std::vector<Real>(),py::arg("crit_shr_opening")=std::vector<Real>(),py::arg("max_shr_strength")=std::vector<Real>(),py::arg("res_shr_strength")=std::vector<Real>()) // Create an interface from vectors
-      .def("createThroughArea",&Interfacer<F>::createThroughArea)
-      .def("createThroughCrack",&Interfacer<F>::createThroughCrack)
-      .def("createThroughWall",&Interfacer<F>::createThroughWall)
-      .def("createThroughPolarAsperity",&Interfacer<F>::createThroughPolarAsperity)
-      .def("createThroughMultiPolAsperity",&Interfacer<F>::createThroughMultiPolAsperity)
-      .def("createThroughCenteredCrack",&Interfacer<F>::createThroughCenteredCrack)
-      .def("createThroughLeftSidedCrack",&Interfacer<F>::createThroughLeftSidedCrack)
-      .def("createRightPropagatingCrackRoundAsp",&Interfacer<F>::createRightPropagatingCrackRoundAsp);
+      .def("insertPatternfromFile",py::overload_cast<std::string, UInt>(&Interfacer<F>::insertPatternfromFile),
+	   "Tune interface properties from a text file starting at a given position")
+      .def("insertPatternfromFile",py::overload_cast<std::string, std::string,std::string>(&Interfacer<F>::insertPatternfromFile),"Create an interface from two text files, one for the critical stress the other for the critical opening, and optionally one for the residual strength")
+      .def("createNormalDistributedInterface",&Interfacer<F>::createNormalDistributedInterface,
+	   py::arg("crit_nor_opening"),py::arg("crit_shr_opening"),py::arg("max_nor_strength"),py::arg("max_shr_strength"),py::arg("stddev"),py::arg("seed"), 
+	   "Create an heterogeneous interface following normal distribution of strength")
+      .def("createHeterogeneousInterface",&Interfacer<F>::createHeterogeneousInterface,py::arg("crit_nor_opening"),py::arg("max_nor_strength"),py::arg("res_nor_strength")=std::vector<Real>(),py::arg("crit_shr_opening")=std::vector<Real>(),py::arg("max_shr_strength")=std::vector<Real>(),py::arg("res_shr_strength")=std::vector<Real>(), "Create an heterogeneous interface from vectors") // Create an interface from vectors
+      .def("createThroughArea",&Interfacer<F>::createThroughArea,
+	   py::arg("area_start"),py::arg("area_end"),py::arg("cracking_index"),py::arg("ratio_max_nor_strength")=1,py::arg("ratio_max_shr_strength")=1,py::arg("ratio_max_crit_nor_opening")=1,py::arg("ratio_max_crit_shr_opening")=1,py::arg("variation_rather_than_ratio")=0, 
+	   "create a z-invariant(=through) area between x=start and x=end of given cracking_index and with properties given by new_prop = ratio*current_prop, if variation_rather_than_ratio=0, new_prop = ratio+current_prop, if variation_rather_than_ratio=1")
+      .def("createThroughCrack",&Interfacer<F>::createThroughCrack,
+	   py::arg("crack_start"),py::arg("crack_end"),
+	   "Create a crack between x=crack_start and x=crack_end ")
+      .def("createThroughWall",&Interfacer<F>::createThroughWall,
+	   py::arg("wall_start"),py::arg("wall_end"),
+	   "Create a wall (large thoughness) between x=wall_start and x=wall_end")
+      .def("createThroughPolarAsperity",&Interfacer<F>::createThroughPolarAsperity,
+	   py::arg("position"),py::arg("width"),py::arg("delta_max_nor_strength"),py::arg("delta_max_shr_strength"),py::arg("delta_crit_nor_opening"),py::arg("delta_crit_shr_opening"),py::arg("polarity"),
+	   "Create an asperity made of weaker(-delta) then stronger(+delta) areas at given position and given width")
+      .def("createThroughMultiPolAsperity",&Interfacer<F>::createThroughMultiPolAsperity,
+	   py::arg("start"),py::arg("end"),py::arg("number"),py::arg("delta_max_nor_strength"),py::arg("delta_max_shr_strength"),py::arg("delta_crit_nor_opening"),py::arg("delta_crit_shr_opening"),py::arg("polarity"),
+	   "Create an interface made of multiple weaker(-delta) and stronger(+delta) areas"
+	   )
+      .def("createThroughCenteredCrack",&Interfacer<F>::createThroughCenteredCrack,
+	   py::arg("initial_crack_size"),py::arg("crit_nor_opening"),py::arg("crit_shr_opening"),py::arg("max_nor_strength"),py::arg("max_shr_strength"),
+	   "create an interface with a centered crack")
+      .def("createThroughLeftSidedCrack",&Interfacer<F>::createThroughLeftSidedCrack,
+	   py::arg("initial_crack_size"),py::arg("crit_nor_opening"),py::arg("crit_shr_opening"),py::arg("max_nor_strength"),py::arg("max_shr_strength"),
+	   "Create an interface with a left-sided crack")
+      .def("createRightPropagatingCrackRoundAsp",&Interfacer<F>::createRightPropagatingCrackRoundAsp,
+	   py::arg("initial_crack_size"),py::arg("crit_nor_opening"),py::arg("crit_shr_opening"),py::arg("max_nor_strength"),py::arg("max_shr_strength"),py::arg("radius"),py::arg("asp_ctr"),py::arg("ratio_strength"),py::arg("ratio_crit_open")=1,   
+	   "create right propagating through crack meeting a circular asperity whose strength = ratio_strength*interface_strength and crit_opening = ratio_crit_open*interface_crit_opening"
+	   );
     //.def("createIncohIntfc",&Interfacer<F>::createIncohIntfc);
   }
   

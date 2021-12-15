@@ -42,14 +42,14 @@ namespace cracklet {
   
   void register_simulation_driver(py::module& mod) {
     py::class_<SimulationDriver,DataRegister>(mod, "SimulationDriver")
-      .def(py::init<SpectralModel&, Real>(),py::arg("model_to_drive"),py::arg("beta")=0.0)
+      .def(py::init<SpectralModel&, Real>(),py::arg("model_to_drive"),py::arg("beta")=0.0,"Constructor for the Simulation Driver")
       .def(py::init<SpectralModel&, Real, Real>())
-      .def("initConstantLoading",&SimulationDriver::initConstantLoading)
-      .def("initLoadingFromFile",&SimulationDriver::initLoadingFromFile)
-      .def("initConstantSpeed",&SimulationDriver::initConstantSpeed,py::arg("initial_loading"),py::arg("psi"),py::arg("phi"),py::arg("average_max_stress"),py::arg("spont_crack_length")=0.0,py::arg("load_control")=LoadControlType::_time_control,py::arg("load_upper_bound")=0.9,py::arg("griffith_length")=0.)
-      .def("solveStep",&SimulationDriver::solveStep)
-      .def("writeLoading",&SimulationDriver::writeLoading)
-      .def("launchCrack",&SimulationDriver::launchCrack,py::arg("crack_start"),py::arg("launched_size"),py::arg("v_init"),py::arg("one_side_propagation")=true);
+      .def("initConstantLoading",&SimulationDriver::initConstantLoading,py::arg("cst_loading"),py::arg("psi"),py::arg("phi"),"Init a simulation with constant loading conditions")
+      .def("initLoadingFromFile",&SimulationDriver::initLoadingFromFile,py::arg("loading_file"),py::arg("load_control"),py::arg("initial_loading"),py::arg("psi"),py::arg("phi"),"Init a simulation with evolving loading conditions following loading_file")
+      .def("initConstantSpeed",&SimulationDriver::initConstantSpeed,py::arg("initial_loading"),py::arg("psi"),py::arg("phi"),py::arg("average_max_stress"),py::arg("spont_crack_length")=0.0,py::arg("load_control")=LoadControlType::_time_control,py::arg("load_upper_bound")=0.9,py::arg("griffith_length")=0.,"Initialization before tailoring loading conditions to fix crack speed")
+      .def("solveStep",&SimulationDriver::solveStep,"Solve one time step of the simulation")
+      .def("writeLoading",&SimulationDriver::writeLoading,py::arg("load_file"),"Print tailored loading conditions to file")
+      .def("launchCrack",&SimulationDriver::launchCrack,py::arg("crack_start"),py::arg("launched_size"),py::arg("v_init"),py::arg("one_side_propagation")=true,"Launching artificially a through crack from position crack_start up to a given launched_size by artificially growing it at speed v_init*cs");
   }
   
 } // namespace cracklet

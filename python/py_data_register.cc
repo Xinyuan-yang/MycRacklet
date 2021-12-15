@@ -80,30 +80,54 @@ void register_data_register(py::module& mod) {
   py::class_<DataRegister>(mod, "DataRegister")
     .def(py::init<>())
     .def_readwrite_static("restart_dir",&DataRegister::restart_dir)
-    .def("readData",&DataRegister::readData)
-    .def("registerParameterReal",&DataRegister::registerParameter<Real>)
-    .def("registerParameterInt",&DataRegister::registerParameter<UInt>)
-    .def("registerParameterString",&DataRegister::registerParameter<std::string>)
-    .def("readInputFile",&DataRegister::readInputFile)
-    .def("getParameterReal",&DataRegister::getParameter<Real>)
-    .def("getParameterInt",&DataRegister::getParameter<UInt>)
-    .def("getParameterString",&DataRegister::getParameter<std::string>)
-    .def("registerComputer",&DataRegister::registerComputer)
-    .def("getComputer",&DataRegister::getComputer)
-    .def("getCrackTipPosition",&DataRegister::getCrackTipPosition,py::arg(),py::arg("z_pos")=0)
-    .def("getTopVelocities",&DataRegister::getTopVelocities,py::return_value_policy::reference)
-    .def("getBotVelocities",&DataRegister::getBotVelocities,py::return_value_policy::reference)
-    .def("getShearVelocityJumps",&DataRegister::getShearVelocityJumps,py::return_value_policy::reference)
-    .def("getNormalVelocityJumps",&DataRegister::getNormalVelocityJumps,py::return_value_policy::reference)
-    .def("getTopDisplacements",&DataRegister::getTopDisplacements,py::return_value_policy::reference)
-    .def("getBotDisplacements",&DataRegister::getBotDisplacements,py::return_value_policy::reference)
-    .def("getShearDisplacementJumps",&DataRegister::getShearDisplacementJumps,py::return_value_policy::reference)
-    .def("getNormalDisplacementJumps",&DataRegister::getNormalDisplacementJumps,py::return_value_policy::reference)
-    .def("getInterfaceTractions",&DataRegister::getInterfaceTractions,py::return_value_policy::reference)
-    .def("getTopDynamicStresses",&DataRegister::getTopDynamicStresses,py::return_value_policy::reference)
-    .def("getBotDynamicStresses",&DataRegister::getBotDynamicStresses,py::return_value_policy::reference)
-    .def("getTopLoading",&DataRegister::getTopLoading,py::return_value_policy::reference)
-    .def("getBotLoading",&DataRegister::getBotLoading,py::return_value_policy::reference)
+    .def("readData",&DataRegister::readData,
+	 "Access to a given field returned in the type DataTypes")
+    .def("registerParameterReal",&DataRegister::registerParameter<Real>,
+	 "Register a global simulation parameter, whose type is a float")
+    .def("registerParameterInt",&DataRegister::registerParameter<UInt>,
+	 "Register a global simulation parameter, whose type is an integer")
+    .def("registerParameterString",&DataRegister::registerParameter<std::string>,
+	 "Register a global simulation parameter, whose type is a string")
+    .def("readInputFile",&DataRegister::readInputFile,
+	 "Register a set of global parameters from input file")
+    .def("getParameterReal",&DataRegister::getParameter<Real>,
+	 "Get the value of a simulation parameter, whose type is a float")
+    .def("getParameterInt",&DataRegister::getParameter<UInt>,
+	 "Get the value of a simulation parameter, whose type is an integer")
+    .def("getParameterString",&DataRegister::getParameter<std::string>,
+	 "Get the value of a simulation parameter, whose type is a string")
+    .def("registerComputer",&DataRegister::registerComputer,
+	 "Register a computer object with a given name")
+    .def("getComputer",&DataRegister::getComputer,
+	 "Access a registered computer object")
+    .def("getCrackTipPosition",&DataRegister::getCrackTipPosition,py::arg(),py::arg("z_pos")=0,
+	 "Method returning current crack position searched between x_start and x_end (looking for the first point with state == 2)")
+    .def("getTopVelocities",&DataRegister::getTopVelocities,py::return_value_policy::reference,
+	 "Direct access to top velocities")
+    .def("getBotVelocities",&DataRegister::getBotVelocities,py::return_value_policy::reference,
+	 "Direct access to bottom velocities")
+    .def("getShearVelocityJumps",&DataRegister::getShearVelocityJumps,py::return_value_policy::reference,
+	 "Direct access to shear velocity jumps")
+    .def("getNormalVelocityJumps",&DataRegister::getNormalVelocityJumps,py::return_value_policy::reference,
+	 "Direct access to normal velocity jumps")
+    .def("getTopDisplacements",&DataRegister::getTopDisplacements,py::return_value_policy::reference,
+	 "Direct access to top displacements")
+    .def("getBotDisplacements",&DataRegister::getBotDisplacements,py::return_value_policy::reference,
+	 "Direct access to bottom displacements")
+    .def("getShearDisplacementJumps",&DataRegister::getShearDisplacementJumps,py::return_value_policy::reference,
+	 "Direct access to shear displacements jumps")
+    .def("getNormalDisplacementJumps",&DataRegister::getNormalDisplacementJumps,py::return_value_policy::reference,
+	 "Direct access to normal displacements jumps")
+    .def("getInterfaceTractions",&DataRegister::getInterfaceTractions,py::return_value_policy::reference,
+	 "Direct access to interface tractions")
+    .def("getTopDynamicStresses",&DataRegister::getTopDynamicStresses,py::return_value_policy::reference,
+	 "Direct access to top dynamic stresses")
+    .def("getBotDynamicStresses",&DataRegister::getBotDynamicStresses,py::return_value_policy::reference,
+	 "Direct access to bottom dynamic stresses")
+    .def("getTopLoading",&DataRegister::getTopLoading,py::return_value_policy::reference,
+	 "Direct access to top loading")
+    .def("getBotLoading",&DataRegister::getBotLoading,py::return_value_policy::reference,
+	 "Direct access to bottom loading")
 ;
   
 }

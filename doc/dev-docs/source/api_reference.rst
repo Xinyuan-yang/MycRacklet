@@ -10,73 +10,65 @@ Python API
 
    .. automethod:: __init__
 
-.. autoclass:: cracklet.SimulationDriver
+.. autoclass:: py11_cracklet.SimulationDriver
    :members:
    :show-inheritance:
 
    .. automethod:: __init__
       
 cracklet Interface Laws
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: cracklet.CohesiveLaw
+.. autoclass:: py11_cracklet.CohesiveLaw
    :members:
    :show-inheritance:
 
    .. automethod:: __init__
       
-.. autoclass:: cracklet.InterfacerLinearCoupledCohesive
+.. autoclass:: py11_cracklet.InterfacerLinearCoupledCohesive
    :members:
    :show-inheritance:
       
-.. autoclass:: cracklet.RateAndStateLaw
+.. autoclass:: py11_cracklet.RateAndStateLaw
    :members:
    :show-inheritance:
       
 cracklet Interfacer
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
       
-.. autoclass:: cracklet.InterfacerRateAndState
-   :members: createUniformInterface
+.. autoclass:: py11_cracklet.InterfacerRateAndState
+   :members:
    :show-inheritance:
 
-.. autoclass:: cracklet.InterfacerRegularizedRateAndState
+.. autoclass:: py11_cracklet.InterfacerRegularizedRateAndState
    :members:
    :show-inheritance:
       
-.. autoclass:: cracklet.InterfacerWeakeningRateAndState
+.. autoclass:: py11_cracklet.InterfacerWeakeningRateAndState
    :members:
    :show-inheritance:
       
 cracklet Contact Laws
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
       
-.. autoclass:: cracklet.CoulombLaw
+.. autoclass:: py11_cracklet.CoulombLaw
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
 
-.. autoclass:: cracklet.RegularizedCoulombLaw
+.. autoclass:: py11_cracklet.RegularizedCoulombLaw
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
 
 cracklet Dumper and Data Management
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: cracklet.DataRegister
+.. autoclass:: py11_cracklet.DataRegister
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
 
-.. autoclass:: cracklet.DataDumper
+.. autoclass:: py11_cracklet.DataDumper
    :members:
-   :undoc-members:
    :show-inheritance:
-   :inherited-members:
 
 C++ API
 -------
@@ -88,7 +80,7 @@ C++ API
    :members:
 
 cracklet Interface Laws
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
       
 .. doxygenclass:: InterfaceLaw
    :members:
@@ -139,8 +131,8 @@ C++ API
 .. doxygenclass:: SimulationDriver
    :members:
 
-cracklet Interface Laws
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Interface Laws
+^^^^^^^^^^^^^^
       
 .. doxygenclass:: InterfaceLaw
    :members:
@@ -153,14 +145,14 @@ cracklet Interface Laws
 .. doxygenclass:: RateAndStateLaw
    :members:
 
-cRacklet Interfacer
-^^^^^^^^^^^^^^^^^^^      
+Interfacer
+^^^^^^^^^^
 
 .. doxygenclass:: Interfacer
    :members:
       
-cRacklet Contact Laws
-^^^^^^^^^^^^^^^^^^^^^
+Contact Laws
+^^^^^^^^^^^^
 
 .. doxygenclass:: ContactLaw
    :members:
@@ -171,8 +163,8 @@ cRacklet Contact Laws
 .. doxygenclass:: RegularizedCoulombLaw
    :members:
 
-cRacklet Dumper and Data Management
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Dumper and Data Management
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenclass:: DataRegister
    :members:

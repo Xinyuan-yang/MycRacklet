@@ -226,7 +226,7 @@ public:
   void incrementLoad(Real increment,UInt loading_direction);
   // Set loading case using a pre-computed loading file
   // Real setLoadingCase(std::string loading_file, Real psi, Real phi);
-  /// update loading case
+  /// Update loading case
   void updateLoads();
   // Update point-wise loading conidtions using an uniform constant value per dimension  
   void updateLoads(Real * loading_per_dim);
@@ -247,7 +247,7 @@ public:
       using the interface conditions given in the associated InterfaceLaw
   */
   void computeInterfaceFields();
-  /// Compute FFT on displacement feelds
+  /// Compute FFT on displacement fields
   void fftOnDisplacements();
   /// Compute stresses convolution terms by Backward FFT
   void computeStress();

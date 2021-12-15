@@ -182,7 +182,7 @@ public:
   /** insert perturbation from a given file to the state field
    */
   void insertPerturbationFromFile(std::string input_file);
-  /** Method used in restart framework which still need to be implemented for the R&S law
+  /** Method used in restart framework
    */
   void restart(bool pausing=false, UInt nele_2d=0);
     

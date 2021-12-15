@@ -125,8 +125,7 @@ public:
 					Real max_nor_strength, 
 					Real max_shr_strength,
 					Real stddev, Real seed);
-  /** For the linear coupled cohesive law: create a z-invariant(="through") area between x=start and x=end of given 
-      cracking_index and with properties given by
+  /** For the linear coupled cohesive law: create a z-invariant(="through") area between x=start and x=end of given cracking_index and with properties given by
       new_prop = ratio*current_prop, if variation_rather_than_ratio=0,
       new_prop = ratio+current_prop, if variation_rather_than_ratio=1
       @param area_start : starting position of the area
@@ -145,7 +144,7 @@ public:
 			 Real ratio_crit_nor_opening=1., 
 			 Real ratio_crit_shr_opening=1.,
 			 bool variation_rather_than_ratio=0);
-  /** For the linear coupled cohesive law: create a crack between x=crack_start and x=crack_end) 
+  /** For the linear coupled cohesive law: create a crack between x=crack_start and x=crack_end
       @param crack_start : starting position of the area
       @param crack_end : starting position of the area
   */

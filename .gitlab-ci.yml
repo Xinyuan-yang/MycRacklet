@@ -61,7 +61,7 @@ build:docker:
     - python -c "import cracklet"    
     - make dev_doc
   artifacts:
-    when: on_success
+    when: always
     paths:
       - build
     expire_in: 10h

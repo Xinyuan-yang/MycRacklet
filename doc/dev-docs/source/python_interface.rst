@@ -1,8 +1,8 @@
 Python interface
 ================
 
-Compile the library
--------------------
+Compile the library from sources
+--------------------------------
 
 In order to use the python interface build for cRacklet, you need pybind11 and python3.
 
@@ -10,11 +10,18 @@ During configuration, activate **CRACKLET_PYTHON_INTERFACE**. Running::
 
   make
 
-in **build** folder will compile the python library called py11_cracklet in **build/python/** folder. Please add this path to your python path. Otherwise you can do ::
+in **build** folder will compile the python library called cracklet in **build/python/** folder. Please add this path to your python path. Otherwise you can do ::
 
   make install
   
 You can activate the python examples with the option **CRACKLET_EXAMPLES_PYTHON**.
+
+Install via pip
+---------------
+
+Alternatively, one can install cracklet using pip. The last version of the package can be installed with::
+
+  pip install cracklet --extra-index-url https://gitlab.com/api/v4/projects/25914378/packages/pypi/simple
 
 Use the python interface
 ------------------------
@@ -37,7 +44,7 @@ The parameters can be registered using :py:func:`RegisterParameterReal <py11_cra
   cracklet.DataRegister.registerParameterReal("critical_shear_opening",crit_s_open)
   cracklet.DataRegister.registerParameterReal("max_normal_strength",max_n_str)
   cracklet.DataRegister.registerParameterReal("max_shear_strength",max_s_str)
-  interfacer = py11_cracklet.InterfacerLinearCoupledCohesive(model)    
+  interfacer = cracklet.InterfacerLinearCoupledCohesive(model)    
   interfacer.createUniformInterface()
   interfacer.createThroughCrack(crack_start,crack_end)
 
@@ -48,7 +55,7 @@ The loading can then be initiated with::
 The :py:class:`DataDumper <py11_cracklet.DataDumper>` is used to dump the interfacial fields that are available in :py:obj:`DataFields <py11_cracklet.DataFields>` ::
    
   dumper = DataDumper(model)
-  dumper.initDumper(output_file,py11_cracklet.DataFields._top_displacements)
+  dumper.initDumper(output_file,cracklet.DataFields._top_displacements)
 
 One can then solve a step with ::
   

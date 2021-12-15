@@ -1,11 +1,12 @@
-#===============================================================================
-# @file   CMakeLists.txt
+#!/usr/bin/env python3
+
+# @file   fixtures.py
 #
 # @author Thibault Roch <thibault.roch@epfl.ch>
 #
-# @date   Fri Jan 29 17:27:10 2021
+# @date   Wed Dec 15 15:02:10 2021
 #
-# @brief  configuration file of cRacklet python interface test
+# @brief  fixtures for pytest
 #
 # @section LICENSE
 #
@@ -32,13 +33,34 @@
 
 #===============================================================================
 
-include_directories (${cRacklet_SOURCE_DIR}/src)
-copy_kernel_files(33 FALSE)
+import pytest
+import numpy as np
+import cracklet as cra
 
-configure_file(fixtures.py fixtures.py COPYONLY)
+# Create a fixture model class for a 2D interface
+@pytest.fixture
+def model_2D():
+    nb_time_steps = 100
+    nb_x = 512
+    dom_size = 1
+    nu = 0.33
+    E = 5.3e9
+    cs = 1263
+    tcut = 100
+    model = cra.SpectralModel(nb_x,nb_time_steps,dom_size,nu,E,cs,tcut,"Fixture 2D Model")
+    return model
 
-register_cRacklet_test(test_pybind_2d "Python Interface for 2D model"
-  PYTHON)
-
-register_cRacklet_test(test_pybind_3d "Python Interface for 3D model"
-  PYTHON)
+# Create a fixture model class for a 3D interface
+@pytest.fixture
+def model_3D():
+    nb_time_steps = 100
+    nb_x = 512
+    nb_z = 32
+    dom_size_x = 1
+    dom_size_z = 0.0625
+    nu = 0.33
+    E = 5.3e9
+    cs = 1263
+    tcut = 100
+    model = cra.SpectralModel([nb_x,nb_z],nb_time_steps,[dom_size_x,dom_size_z],nu,E,cs,tcut,"Fixture 2D Model")
+    return model

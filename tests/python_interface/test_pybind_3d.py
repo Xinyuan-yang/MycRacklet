@@ -1,11 +1,12 @@
-#===============================================================================
-# @file   CMakeLists.txt
+#!/usr/bin/env python3
+
+# @file   test_pybind_3d.py
 #
 # @author Thibault Roch <thibault.roch@epfl.ch>
 #
 # @date   Fri Jan 29 17:27:10 2021
 #
-# @brief  configuration file of cRacklet python interface test
+# @brief  pytest for 3D interfaces
 #
 # @section LICENSE
 #
@@ -32,13 +33,27 @@
 
 #===============================================================================
 
-include_directories (${cRacklet_SOURCE_DIR}/src)
-copy_kernel_files(33 FALSE)
+import sys
+import pytest
+import numpy as np
+import cracklet as cra
+from fixtures import model_3D
 
-configure_file(fixtures.py fixtures.py COPYONLY)
+def test_creation_model_3D(model_3D):
 
-register_cRacklet_test(test_pybind_2d "Python Interface for 2D model"
-  PYTHON)
+    sim_driver = cra.SimulationDriver(model_3D);
 
-register_cRacklet_test(test_pybind_3d "Python Interface for 3D model"
-  PYTHON)
+    beta = 0.2 # By default
+    time = 0 / 512 / 1263 * beta
+    
+    assert([512,32] == model_3D.getNbElements())
+    assert(time == model_3D.getTime())
+    assert(0 == model_3D.getCurrentTimeStep())
+
+    dx = 1 / 512
+    
+    assert([dx,dx] == model_3D.getElementSize())
+    assert(3 == model_3D.getDim())
+
+if __name__ == "__main__":
+    pytest.main(sys.argv)

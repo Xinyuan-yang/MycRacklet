@@ -55,13 +55,6 @@ build:docker:
     - cmake --build build/examples > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
     - cmake --build build/tests > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
     - cmake --build build/python > >(tee -a ubuntu-out.log) 2> >(tee -a ubuntu-err.log >&2)
-    - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE
-    - cd build
-    - python3 -c "import sys; print('\n'.join(sys.path))"
-    - source cRacklet_environement.sh
-    - python3 -c "import sys; print('\n'.join(sys.path))"
-    - python3 -c "import cracklet"    
-    - make dev_doc
   artifacts:
     when: always
     paths:
@@ -104,8 +97,7 @@ deploy:test_documentation:
     - build:ubuntu
   script:
     - cd build
-    - export PYTHONPATH="$PWD/python/cracklet"
-    - python -c "import sys; print('\n'.join(sys.path))"
+    - source cRacklet_environement.sh
     - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
     - make dev_doc
   artifacts:
@@ -118,6 +110,7 @@ pages:
     - build:ubuntu
   script:
     - cd build
+    - source cRacklet_environement.sh
     - cmake -DCRACKLET_DOCUMENTATION:BOOL=TRUE ..
     - make dev_doc
     - mv doc/html ../public

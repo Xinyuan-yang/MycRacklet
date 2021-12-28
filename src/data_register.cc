@@ -355,6 +355,21 @@ UInt DataRegister::getCrackTipPosition(UInt x_start, UInt x_end, UInt z_pos) {
 }
 
 /* -------------------------------------------------------------------------- */
+UInt DataRegister::getCohesiveTipPosition(UInt x_start, UInt x_end, UInt z_pos) {
+
+  UInt nb_x = n_ele[0];
+  
+  UInt x_tip=x_start;
+
+  const std::vector<UInt> * ind_crack = readData(_id_crack);
+
+  while (((*ind_crack)[x_tip+z_pos*nb_x]==1)&&(x_tip<x_end))
+    ++x_tip;
+  
+  return x_tip;
+}
+
+/* -------------------------------------------------------------------------- */
 void Integrator::integrate(Real time){
 
   Real dt = time - t_old;

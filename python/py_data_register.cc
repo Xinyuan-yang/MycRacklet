@@ -102,6 +102,8 @@ void register_data_register(py::module& mod) {
 	 "Access a registered computer object")
     .def("getCrackTipPosition",&DataRegister::getCrackTipPosition,py::arg(),py::arg("z_pos")=0,
 	 "Method returning current crack position searched between x_start and x_end (looking for the first point with state == 2)")
+    .def("getCohesiveTipPosition",&DataRegister::getCohesiveTipPosition,py::arg(),py::arg("z_pos")=0,
+	 "Method returning current cohesive tip position searched between x_start and x_end (looking for the last point with state == 1)")
     .def("getTopVelocities",&DataRegister::getTopVelocities,py::return_value_policy::reference,
 	 "Direct access to top velocities")
     .def("getBotVelocities",&DataRegister::getBotVelocities,py::return_value_policy::reference,

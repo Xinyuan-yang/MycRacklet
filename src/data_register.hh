@@ -227,6 +227,12 @@ public:
       @param z_pos (UInt) : z index for 3D simulation. By default the position of the tip is investigated along z = 0
    */
   static UInt getCrackTipPosition(UInt x_start, UInt x_end, UInt z_pos=0);
+  /** Method returning current cohesive tip position searched between x_start and x_end (looking for the last point with state == 1). Note that the x_start should be already in the process zone, so use the getCrackTipPosition first to find the beginning of the process zone
+      @param x_start (UInt) : index of the first element to start looking for the cohesive tip position.
+      @param x_end (UInt) : index of the last element to look for the tip position
+      @param z_pos (UInt) : z index for 3D simulation. By default the position of the tip is investigated along z = 0
+   */
+  static UInt getCohesiveTipPosition(UInt x_start, UInt x_end, UInt z_pos=0);
   /// Method used in restart framework to load/export a vector from/to a data_file 
   /// pausing=true->generate restart data_file | pausing=false->load vector from existing data_file
   /// If 3d simulation is restarted from 2d one, specify the number of elements along x (nele_2d=nele_x)

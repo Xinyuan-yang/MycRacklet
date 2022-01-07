@@ -102,7 +102,7 @@ option(CRACKLET_PYTHON_INTERFACE "Activate python binding" OFF)
 
 if(CRACKLET_PYTHON_INTERFACE)
   find_package(PythonInterp 3)
-  add_external_package(pybind11 VERSION 2.2.5 CONFIG)
+  add_external_package(pybind11 VERSION 2.2.4 CONFIG)
   add_subdirectory(python)
 endif()
 

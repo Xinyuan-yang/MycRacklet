@@ -102,8 +102,39 @@ The slip law proposed by `Ruina (1983) <https://doi.org/10.5194/npg-15-1-2008>`_
 
 .. math::
    g(\phi) = - \frac{v \phi}{D} \log \left( \frac{v \phi}{D} \right)
-
-:cpp:enum:`FractureLawType <_rate_and_state>`
    
-Friction law
-------------
+Custom interface law
+--------------------
+
+If you want to use a constitutive law that is not implemented in cRacklet, you will need to code it in C++. Please consider creating a merge request for your contribution in GitLab with appropriate documentation if you think that the constitutive behavior you implemented could be used by the community.
+
+
+If you want to add an evolution law or a friction law that is part of the rate and state framework (depends on a state variable and the sliding velocity), you can define a simple *Struct* as done in the file *rate_and_state_formulations.hh*.
+
+Adding a rate and state evolution law
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For an evolution law, you need to define the evolution law :math:`g(\phi)` as the operator () and the evaluation of :math:`g(\phi)` in steady state as the method getSteadyState. In addition, you will need to create an initialization function for the class :cpp:class:`RateAndStateLaw <RateAndStateLaw>` that allocates a shared pointer to an object of your new "struct" (should be similar to :cpp:func:`initStateEvolution <RateAndStateLaw::initStateEvolution>`).
+
+Adding a rate and state friction law
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For a friction law, you need to define the friction law :math:`f(v,\phi)` as the operator (), the derivative of the friction coefficient with respect to the velocity :math:`\partial f(v,\phi) / \partial v` as the method getTangent, the derivative of the steady-state friction coefficient with respect to the steady velocity :math:`\partial f(v_{ss}) / \partial v_{ss}` as the method getSteadyTangent, and a method that computes the state value satisfying steady state as getStableState.
+In addition, an initialization function for the class :cpp:class:`RateAndStateLaw <RateAndStateLaw>` that allocates a shared pointer to an object of your new "struc" should be defined, similarly to :cpp:func:`initStandardFormulation <RateAndStateLaw::initStandardFormulation>`.
+
+To create the interface itself, you should create a new entry in the enum :cpp:enum:`FractureLawType <FractureLawType>` with your new law, and create a templated version of the method :cpp:func:`createUniformInterface <Interfacer::createUniformInterface>` and :cpp:func:`createHeterogeneousInterface <Interfacer::createHeterogeneousInterface>` for the class :cpp:class:`Interfacer`. 
+
+Creating a custom constitutive law
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you want to define a constitutive law that is neither a cohesive law (strength depends only on opening) nor is defined in the rate and state framework (friction depends on velocity and a state variable), you will need to create a new class. This class should inherit from :cpp:class:`InterfaceLaw` and you need to define the following method:
+
+- :cpp:func:`initInterfaceConditions <InterfaceLaw::initInterfaceConditions>`: computes the interface fields for the initial conditions.
+- :cpp:func:`updateInterfaceConditions <InterfaceLaw::updateInterfaceConditions>`: computes the interface fields after the displacement has been updated according to the explicit time stepping and the dynamic stresses computed based on the displacement history.
+- :cpp:func:`restart <InterfaceLaw::restart>`: save or load the fields required to restart a simulation. This should only concern additional fields used for the constitutive behavior implemented, as the displacement and velocity fields are handled by the mother class.
+
+To solve for the interface fields, you can take inspiration from the classes :cpp:class:`CohesiveLaw` or :cpp:class:`RateAndStateLaw`.
+With the class :cpp:class:`CohesiveLaw`, the system is well defined and the velocity is directly expressed in terms of the loading, the dynamic stresses and the material parameters. The normal and shear velocities are computed independently. The strength of the interface has to be evaluated against the stress to assess if interface opening is occuring.
+The :cpp:class:`RateAndStateLaw` however uses an iterative Newton-Raphson procedure to find the value of the velocity and the state variable to satisfy that the interfacial stress is always equal to the strength.
+
+To create the interface itself, you should create a new entry in the enum :cpp:enum:`FractureLawType <FractureLawType>` with your new law, and create a templated version of the method :cpp:func:`createUniformInterface <Interfacer::createUniformInterface>` and :cpp:func:`createHeterogeneousInterface <Interfacer::createHeterogeneousInterface>` for the class :cpp:class:`Interfacer`.

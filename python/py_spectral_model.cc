@@ -97,8 +97,8 @@ void register_spectral_model(py::module& mod) {
 	 "Spatial enveloppe to modifiy the loading shape")
     .def("incrementLoad",&SpectralModel::incrementLoad,py::arg("increment"),py::arg("loading_direction"),
 	 "Increment uniformly the load in a given direction")
-    .def("updateLoads",py::overload_cast<>(&SpectralModel::updateLoads),
-	 "Update loading case")
+    // .def("updateLoads",py::overload_cast<>(&SpectralModel::updateLoads),
+    // "Update loading case")
     .def("updateLoads",py::overload_cast<Real *>(&SpectralModel::updateLoads),
 	 "Update point-wise loading conidtions using an uniform constant value per dimension")
     .def("initInterfaceFields",&SpectralModel::initInterfaceFields,

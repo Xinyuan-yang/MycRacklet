@@ -59,9 +59,9 @@ void register_rate_and_state_law(py::module& mod) {
     // Compute the next velocity for imposed vBC
     .def("computeNextAverageVelocity",&RateAndStateLaw::computeNextAverageVelocity,
 	 "Compute the interface conditions but do not update them! (Used in pseudo-velocity driven systems) and return the average velocity of the next (fictious) step.")
-    .def("perturbState",py::overload_cast<Real,Real>(&RateAndStateLaw::perturbState),py::arg("epsilon"),py::arg("k"),
+    .def("perturbState",[](RateAndStateLaw & self, Real epsilon, Real k) {self.perturbState(epsilon,k);},
 	 "perturb the state variable by adding a sinusoidale perturbation")
-    .def("perturbState",py::overload_cast<std::vector<Real>>(&RateAndStateLaw::perturbState),py::arg("perturbation"),
+    .def("perturbState",[](RateAndStateLaw & self, std::vector<Real> perturbation) {self.perturbState(perturbation);},
 	 "perturbe the state variable by adding a vector to it")
     .def("insertPerturbationPatch",&RateAndStateLaw::insertPerturbationPatch,
 	 py::arg("patch_limits"),py::arg("new_rate"),
@@ -69,11 +69,9 @@ void register_rate_and_state_law(py::module& mod) {
     .def("insertGaussianPerturbation",&RateAndStateLaw::insertGaussianPerturbation,
 	 py::arg("std_dev"),py::arg("amplitude"),
 	 "Insert gaussian perturbation in the velocity field")
-    .def("insertSkewedPerturbation",py::overload_cast<Real, Real, Real, Real>(&RateAndStateLaw::insertSkewedPerturbation),
-	 py::arg("std_dev"),py::arg("amplitude"),py::arg("alpha"),py::arg("rel_loc")=0.5,
+    .def("insertSkewedPerturbation",[](RateAndStateLaw & self, Real std_dev, Real amplitude, Real alpha, Real rel_loc = 0.5) {self.insertSkewedPerturbation(std_dev,amplitude,alpha,rel_loc); },
 	 "Insert a skewed perturbation in the velocity field. The maximum of the perturbation is given by the amplitude")
-    .def("insertSkewedPerturbation",py::overload_cast<std::vector<Real>,std::vector<Real>,std::vector<Real>,std::vector<Real> >(&RateAndStateLaw::insertSkewedPerturbation),
-	 py::arg("std_dev"),py::arg("amplitude"),py::arg("alpha"),py::arg("rel_loc"),
+    .def("insertSkewedPerturbation",[](RateAndStateLaw & self, std::vector<Real> std_dev, std::vector<Real> amplitude, std::vector<Real> alpha, std::vector<Real> rel_loc) {self.insertSkewedPerturbation(std_dev,amplitude,alpha,rel_loc);},
 	 "Insert a skewed perturbation in the velocity field. The maximum of the perturbation is given by the amplitude")
     .def("restart",&RateAndStateLaw::restart,
 	 "Method used in restart framework");

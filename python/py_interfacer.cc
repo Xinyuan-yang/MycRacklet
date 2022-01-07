@@ -94,9 +94,12 @@ void register_fracture_law_type(py::module&mod){
       .def(py::init<SpectralModel&>())
       .def("createUniformInterface",&Interfacer<F>::createUniformInterface,"Create a uniform layer on the entire interface. Required parameters should be registered through the simulation parameters.")
       
-      .def("insertPatternfromFile",py::overload_cast<std::string, UInt>(&Interfacer<F>::insertPatternfromFile),
-	   "Tune interface properties from a text file starting at a given position")
-      .def("insertPatternfromFile",py::overload_cast<std::string, std::string,std::string>(&Interfacer<F>::insertPatternfromFile),"Create an interface from two text files, one for the critical stress the other for the critical opening, and optionally one for the residual strength")
+      .def("insertPatternfromFile",[](Interfacer<F> & self, std::string filename, UInt origin=0) {self.insertPatternfromFile(filename,origin);
+				   },
+	"Tune interface properties from a text file starting at a given position")
+      .def("insertPatternfromFile",[](Interfacer<F> & self, std::string file_strength, std::string file_opening, std::string file_residual = "None") {self.insertPatternfromFile(file_strength,file_opening,file_residual);
+				   },
+	"Create an interface from two text files, one for the critical stress the other for the critical opening, and optionally one for the residual strength")
       .def("createNormalDistributedInterface",&Interfacer<F>::createNormalDistributedInterface,
 	   py::arg("crit_nor_opening"),py::arg("crit_shr_opening"),py::arg("max_nor_strength"),py::arg("max_shr_strength"),py::arg("stddev"),py::arg("seed"), 
 	   "Create an heterogeneous interface following normal distribution of strength")

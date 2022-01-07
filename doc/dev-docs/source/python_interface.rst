@@ -1,3 +1,5 @@
+.. _python-interface:
+
 Python interface
 ================
 

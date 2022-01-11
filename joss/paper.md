@@ -38,7 +38,7 @@ The study of dynamically propagating rupture along interfaces is of prime import
 
 # Statement of need
 
-`cRacklet` is a C++ library with a Python interface [@pybind11] initiated as a collaboration between the Computational Solid Mechanics Laboratory at EPFL and the Department of Aerospace Engineering of the University of Illinois at Urbana-Champaign.  `cRacklet` implements a spectral formulation of the elastodynamics boundary integral relations between the displacements and the corresponding traction stress acting at a planar interface between two homogeneous elastic solids [@geubelle_spectral_1995], [@breitenfeld_numerical_1998]. The formulation implemented is the *independent* one, which considers the top and bottom solids separately [@breitenfeld_numerical_1998]. The stresses acting at the interface are related to the history of interfacial displacements via a time convolution evaluated in the Fourier domain. The convolutions are efficiently computed within a shared-memory parallel framework using FFTW3/OpenMP. The prescription of an interfacial behavior allows for solving the continuity of tractions and displacements through the interface. Time integration is achieved using an explicit time-stepping scheme. `cRacklet` is aimed at researchers interested in interfacial dynamics, ranging from nucleation problems to dynamic propagation of rupture fronts. While the spectral boundary integral formulation is a well-established method that has been extensively referenced in the literature [@MDSBI], [@UGUCA], we believe that `cRacklet` will be a useful addition to the community by gathering in the same framework various kinds of interfacial problems and constitutive laws, and by offering an easy to handle software thanks to its python interface. `cRacklet` is efficient, accessible (C++ or Python), and suited to study a broad class of problems (fracture and friction). We wish that `cRacklet` will become a link between model developers and users by providing both adaptability and usability.
+`cRacklet` is a C++ library with a Python interface [@pybind11] initiated as a collaboration between the Computational Solid Mechanics Laboratory at EPFL and the Department of Aerospace Engineering of the University of Illinois at Urbana-Champaign.  `cRacklet` implements a spectral formulation of the elastodynamics boundary integral relations between the displacements and the corresponding traction stress acting at a planar interface between two homogeneous elastic solids [@geubelle_spectral_1995], [@breitenfeld_numerical_1998]. The formulation implemented is the *independent* one, which considers the top and bottom solids separately [@breitenfeld_numerical_1998]. The stresses acting at the interface are related to the history of interfacial displacements via a time convolution evaluated in the Fourier domain. The convolutions are efficiently computed within a shared-memory parallel framework using FFTW3/OpenMP. The prescription of an interfacial behavior allows for solving the continuity of tractions and displacements through the interface. Time integration is achieved using an explicit time-stepping scheme. `cRacklet` is aimed at researchers interested in interfacial dynamics, ranging from nucleation problems to dynamic propagation of rupture fronts. While the spectral boundary integral formulation is a well-established method that has been extensively referenced in the literature [@MDSBI], [@UGUCA], we believe that `cRacklet` will be a useful addition to the community by gathering in the same framework various kinds of interfacial problems and constitutive laws, and by offering an easy to handle software thanks to its python interface. `cRacklet` is efficient, accessible (C++ or Python), and suited to study a broad class of [problems](https://gitlab.com/cracklet/cracklet/-/tree/master/examples) (fracture and friction). We wish that `cRacklet` will become a link between model developers and users by providing both adaptability and usability.
 
 # Features
 
@@ -64,29 +64,7 @@ The successive panels of \autoref{fig:evolution} illustrate the nucleation and p
 
 # Publications
 
-The following publications have been made possible with `cRacklet`:
-
-- @barras_study_2014
-
-- @barras_interplay_2017
-
-- @barras_supershear_2018
-
-- @brener_unstable_2018
-
-- @barras_emergence_2019
-
-- @barras_emergence_2020
-
-- @fekak_crack_2020
-
-- @rezakhani_finite_2020
-
-- @brener_unconventional_2021
-
-- @lebihain_instability_2021
-
-- @roch_velocity_2021
+The following publications have been made possible with `cRacklet`: @barras_study_2014, @barras_interplay_2017, @barras_supershear_2018, @brener_unstable_2018, @barras_emergence_2019, @barras_emergence_2020, @fekak_crack_2020, @rezakhani_finite_2020, @brener_unconventional_2021, @lebihain_earthquake_2021, @roch_velocity_2022.
 
 # Acknowledgments
 

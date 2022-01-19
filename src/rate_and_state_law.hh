@@ -164,6 +164,9 @@ public:
       @param perturbation : perturbation vector
    */
   void perturbState(std::vector<Real> perturbation);
+  /** set the state variable such that frictional strengths equate current interface tractions (if possible)
+   */
+  void setStableState();
   /** insert gaussian perturbation patch in the velocity field
    */
   void insertPerturbationPatch(std::vector<UInt> patch_limits, Real new_rate);

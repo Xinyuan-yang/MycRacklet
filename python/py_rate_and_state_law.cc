@@ -63,6 +63,7 @@ void register_rate_and_state_law(py::module& mod) {
 	 "perturb the state variable by adding a sinusoidale perturbation")
     .def("perturbState",[](RateAndStateLaw & self, std::vector<Real> perturbation) {self.perturbState(perturbation);},
 	 "perturbe the state variable by adding a vector to it")
+    .def("setStableState", &RateAndStateLaw::setStableState, "Set the state variable such that frictional strengths equate current interface tractions")
     .def("insertPerturbationPatch",&RateAndStateLaw::insertPerturbationPatch,
 	 py::arg("patch_limits"),py::arg("new_rate"),
 	 "Insert gaussian perturbation patch in the velocity field")

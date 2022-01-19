@@ -67,6 +67,54 @@ void register_data_fields(py::module& mod) {
 
 }
 
+void register_data_types(py::module& mod) {
+  py::class_<DataTypes>(mod, "DataTypes", py::buffer_protocol())
+    .def(py::init<>())
+    .def("testMe",[](DataTypes&datatype){
+	UInt res;
+	if(datatype.vec_double != NULL)
+	  res=1;
+	else if(datatype.vec_uint != NULL)
+	  res=2;
+	else if(datatype.crack_prof != NULL)
+	  res=3;
+	else
+	  res=0;
+	return res;
+      })
+    .def_buffer([](DataTypes&datatype) -> py::buffer_info {
+	if(datatype.vec_double != NULL)
+	  return py::buffer_info(datatype.vec_double->data(),
+				 sizeof(Real),
+				 py::format_descriptor<Real>::format(),
+				 1,
+				 {datatype.vec_double->size()},
+				 {sizeof(Real)}
+				 );
+	else if(datatype.vec_uint != NULL)
+	  return py::buffer_info(datatype.vec_uint->data(),
+				 sizeof(UInt),
+				 py::format_descriptor<UInt>::format(),
+				 1,
+				 {datatype.vec_uint->size()},
+				 {sizeof(UInt)}
+				 );
+	else if(datatype.crack_prof != NULL) {
+	  std::vector<UInt> nele = datatype.crack_prof->shape();
+	  UInt dim = datatype.crack_prof->size()/(nele[0]*nele[1]);
+	  return py::buffer_info(datatype.crack_prof->getValues().data(),
+				 sizeof(Real),
+				 py::format_descriptor<Real>::format(),
+				 3,
+				 {nele[0],nele[1],dim},
+				 {sizeof(Real)*dim,sizeof(Real)*dim*nele[0],sizeof(Real)}
+				 );
+	}
+	else
+	  return py::buffer_info();
+    });
+}
+
 void register_integrator_types(py::module& mod) {
   py::enum_<IntegratorTypes>(mod,"IntegratorTypes")
     .value("_shear_fracture_energy",IntegratorTypes::_shear_fracture_energy)

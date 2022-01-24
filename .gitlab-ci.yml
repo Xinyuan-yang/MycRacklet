@@ -108,15 +108,17 @@ build:ubuntu_coverage:
 
 test:ubuntu:
   extends:
-  - .tests
+    - .tests
+    - .build_release
   dependencies:
-  - build:ubuntu
+    - build:ubuntu
 
 test:ubuntu_coverage:
   extends:
-  - .tests
+    - .tests
+    - .build_coverage
   dependencies:
-  - build:ubuntu_coverage
+    - build:ubuntu_coverage
 
 
 # ----------------------------------------------------------------------------------------

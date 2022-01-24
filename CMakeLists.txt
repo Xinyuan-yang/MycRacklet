@@ -48,7 +48,7 @@ endif()
 set(cRacklet_CMAKE_DIR "${cRacklet_SOURCE_DIR}/cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${cRacklet_SOURCE_DIR}/cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${cRacklet_SOURCE_DIR}/cmake/Modules")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x --coverage" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS "-std=c++0x" CACHE STRING "" FORCE)
 
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries.")
 mark_as_advanced(BUILD_SHARED_LIBS)
@@ -58,6 +58,8 @@ if(NOT CRACKLET_TARGETS_EXPORT)
 endif()
 
 include(GNUInstallDirs)
+
+include(cRackletExtraCompilationProfiles)
 
 #===============================================================================
 # Release file target

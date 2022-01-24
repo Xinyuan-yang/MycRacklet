@@ -99,11 +99,24 @@ build:ubuntu:
   dependencies:
     - configure:ubuntu
 
+build:ubuntu_coverage:
+  extends:
+    - .build
+  dependencies:
+    - configure:ubuntu_coverage
+
 test:ubuntu:
   extends:
   - .tests
   dependencies:
   - build:ubuntu
+
+test:ubuntu_coverage:
+  extends:
+  - .tests
+  dependencies:
+  - build:ubuntu_coverage
+
 
 # ----------------------------------------------------------------------------------------
 deploy:test_documentation:

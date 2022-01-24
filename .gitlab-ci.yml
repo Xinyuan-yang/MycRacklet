@@ -76,6 +76,7 @@ build:docker:
     - ctest -T test --no-compress-output --timeout 1800 --output-junit junit-report.xml
     - if [ ${BUILD_TYPE} = "Coverage" ]; then
     - gcovr --xml-pretty --exclude-unreachable-branches --print-summary -o coverage.xml --root ${CI_PROJECT_DIR}
+    - fi
   coverage: /^\s*lines:\s*\d+.\d+\%/
   artifacts:
     when: always

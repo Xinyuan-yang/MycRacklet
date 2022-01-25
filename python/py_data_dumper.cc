@@ -50,25 +50,26 @@ void register_data_dumper(py::module& mod) {
     .def("initVectorDumper",&DataDumper::initVectorDumper,py::arg("filename"), py::arg("type"), py::arg("dimension_to_dump"), py::arg("ratio_of_nele") = 1.0, py::arg("stride")=1, py::arg("start")=0, py::arg("format")=_text,
 	 "Create a Dumper to output vectorial field (of size n_ele*dim). Options are the same than initDumper + one entry to specify which direction to dump")
 
-    .def("initPointsDumper",py::overload_cast<const std::string, std::vector<DataFields>, std::vector<UInt>, OutputFormat>(&DataDumper::initPointsDumper), py::arg("filename"), py::arg("fields"), py::arg("points_to_dump"), py::arg("format")=_text,
+    .def("initPointsDumper",[](DataDumper & self,const std::string filename, std::vector<DataFields> fields,
+			       std::vector<UInt> points_to_dump, OutputFormat format=_text) {self.initPointsDumper(filename,fields,points_to_dump,format);},
 	 "Create a PointsDumper to output a list of fields at precise interface position specified in points_to_dump. IMPORTANT: With binary mode, every data is written in the format of Real data type !")
 
-    .def("initPointsDumper",py::overload_cast<const std::string, std::vector<UInt>, OutputFormat>(&DataDumper::initPointsDumper),py::arg("filename"), py::arg("points_to_dump"), py::arg("format")=_text,
+    .def("initPointsDumper",[](DataDumper & self,const std::string filename, std::vector<UInt> points_to_dump, OutputFormat format=_text) {self.initPointsDumper(filename,points_to_dump,format);},
 	 "Create a PointsDumper as above but using the standard output fields listed on top of this file")
 
-    .def("initPointsDumper",py::overload_cast<const std::string, UInt, UInt, UInt, OutputFormat>(&DataDumper::initPointsDumper),py::arg("filename"), py::arg("start"), py::arg("end"), py::arg("nb_obs_points"), py::arg("format")=_text,
+    .def("initPointsDumper",[](DataDumper & self,const std::string filename, UInt start, UInt end, UInt nb_obs_points, OutputFormat format=_text) {self.initPointsDumper(filename,start,end,nb_obs_points,format);},
 	 "Create a PointsDumper of standard fields along nb_obs_points between elements start and end")
 
-    .def("initIntegratorsDumper",py::overload_cast<const std::string, std::vector<UInt>, std::vector<IntegratorTypes>, std::vector<std::string>,OutputFormat>(&DataDumper::initIntegratorsDumper),
-	 py::arg("filename"), py::arg("integration_domain"), py::arg("inte_types")=standard_energy_integrators, py::arg("integrator_names")=standard_energy_names, py::arg("format")=_text,
+    .def("initIntegratorsDumper",[](DataDumper & self,const std::string filename, std::vector<UInt> integration_domain,
+			     std::vector<IntegratorTypes> inte_types=standard_energy_integrators,
+			     std::vector<std::string> integrator_names=standard_energy_names,
+				    OutputFormat format=_text) {self.initIntegratorsDumper(filename,integration_domain,inte_types,integrator_names,format);},
 	 "Create a IntegratorsDumper to compute/output a list of integration types along a given integration domain. Each integration type gets an associated name used for registration in the DataRegister")
     
-    .def("initIntegratorsDumper",py::overload_cast<const std::string, std::vector<Real>, std::vector<Real>, OutputFormat>(&DataDumper::initIntegratorsDumper),
-	 py::arg("filename"), py::arg("start_corner"), py::arg("end_corner"), py::arg("format")=_text,
+    .def("initIntegratorsDumper",[](DataDumper & self,const std::string filename, std::vector<Real> start_corner, std::vector<Real> end_corner, OutputFormat format=_text) {self.initIntegratorsDumper(filename,start_corner,end_corner,format);},
 	 "Create a IntegratorsDumper with standard energies within a rectangular subset of the plane between start and en corner")
     
-    .def("initIntegratorsDumper",py::overload_cast<const std::string, OutputFormat>(&DataDumper::initIntegratorsDumper),
-	 py::arg("filename"), py::arg("format")=_text,
+    .def("initIntegratorsDumper",[](DataDumper & self,const std::string filename, OutputFormat format=_text) {self.initIntegratorsDumper(filename,format);},
 	 "Create a IntegratorsDumper with standard energies integrated over the entire plane")
 
     .def("initSurfingIntegratorsDumper",&DataDumper::initSurfingIntegratorsDumper,

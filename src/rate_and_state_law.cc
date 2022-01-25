@@ -381,7 +381,22 @@ void RateAndStateLaw::perturbState(std::vector<Real> perturbation) {
     phi[i] += perturbation[i];
   }
 }
+/* -------------------------------------------------------------------------- */
+void RateAndStateLaw::setStableState() {
 
+  UInt n_ele = D.size();
+  CrackProfile * stresses = datas[_top_dynamic_stress];
+
+  for (UInt i = 0; i < n_ele; ++i) {
+
+    Real slip_rate = 2*(*dot_u_top)[i*3+2]+V_0[i*2+1];
+    Real tractions = (*stresses)[i*3+2] - accoust*(*dot_u_top)[i*3+2];
+
+    phi[i] = formulation->getStableState(tractions,sigma_0,slip_rate,a[i],b[i],D[i],f_0[i],v_star[i],phi_star[i]);
+    if (phi[0]<0)
+      cRacklet::error("The current amplitude of the sliding velocity implies negative value of phi !");
+  }
+}
 /* -------------------------------------------------------------------------- */
 void RateAndStateLaw::insertPerturbationPatch(std::vector<UInt> patch_limits, Real new_rate) {
   
@@ -543,7 +558,7 @@ void RateAndStateLaw::restart(bool pausing, UInt nele_2d) {
   
   std::vector<Real> * state = datas[_state_variable];
   DataRegister::restartData(*state,"restart_state.cra",pausing, nele_2d);
-  
+  DataRegister::restartData(V_0,"restart_V0.cra",pausing, nele_2d);
 }
 
 /* -------------------------------------------------------------------------- */

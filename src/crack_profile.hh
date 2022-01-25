@@ -69,6 +69,8 @@ public:
   void finalizeFFT();
   // get the total number of data stored
   UInt size() const {return heights.size();}
+  // get the shape of stored data
+  std::vector<UInt> shape() const {return n;}
   // return a profile made of strided values
   CrackProfile getStridedPart(UInt stride, UInt start) const;
   // return the value of maximum height

@@ -21,6 +21,6 @@ The following publications have been made possible with cRacklet:
 
 - `Brener, E. A., & Bouchbinder, E. (2021). Unconventional singularities and energy balance in frictional rupture. Nature Communications, 12(1), 2585. <https://doi.org/10.1038/s41467-021-22806-9>`_
 
-- `Lebihain, M., Roch, T., Violay, M., & Molinari, J.-F. (2021). Eartquake Nucleation Along Fault With Heterogeneous Weakening Rate. Geophysical Research Letters, 48 e2021GL094901. <https://doi.org/10.1029/2021GL094901>`_
+- `Lebihain, M., Roch, T., Violay, M., & Molinari, J.-F. (2021). Earthquake Nucleation Along Fault With Heterogeneous Weakening Rate. Geophysical Research Letters, 48 e2021GL094901. <https://doi.org/10.1029/2021GL094901>`_
 
 - `Roch, T., Brener, E. A., Molinari, J.-F., & Bouchbinder, E. (2022). Velocity-driven frictional sliding: Coarsening and steady-state pulse trains. Journal of the Mechanics and Physics of Solids, 158, 104607. <https://doi.org/10.1016/j.jmps.2021.104607>`_

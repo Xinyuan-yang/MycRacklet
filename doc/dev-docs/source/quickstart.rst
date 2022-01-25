@@ -52,6 +52,8 @@ To build the documentation locally, activate the documentation option with **CMa
   
   make dev_doc
 
+If you want to generate the documentation for the python interface, you first need to generate the python module. See :ref:`python-interface`.
+  
 Running the test
 ----------------
 

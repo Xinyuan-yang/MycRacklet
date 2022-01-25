@@ -135,8 +135,12 @@ guide](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_req
 to create a merge request on GitLab. Please target the repository's `develop`
 branch.
 
+## Citing
 
-## AUTHORS
+To give proper credit to cRacklet and the researchers who have developed it, please cite cRacklet as:
+Roch et al., (2022). cRacklet: a spectral boundary integral method library for interfacial rupture simulation. Journal of Open Source Software, 7(69), 3724, https://doi.org/10.21105/joss.03724
+
+## Authors
 
 - Fabian Barras <fabian.barras@epfl.ch>
 - Thibault Roch <thibault.roch@epfl.ch>
@@ -174,9 +178,9 @@ The following publications have been made possible with cRacklet:
 
 - [Brener, E. A., & Bouchbinder, E. (2021). Unconventional singularities and energy balance in frictional rupture. Nature Communications, 12(1), 2585](https://doi.org/10.1038/s41467-021-22806-9)
 
-- [Lebihain, M., Roch, T., Violay, M., & Molinari, J.-F. (2021). Instability regimes in the onset of motion along disordered frictional surfaces. arXiv:2102.10870 [cond-Mat]](http://arxiv.org/abs/2102.10870)
+- [Lebihain, M., Roch, T., Violay, M., & Molinari, J.-F. (2021). Earthquake Nucleation Along Faults With Heterogeneous Weakening Rate. Geophysical Research Letters, 48, e2021GL094901.](https://doi.org/10.1029/2021GL094901)
 
-- [Roch, T., Brener, E. A., Molinari, J.-F., & Bouchbinder, E. (2021). Velocity-driven frictional sliding: Coarsening and steady-state pulse trains. arXiv:2104.13110 [cond-Mat,Physics:nlin, Physics:physics]](http://arxiv.org/abs/2104.13110)
+- [Roch, T., Brener, E. A., Molinari, J.-F., & Bouchbinder, E. (2022). Velocity-driven frictional sliding: Coarsening and steady-state pulses. Journal of the Mechanics and Physics of Solids, 128, 104607](https://doi.org/10.1016/j.jmps.2021.104607)
 
                                                                                                   
                         ´.-,,,...´´                                                                     

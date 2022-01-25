@@ -41,12 +41,20 @@ build:docker:
         -DCRACKLET_EXAMPLES:BOOL=TRUE
         -DCRACKLET_MULTI_THREADED:BOOL=TRUE
         -DCRACKLET_PYTHON_INTERFACE:BOOL=TRUE
-        -DCMAKE_BUILD_TYPE:STRING=Release ..
+        -DCMAKE_BUILD_TYPE:STRING=${BUILD_TYPE} ..
   artifacts:
     when: on_success
     paths:
       - build
     expire_in: 10h
+
+.build_coverage:
+  variables:
+    BUILD_TYPE: "Coverage"
+
+.build_release:
+  variables:
+    BUILD_TYPE: "Release"
 
 .build:
   stage: build
@@ -66,7 +74,9 @@ build:docker:
   script:
     - cd build
     - ctest -T test --no-compress-output --timeout 1800 --output-junit junit-report.xml
+    - if [ ${BUILD_TYPE} = "Coverage" ]; then
     - gcovr --xml-pretty --exclude-unreachable-branches --print-summary -o coverage.xml --root ${CI_PROJECT_DIR}
+    - fi
   coverage: /^\s*lines:\s*\d+.\d+\%/
   artifacts:
     when: always
@@ -76,6 +86,12 @@ build:docker:
 
 configure:ubuntu:
   extends:
+    - .build_release
+    - .configure
+
+configure:ubuntu_coverage:
+  extends:
+    - .build_coverage
     - .configure
 
 build:ubuntu:
@@ -84,11 +100,26 @@ build:ubuntu:
   dependencies:
     - configure:ubuntu
 
+build:ubuntu_coverage:
+  extends:
+    - .build
+  dependencies:
+    - configure:ubuntu_coverage
+
 test:ubuntu:
   extends:
-  - .tests
+    - .tests
+    - .build_release
   dependencies:
-  - build:ubuntu
+    - build:ubuntu
+
+test:ubuntu_coverage:
+  extends:
+    - .tests
+    - .build_coverage
+  dependencies:
+    - build:ubuntu_coverage
+
 
 # ----------------------------------------------------------------------------------------
 deploy:test_documentation:

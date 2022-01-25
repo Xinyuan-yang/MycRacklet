@@ -44,6 +44,7 @@ namespace cracklet {
   void register_all(pybind11::module & mod) {
     register_interface_law(mod);
     register_data_fields(mod);
+    register_data_types(mod);
     register_integrator_types(mod);
     register_data_register(mod);
     register_directions(mod);

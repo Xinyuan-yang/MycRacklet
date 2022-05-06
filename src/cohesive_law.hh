@@ -71,6 +71,8 @@ public:
     
     this->registerData(_normal_strength, &nor_strength);
     this->registerData(_shear_strength, &shr_strength);
+    this->registerData(_maximum_normal_strength, &max_nor_strength);
+    this->registerData(_maximum_shear_strength, &max_shr_strength);
     this->registerData(_frictional_strength, &fric_strength);
     this->registerData(_id_crack, &ind_crack);
     this->registerData(_critical_normal_opening, &crit_nor_opening);

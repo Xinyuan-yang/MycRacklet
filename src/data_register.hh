@@ -58,6 +58,8 @@ enum DataFields {
   
   _normal_strength, //n_ele
   _shear_strength, //n_ele
+  _maximum_normal_strength, //n_ele
+  _maximum_shear_strength, //n_ele
   _frictional_strength, //n_ele
   _id_crack, //n_ele
   _critical_normal_opening, //n_ele
@@ -97,6 +99,8 @@ static std::map<DataFields, std::string> datafields_name = {
   {_bottom_dynamic_stress, "Stress contribution from the history of the top displacements"},
   {_normal_strength, "Normal strength"},
   {_shear_strength, "Shear strength"},
+  {_maximum_normal_strength, "Maximum normal strength"},
+  {_maximum_shear_strength, "Maximum shear strength"},
   {_frictional_strength, "Frictional strength"},
   {_id_crack, "Crack index"},
   {_critical_normal_opening, "Critical normal opening displacement"},

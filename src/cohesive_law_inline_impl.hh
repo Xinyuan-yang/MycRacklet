@@ -86,8 +86,10 @@ void CohesiveLaw::computeContactVelocities(UInt ix, UInt iz){
   temp_trac = cmpted_stress[0] - eta[0]*mu[0]*temp_velot/cs[0];
   (*intfc_trac)[i*dim+1] = temp_trac;
   
-  contact_law->computeFricStrength(temp_trac, strength, i, it);
-  
+  if(contact_law!=NULL){
+    contact_law->computeFricStrength(temp_trac, strength, i, it);
+  }
+
   computeShearVelocities(strength, i);
   
   ind_crack[i] = 3;

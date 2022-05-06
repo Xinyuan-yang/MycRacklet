@@ -52,6 +52,9 @@ void register_rate_and_state_law(py::module& mod) {
     .def("setVelocityPredictor",&RateAndStateLaw::setVelocityPredictor,
 	 py::arg("v_0_pred"),
 	 "Define the velocity prediction for each component (used before searching the initial steady state)")
+    .def("setV0",&RateAndStateLaw::setV0,
+	 py::arg("v_0"),
+	 "Set the reference velocity to a given vector (only two components, x and z)")
     .def("initInterfaceConditions",&RateAndStateLaw::initInterfaceConditions,
 	 "Initialize interface fields")
     .def("updateInterfaceConditions",&RateAndStateLaw::updateInterfaceConditions,

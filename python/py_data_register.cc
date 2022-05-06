@@ -50,6 +50,8 @@ void register_data_fields(py::module& mod) {
     .value("_bottom_dynamic_stress",DataFields::_bottom_dynamic_stress)
     .value("_normal_strength",DataFields::_normal_strength)
     .value("_shear_strength",DataFields::_shear_strength)
+    .value("_maximum_normal_strength",DataFields::_maximum_normal_strength)
+    .value("_maximum_shear_strength",DataFields::_maximum_shear_strength)
     .value("_frictional_strength",DataFields::_frictional_strength)
     .value("_id_crack",DataFields::_id_crack)
     .value("_critical_normal_opening",DataFields::_critical_normal_opening)

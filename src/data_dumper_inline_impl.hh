@@ -51,6 +51,8 @@ inline void Dumper::dump() {
 
   case _normal_strength:
   case _shear_strength:
+  case _maximum_normal_strength:
+  case _maximum_shear_strength:
   case _frictional_strength:
   case _state_variable:
   case _friction_coefficient:

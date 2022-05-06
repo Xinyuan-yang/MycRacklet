@@ -82,7 +82,9 @@ build:docker:
     when: always
     reports:
       junit: build/junit-report.xml
-      cobertura: build/coverage.xml
+      coverage_report:
+	coverage_format: cobertura
+	path: build/coverage.xml
 
 configure:ubuntu:
   extends:

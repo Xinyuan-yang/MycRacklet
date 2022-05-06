@@ -83,8 +83,8 @@ build:docker:
     reports:
       junit: build/junit-report.xml
       coverage_report:
-	coverage_format: cobertura
-	path: build/coverage.xml
+        coverage_format: cobertura
+        path: build/coverage.xml
 
 configure:ubuntu:
   extends:

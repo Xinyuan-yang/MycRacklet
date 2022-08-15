@@ -151,7 +151,7 @@ def main():
         model.computeInterfaceFields()
         model.increaseTimeStep()
 
-        x_tip = DataRegister.getCrackTipPosition(0,nb_elements) * dx
+        x_tip = cra.DataRegister.getCrackTipPosition(0,nb_elements) * dx
         
         if ((t%print_freq)==0):
             print("Process at {:.3f} %".format(t/nb_time_steps*100))
@@ -189,10 +189,10 @@ def plotEvolution():
     vmin = 0
     ticks = ['Intact','Process zone','Cracked']
     ticks_pos = [0.33,1,1.66]        
-    colorsList = [(0,0,1),(0,1,0),(1,0,0)]
+    colorsList = ['seagreen','orange','maroon']
     colormap = matplotlib.colors.ListedColormap(colorsList)
     
-    mesh = axe.pcolormesh(px,py,state,vmin=vmin,vmax=vmax,cmap=colormap)
+    mesh = axe.pcolormesh(px,py,state,vmin=vmin,vmax=vmax,cmap=colormap,shading='auto')
     divider = make_axes_locatable(axe)
     cax = divider.append_axes("right",size="5%",pad = 0.05)
     cbar = plt.colorbar(mesh,ticks=ticks_pos,cax = cax)

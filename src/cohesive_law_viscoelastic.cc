@@ -46,6 +46,8 @@ void CohesiveLawViscoelastic::initQuadraticFormulation() {
 /* -------------------------------------------------------------------------- */
 void CohesiveLawViscoelastic::initPowerLawFormulation() {
   formulation = std::make_shared<ViscoelasticPowerLawFormulation>();
+  
+  memcpy(&this->lim_velocity[0],&this->lim_velocity[0],this->lim_velocity.size()*sizeof(Real));
 }
 
 /* -------------------------------------------------------------------------- */
@@ -53,7 +55,6 @@ void CohesiveLawViscoelastic::initInterfaceConditions() {
   
   memcpy(&this->max_nor_strength[0],&this->nor_strength[0],this->nor_strength.size()*sizeof(Real));
   memcpy(&this->max_shr_strength[0],&this->shr_strength[0],this->shr_strength.size()*sizeof(Real));
-  memcpy(&this->lim_velocity[0],&this->lim_velocity[0],this->lim_velocity.size()*sizeof(Real));
   
   this->computeInitialVelocities();
 }

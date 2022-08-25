@@ -75,7 +75,10 @@ void CohesiveLawViscoelastic::computeIndepNormalVelocities(UInt ix, UInt iz){
     else
       delta_v = -std::min(std::abs(delta_v),gamma*std::abs(lim_velocity[i]));
     */
-    converg_v = delta_v/rate;
+
+    // Here we add a fictional minimum for the rate as being 0 to avoid problems
+    // when the rate is equal to 0
+    converg_v = delta_v/std::max(1.,rate);
     converg_s = delta_s/std::max(1.,cmpted_stress[0]);
     m += 1;
 

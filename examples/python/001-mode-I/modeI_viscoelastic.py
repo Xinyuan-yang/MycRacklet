@@ -41,7 +41,7 @@ def main():
 
     # Geometry and material parameters
     
-    nb_time_steps = 15000
+    nb_time_steps = 30000
     nb_elements = 2048
     dom_size = 0.3
     dx = dom_size / nb_elements
@@ -61,7 +61,7 @@ def main():
     
     # Loading case
 
-    nb_load_increase = 1000
+    nb_load_increase = 5000
 
     load_f = 3e6 # Final load
 

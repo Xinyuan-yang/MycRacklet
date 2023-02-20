@@ -30,12 +30,18 @@
  */
 #include "cohesive_law.hh"
 #include "cohesive_law_viscoelastic.hh"
+#include "cohesive_law_all.hh"
 #include <random>
 #include <chrono>
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::initInterfaceLaw() {
   interface_law = std::make_shared<CohesiveLaw>(); 
+}
+
+template<>
+inline void Interfacer<_coupled_cohesive>::initInterfaceLaw() {
+  interface_law = std::make_shared<CohesiveLawAll>(); 
 }
 
 /* -------------------------------------------------------------------------- */
@@ -138,6 +144,57 @@ inline void Interfacer<_regularized_weakening_rate_and_state>::createHeterogeneo
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::createUniformInterface() {
+
+  Real crit_nor_opening = DataRegister::getParameter<Real>("critical_normal_opening");
+  Real crit_shr_opening = DataRegister::getParameter<Real>("critical_shear_opening");
+  Real max_nor_strength = DataRegister::getParameter<Real>("max_normal_strength");
+  Real max_shr_strength = DataRegister::getParameter<Real>("max_shear_strength");
+  
+  Real res_nor_strength = 0;
+  Real res_shr_strength = 0;
+  if(DataRegister::hasParameter("res_normal_strength")){
+    res_nor_strength = DataRegister::getParameter<Real>("res_normal_strength");
+  }
+  if(DataRegister::hasParameter("res_shear_strength")){
+    res_shr_strength = DataRegister::getParameter<Real>("res_shear_strength");
+  }
+  
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+  std::vector<Real> * res_n_strength = datas[_residual_normal_strength];
+  std::vector<Real> * res_s_strength = datas[_residual_shear_strength];
+  
+  std::fill(nor_strength->begin(), nor_strength->end(), max_nor_strength);
+  std::fill(shr_strength->begin(), shr_strength->end(), max_shr_strength);
+  std::fill(crit_n_open->begin(), crit_n_open->end(), crit_nor_opening);
+  std::fill(crit_s_open->begin(), crit_s_open->end(), crit_shr_opening);
+  std::fill(res_n_strength->begin(), res_n_strength->end(), res_nor_strength);
+  std::fill(res_s_strength->begin(), res_s_strength->end(), res_shr_strength);
+  
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " UNIFORM INTERFACE " << std::endl
+	      << "* Critical normal opening: " << crit_nor_opening << std::endl
+	      << "* Critical shear opening: " << crit_shr_opening << std::endl
+	      << "* Maximal normal strength: " << max_nor_strength << std::endl
+	      << "* Maximal shear strength: " << max_shr_strength << std::endl
+	      << "* Residual normal strength: " << res_nor_strength << std::endl
+	      << "* Residual shear strength: " << res_shr_strength << std::endl
+	      << std::endl;	
+
+  out_parameters << "delta_c_nor " << crit_nor_opening << std::endl
+		 << "delta_c_shr " << crit_shr_opening << std::endl
+		 << "tau_max_nor " << max_nor_strength << std::endl
+		 << "tau_max_shr " << max_shr_strength << std::endl
+    		 << "tau_res_nor " << res_nor_strength << std::endl
+		 << "tau_res_shr " << res_shr_strength << std::endl;  
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_coupled_cohesive>::createUniformInterface() {
 
   Real crit_nor_opening = DataRegister::getParameter<Real>("critical_normal_opening");
   Real crit_shr_opening = DataRegister::getParameter<Real>("critical_shear_opening");
@@ -463,6 +520,45 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughArea(Real area_st
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_linear_coupled_cohesive>::createThroughCrack(Real crack_start, Real crack_end) {
+  
+  std::vector<Real> * nor_strength = datas[_normal_strength];
+  std::vector<Real> * shr_strength = datas[_shear_strength];
+  std::vector<Real> * res_n_strength = datas[_residual_normal_strength];
+  std::vector<Real> * res_s_strength = datas[_residual_shear_strength];
+  std::vector<UInt> * ind_crack = datas[_id_crack];
+
+  UInt i_start = (UInt)(crack_start/dx[0]);
+  UInt i_end = (UInt)(crack_end/dx[0]);
+
+  for (UInt ix = i_start; ix < i_end; ++ix) {
+    for (UInt iz = 0; iz < n_ele[1]; ++iz) {
+
+      UInt index = ix+iz*n_ele[0];
+
+      (*nor_strength)[index] = (*res_n_strength)[index];      
+      (*shr_strength)[index] = (*res_s_strength)[index];
+      (*ind_crack)[index] = 2;
+    }
+  }
+
+  Real initial_crack_size = crack_end-crack_start;
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " THROUGH CRACK " << std::endl
+	      << "* Initial crack size: " << initial_crack_size << std::endl
+	      << "* Crack starts at: " << crack_start << std::endl
+	      << "* Crack ends at: " << crack_end << std::endl
+	      << "* The Strength has been set to the residual value" << std::endl
+	      << std::endl;	
+
+  out_parameters << "a0 " << initial_crack_size << std::endl
+		 << "a_l " << crack_start << std::endl
+		 << "a_r " << crack_end << std::endl;
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_coupled_cohesive>::createThroughCrack(Real crack_start, Real crack_end) {
   
   std::vector<Real> * nor_strength = datas[_normal_strength];
   std::vector<Real> * shr_strength = datas[_shear_strength];

@@ -36,8 +36,13 @@ void CohesiveLawAll::initRegularFormulation() {
 }
 
 /* -------------------------------------------------------------------------- */
-void CohesiveLawAll::initDualFormulation() {
-    formulation = std::make_shared<CohesiveFormulation>();
+void CohesiveLawAll::initDualFormulation(Real nor_op_factor, Real shr_op_factor,
+Real nor_str_factor, Real shr_str_factor) {
+  this->nor_op_factor = nor_op_factor;
+  this->shr_op_factor = shr_op_factor;
+  this->nor_str_factor = nor_str_factor;
+  this->shr_str_factor = shr_str_factor;
+  formulation = std::make_shared<DualCohesiveFormulation>();
 }
 
 /* -------------------------------------------------------------------------- */

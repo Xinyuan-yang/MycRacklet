@@ -68,17 +68,29 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 1e6;
+  Real load = 4.5e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
   // Cohesive parameters
-  Real crit_n_open = 0.02e-3;
-  Real crit_s_open = 0.02e-3;
+  Real crit_n_open = 50.0e-5;
+  Real crit_s_open = 50.0e-5;
   Real max_n_str = 5e6;
   Real max_s_str = 5e6;
+  Real res_n_str = 0.25e6;
+  Real res_s_str = 0.25e6;
+  Real nor_op_factor = 0.02;
+  Real shr_op_factor = 0.02;
+  Real nor_str_factor = 8;
+  Real shr_str_factor = 8;
+
+  Real Gc = 0.5*crit_s_open*shr_op_factor*(max_s_str-res_s_str*shr_str_factor) + 0.5*crit_s_open*(1-shr_op_factor)*res_s_str*(shr_str_factor-1) + crit_s_open*res_s_str*(shr_str_factor-1);
+  std::cout << "Gc =" << Gc << std::endl;
 
   Real G_length = 2*mu*crit_n_open*max_n_str/(load*load*M_PI);
+  //Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
+
+    std::cout << "G_length =" << G_length << std::endl;
   
   Real dom_sizex = 15*G_length;
   Real dx = dom_sizex/(Real)(nex);
@@ -114,6 +126,8 @@ int main(int argc, char *argv[]){
   DataRegister::registerParameter("critical_shear_opening",crit_s_open);
   DataRegister::registerParameter("max_normal_strength",max_n_str);
   DataRegister::registerParameter("max_shear_strength",max_s_str);
+  DataRegister::registerParameter("res_shear_strength",res_s_str);
+  DataRegister::registerParameter("res_normal_strength",res_n_str);
   interfacer.createUniformInterface();
   interfacer.createThroughCrack((dom_sizex-crack_size)/2.,(dom_sizex+crack_size)/2.);
     
@@ -121,8 +135,9 @@ int main(int argc, char *argv[]){
   CohesiveLawAll& cohesive_law = dynamic_cast<CohesiveLawAll&>((model->getInterfaceLaw()));
   cohesive_law.preventSurfaceOverlapping(NULL);
 
-  cohesive_law.initRegularFormulation();
-    
+  //cohesive_law.initRegularFormulation();
+  cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
+
   sim_driver.initConstantLoading(load, psi, phi);
     
   /* -------------------------------------------------------------------------- */

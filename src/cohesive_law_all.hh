@@ -55,7 +55,8 @@ public:
   /** regular slip weakening law*/
   void initRegularFormulation();
   /** dual-scale slip weakening law*/
-  void initDualFormulation();
+  void initDualFormulation(Real nor_op_factor, Real shr_op_factor, 
+  Real nor_str_factor, Real shr_str_factor);
 
   /** Initialize interface fields */
   void initInterfaceConditions();
@@ -83,6 +84,10 @@ protected:
   /* Accessors                                                                */
   /* ------------------------------------------------------------------------ */
 public:
+  inline static Real nor_op_factor;
+  inline static Real shr_op_factor;
+  inline static Real nor_str_factor;
+  inline static Real shr_str_factor;
 
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */

@@ -31,6 +31,8 @@
 /* -------------------------------------------------------------------------- */
 #include "cRacklet_common.hh"
 #include "cohesive_law_all.hh"
+#include <vector>
+#include <algorithm>
 /* -------------------------------------------------------------------------- */
 struct CohesiveFormulation {
   CohesiveFormulation(){};
@@ -65,11 +67,12 @@ struct CohesiveFormulation {
 };
 
 /* -------------------------------------------------------------------------- */
-struct DualCohesiveFormulation : public CohesiveFormulation{
+struct DualCohesiveFormulation : public CohesiveFormulation {
   DualCohesiveFormulation(){};
   virtual ~DualCohesiveFormulation(){};
-  virtual inline Real getStrength(Real crit_nor_op, Real crit_shr_op, Real nor_op, Real shr_op, Real max_nor_str,
-  Real max_shr_str, Real res_nor_str, Real res_shr_str, Real &nor_str, Real &shr_str){
+  virtual inline Real getStrength(Real crit_nor_op, Real crit_shr_op, Real nor_op, 
+  Real shr_op, Real max_nor_str, Real max_shr_str, Real res_nor_str, 
+  Real res_shr_str, Real &nor_str, Real &shr_str){
     Real aux;
     UInt id_crack;
     Real nor_op_factor = CohesiveLawAll::nor_op_factor;
@@ -103,5 +106,103 @@ struct DualCohesiveFormulation : public CohesiveFormulation{
     }
 
     return id_crack; 
+  }
+};
+
+/* -------------------------------------------------------------------------- */
+struct TanhCohesiveFormulation : CohesiveFormulation {
+  TanhCohesiveFormulation(){};
+  virtual ~TanhCohesiveFormulation(){};
+  virtual inline Real getStrength(Real crit_nor_op, Real crit_shr_op, Real nor_op, 
+  Real shr_op, Real max_nor_str, Real max_shr_str, Real res_nor_str, 
+  Real res_shr_str, Real &nor_str, Real &shr_str){
+    Real aux;
+    UInt id_crack;
+    Real center = CohesiveLawAll::center;
+    Real smoothing = CohesiveLawAll::smoothing;
+
+    aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
+		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
+    
+    if (aux > 1) {
+      bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
+      // the case of contact is handled by the associated ContactLaw
+      if (!in_contact) { 
+        id_crack = 2;
+        nor_str = res_nor_str;
+        shr_str = res_shr_str;
+      }      
+    }
+  
+    else {
+      id_crack = 1;
+      nor_str = 0.5*(max_nor_str + res_nor_str) + 0.5*(max_nor_str - res_nor_str)*std::tanh((center - aux)/smoothing);
+      shr_str = 0.5*(max_shr_str + res_shr_str) + 0.5*(max_shr_str - res_shr_str)*std::tanh((center - aux)/smoothing);
+    }
+    return id_crack;
+  }
+};
+
+/* -------------------------------------------------------------------------- */
+struct MultiCohesiveFormulation : CohesiveFormulation {
+  MultiCohesiveFormulation(){};
+  virtual ~MultiCohesiveFormulation(){};
+  virtual inline Real getStrength(Real crit_nor_op, Real crit_shr_op, Real nor_op, 
+  Real shr_op, Real max_nor_str, Real max_shr_str, Real res_nor_str, 
+  Real res_shr_str, Real &nor_str, Real &shr_str){
+    Real aux;
+    Real id_crack;
+
+    std::vector<double> op_list = CohesiveLawAll::op_list; 
+    std::vector<double> str_list = CohesiveLawAll::str_list;
+
+    str_list.insert(str_list.begin(), max_shr_str);
+    str_list.insert(str_list.end(), res_shr_str);
+    op_list.insert(op_list.begin(), 0.0);
+    op_list.insert(op_list.end(), 1.0);
+
+    aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
+		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
+
+    if (aux > 1) {
+      bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
+      // the case of contact is handled by the associated ContactLaw
+      if (!in_contact) { 
+        id_crack = 2;
+        nor_str = res_nor_str;
+        shr_str = res_shr_str;
+      }      
+    }
+
+    else {
+      auto it_lower = std::lower_bound(op_list.begin(), op_list.end(), aux);
+      auto it_upper = std::upper_bound(op_list.begin(), op_list.end(), aux);
+    
+      double lower_aux = *(--it_lower);
+      auto idx_lower = std::distance(op_list.begin(), it_lower);
+      double upper_aux = *it_upper;
+      auto idx_upper = std::distance(op_list.begin(), it_upper);
+
+      id_crack = 1;
+      nor_str = (str_list[idx_upper] - str_list[idx_lower]) / (lower_aux - upper_aux) * (aux - upper_aux) + str_list[idx_upper];
+      shr_str = -(str_list[idx_upper] - str_list[idx_lower]) / (lower_aux - upper_aux) * (aux - upper_aux) + str_list[idx_upper];
+    }
+    return id_crack;
+  }
+  virtual inline Real getGc(Real crit_shr_op, Real max_shr_str, Real res_shr_str){
+  Real Gc=0;
+
+  std::vector<double> op_list = CohesiveLawAll::op_list; 
+  std::vector<double> str_list = CohesiveLawAll::str_list;
+
+  str_list.insert(str_list.begin(), max_shr_str);
+  str_list.insert(str_list.end(), res_shr_str);
+  op_list.insert(op_list.begin(), 0.0);
+  op_list.insert(op_list.end(), 1.0);
+
+  for (int i=1; i<op_list.size(); i++) {
+    Gc = Gc + crit_shr_op*(op_list[i] - op_list[i-1])*(0.5*(str_list[i-1]-str_list[i]) + (str_list[i] - str_list.back()));
+  }
+  return Gc;
   }
 };

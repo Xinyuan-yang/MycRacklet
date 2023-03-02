@@ -46,6 +46,20 @@ Real nor_str_factor, Real shr_str_factor) {
 }
 
 /* -------------------------------------------------------------------------- */
+void CohesiveLawAll::initTanhFormulation(Real center, Real smoothing) {
+  this->center = center;
+  this->smoothing = smoothing;
+  formulation = std::make_shared<TanhCohesiveFormulation>();  
+}
+
+/* -------------------------------------------------------------------------- */
+void CohesiveLawAll::initMultiFormulation(std::vector<double> op_list, std::vector<double> str_list) {
+  this->op_list = op_list;
+  this->str_list = str_list;
+  formulation = std::make_shared<MultiCohesiveFormulation>();
+}
+
+/* -------------------------------------------------------------------------- */
 void CohesiveLawAll::initInterfaceConditions() {
   
   memcpy(&this->max_nor_strength[0],&this->nor_strength[0],this->nor_strength.size()*sizeof(Real));

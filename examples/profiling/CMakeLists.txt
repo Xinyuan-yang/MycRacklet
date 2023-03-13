@@ -39,6 +39,6 @@ target_link_libraries (size_checking cRacklet)
 add_executable(printKernels printKernels.cc)
 target_link_libraries (printKernels cRacklet)
 
-copy_kernel_files(33 FALSE)
+copy_kernel_files(33 TRUE)
 copy_kernel_files(35 TRUE)
 copy_kernel_files(35 FALSE)

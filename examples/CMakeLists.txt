@@ -37,10 +37,10 @@ option(CRACKLET_EXAMPLES_BIMATERIAL "Activate bimaterial (Aluminium-Homalite) si
 option(CRACKLET_EXAMPLES_2D_HETEROG "Activate 2-D heterogenous interface simulations" OFF)
 option(CRACKLET_EXAMPLES_3D_ASPERTITY "Activate 3-D interface with asperities simulations" OFF)
 option(CRACKLET_EXAMPLES_CRACK_FRONT_WAVES "Activate simulations of the crack front waves study" OFF) 
-option(CRACKLET_EXAMPLES_FRICTION "Activate simulation of frictional contact problems" OFF)
+option(CRACKLET_EXAMPLES_FRICTION "Activate simulation of frictional contact problems" ON)
 option(CRACKLET_EXAMPLES_VISCOELASTIC "Activate simulation of viscoelastic interfaces" OFF)
 option(CRACKLET_EXAMPLES_ROUGH_SURFACES "Activate simulation of microcontacts failure" OFF)
-option(CRACKLET_EXAMPLES_PROFILING "Executables to analyze code performance" OFF)
+option(CRACKLET_EXAMPLES_PROFILING "Executables to analyze code performance" ON)
 
 if(CRACKLET_EXAMPLES_BIMATERIAL)
   add_subdirectory(001_UIUC_AluHoma)

@@ -31,7 +31,6 @@
  */
 /* -------------------------------------------------------------------------- */
 void CohesiveLaw::computeIndepNormalVelocities(UInt ix, UInt iz){
-  std::cout<< "Hello" <<std::endl;
 
   std::vector<Real> temp_veloc(2);
   std::vector<Real> cmpted_stress(2);

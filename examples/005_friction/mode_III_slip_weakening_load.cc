@@ -69,9 +69,21 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 4.5e6;
   Real psi = 90.0;
   Real phi = 90.0;
+  Real start = 0.0; // valeur de départ
+  Real end = 4.5e6; // valeur finale
+  int n = 1000; // nombre d'éléments souhaité
+  // Créer un vecteur de n éléments initialisé à 0
+  std::vector<double> loads(n, 0.0);
+  // Calculer l'incrément entre les valeurs
+  double increment = (end - start) / (n - 1);
+  // Remplir le vecteur avec les valeurs désirées
+  std::transform(loads.begin(), loads.end(), loads.begin(), [start, increment](double) mutable {
+      double value = start;
+      start += increment;
+      return value;
+  });
 
   // Cohesive parameters
   Real crit_n_open = 50.0e-5;
@@ -108,15 +120,15 @@ int main(int argc, char *argv[]){
 
 
   //Real G_length = 2*mu*crit_n_open*(max_n_str-res_n_str)/((load-res_n_str)*(load-res_n_str)*M_PI);
-  Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
+  Real G_length = 4*mu*Gc/(M_PI*std::pow(loads.back()-res_s_str, 2));
 
     std::cout << "G_length =" << G_length << std::endl;
   
-  Real dom_sizex = 15*G_length;
+  Real dom_sizex = 150*G_length;
   Real dx = dom_sizex/(Real)(nex);
 
-  Real crack_size = 2*dx;
-  //Real crack_size = 2*G_length;
+  //Real crack_size = 2*dx;
+  Real crack_size = 2*G_length;
    
   std::string sim_name = "Mode-III crack tip equation of motion";
 
@@ -143,6 +155,8 @@ int main(int argc, char *argv[]){
   //SimulationDriver sim_driver(*model, beta=beta);
   SimulationDriver sim_driver(*model);
 
+  model->setLoadingCase(0, psi, phi);
+
   Interfacer<_coupled_cohesive> interfacer(*model);   
 
   DataRegister::registerParameter("critical_normal_opening",crit_n_open);
@@ -164,7 +178,7 @@ int main(int argc, char *argv[]){
   //cohesive_law.initTanhFormulation(0.5,0.15);
   cohesive_law.initMultiFormulation(op_list, str_list);
 
-  sim_driver.initConstantLoading(load, psi, phi);
+  //sim_driver.initConstantLoading(load, psi, phi);
     
   /* -------------------------------------------------------------------------- */
   //Set-up simulation  outputs
@@ -177,6 +191,7 @@ int main(int argc, char *argv[]){
   dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _text);
   dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _text);
   dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_loading.cra", _top_loading, 2, 1.0, 1, 0, _text);
   dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _text);
   dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0);
   dumper.initDumper("ST_Diagram_maximum_shear_strength.cra", _maximum_shear_strength, 1.0, 1, 0);
@@ -190,9 +205,22 @@ int main(int argc, char *argv[]){
   //sim_driver.launchCrack(dom_sizex/2.,45*G_length,0.075,false);
   //sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);
 
-  while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {
+  model->updateLoads();
+  model->initInterfaceFields();
+  UInt i = 0;
 
-    sim_driver.solveStep();
+  //while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {
+  while ((t < n)&&(x_tip<0.9*nex)) {
+
+    //sim_driver.solveStep();
+    model->setLoadingCase(loads[i], psi, phi);
+    model->updateLoads();
+    
+    model->updateDisplacements();
+    model->fftOnDisplacements();
+    model->computeStress();
+    model->computeInterfaceFields();
+    model->increaseTimeStep();  
     x_tip = model->getCrackTipPosition(nex/2,nex);
 
     if (t%10==0){
@@ -209,7 +237,34 @@ int main(int argc, char *argv[]){
     }
 
     ++t;
-    
+  ++i;
+  }
+
+  model->setLoadingCase(loads.back(), psi, phi);
+  model->updateLoads();
+  while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {   
+    model->updateDisplacements();
+    model->fftOnDisplacements();
+    model->computeStress();
+    model->computeInterfaceFields();
+    model->increaseTimeStep();  
+    x_tip = model->getCrackTipPosition(nex/2,nex);
+
+    if (t%10==0){
+      dumper.dumpAll();
+    }
+
+    if ((x_tip>x_lap)||(t%(UInt)(0.05*nb_time_steps)==0)) {
+      std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " << std::endl;
+      std::cout << "Crack at " << 100*x_tip/(Real)(nex) << "% " << std::endl;
+      std::cout << std::endl;
+      
+      if (x_tip>x_lap)
+	x_lap += 0.05*nex;
+    }
+
+    ++t;
+  ++i;
   }
   //delete model;
   return 0;

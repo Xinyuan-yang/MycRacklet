@@ -46,3 +46,5 @@ add_cracklet_simulation(mode_II_slip_weakening mode_II_slip_weakening.cc)
 add_cracklet_simulation(mode_III_slip_weakening mode_III_slip_weakening.cc)
 
 add_cracklet_simulation(mode_III_slip_weakening_new mode_III_slip_weakening_new.cc)
+
+add_cracklet_simulation(mode_III_slip_weakening_load mode_III_slip_weakening_load.cc)

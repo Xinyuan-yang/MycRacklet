@@ -1,0 +1,33 @@
+% cRacklet Input File
+% Line starting with % are not parsed
+
+% Name of the simulation
+output_folder output/
+
+% Number of elements in the x-direction
+nb_elements 5000
+
+% Domain size in the direction x (Times Gl)
+dom_size 15
+
+% Elastic properties
+E 7.98e9
+nu 0.33
+cs 1581.14
+
+%Loading conditions
+load 4.5e6
+psi 90.0
+phi 90.0
+
+% Interface properties
+critical_normal_opening 50.0e-5
+critical_shear_opening 50.0e-5
+max_normal_strength 5e6
+max_shear_strength 5e6
+
+% Maximum numbers of time step
+nb_time_steps 0
+
+% Cut of the convolution kernels
+tcut 100

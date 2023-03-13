@@ -139,7 +139,7 @@ void SpectralModel::initModel(Real reset_beta, bool blank) {
 
     intfc_trac.SetGridSize(n_ele, dim);
   }
-  
+
   displ_jump = new InterfaceFields(&displacements, dim);
   veloc_jump = new InterfaceFields(&velocities, dim);
   
@@ -165,7 +165,7 @@ void SpectralModel::initModel(Real reset_beta, bool blank) {
     h11u1 = NULL;
   
   this->nb_kernels = 4;
-  
+
   initConvolutionManagers(blank);
 
   if(!blank) {

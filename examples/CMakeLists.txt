@@ -34,7 +34,7 @@
 #===============================================================================
 
 option(CRACKLET_EXAMPLES_BIMATERIAL "Activate bimaterial (Aluminium-Homalite) simulations" OFF)
-option(CRACKLET_EXAMPLES_2D_HETEROG "Activate 2-D heterogenous interface simulations" OFF)
+option(CRACKLET_EXAMPLES_2D_HETEROG "Activate 2-D heterogenous interface simulations" ON)
 option(CRACKLET_EXAMPLES_3D_ASPERTITY "Activate 3-D interface with asperities simulations" OFF)
 option(CRACKLET_EXAMPLES_CRACK_FRONT_WAVES "Activate simulations of the crack front waves study" OFF) 
 option(CRACKLET_EXAMPLES_FRICTION "Activate simulation of frictional contact problems" ON)

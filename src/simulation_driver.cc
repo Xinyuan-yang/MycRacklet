@@ -350,13 +350,8 @@ void SimulationDriver::launchCrack(Real crack_start, Real launched_size,
     x_tip = model.getCrackTipPosition(x_start,model.getNbElements()[0]);
     
     if (model.getCurrentTimeStep()%every_t==0) {
-      std::cout << "x_start " << x_start << std::endl;
-      std::cout << "l_end " << l_end << std::endl;
-      std::cout << "x_tip " << x_tip << std::endl;
-      std::cout << "x_tip_prev" << x_tip_prev << std::endl;
       if (((x_tip-x_tip_prev)>2)&&(x_tip_prev!=0.)) {
 	break;
-  std::cout << "Here" << std::endl;
       }
 
       std::cout << " Crack position is now at " << growth_factor*(x_tip-x_start)*dx[0] << std::endl;

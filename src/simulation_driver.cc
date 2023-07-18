@@ -36,10 +36,11 @@
 SimulationDriver::SimulationDriver(SpectralModel & model_to_drive,
 				   Real target_speed, Real crack_start)
   : model(model_to_drive) { 
-
+  
   this->target_crack_speed=target_speed;
   double new_beta = this->adjustStableTimeStep();
   nb_t_by_elem=1/(new_beta*target_crack_speed);
+      std::cout << "new_beta !!" << new_beta << std::endl;
   model.initModel(new_beta);
   std::vector<Real> dx = model.getElementSize();
   this->x_crack_start = (UInt)(crack_start/dx[0]);  

@@ -31,7 +31,6 @@
 # If not, see <http://www.gnu.org/licenses/>.
 
 #===============================================================================
-
 add_cracklet_simulation(mode_II_rate_and_state mode_II_rate_and_state.cc
   NU_TOP 33
   NU_BOT 33)
@@ -43,9 +42,13 @@ copy_input_file(input_pulse_PMMA.dat)
 
 add_cracklet_simulation(mode_II_slip_weakening mode_II_slip_weakening.cc)
 
+add_cracklet_simulation(mode_II_slip_weakening_new mode_II_slip_weakening_new.cc)
+
 add_cracklet_simulation(mode_III_slip_weakening mode_III_slip_weakening.cc)
 
 add_cracklet_simulation(mode_III_slip_weakening_new mode_III_slip_weakening_new.cc)
+
+add_cracklet_simulation(mode_III_slip_weakening_new_coulomb mode_III_slip_weakening_new_coulomb.cc)
 
 add_cracklet_simulation(mode_III_slip_weakening_load mode_III_slip_weakening_load.cc)
 

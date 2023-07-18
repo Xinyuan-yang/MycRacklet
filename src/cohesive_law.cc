@@ -126,7 +126,6 @@ void CohesiveLaw::computeInitialVelocities() {
 
 /* -------------------------------------------------------------------------- */
 void CohesiveLaw::updateCohesiveLaw() {
-  std::cout << "Here !!!!" << std::endl;
 
   CrackProfile * shr_opening = datas[_shear_displacement_jumps];
   CrackProfile * nor_opening = datas[_normal_displacement_jumps];

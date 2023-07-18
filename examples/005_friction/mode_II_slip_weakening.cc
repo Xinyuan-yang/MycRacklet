@@ -131,9 +131,12 @@ int main(int argc, char *argv[]){
   
   //dumper.initDumper("ST_Diagram_nor_velo_jump.cra", _normal_velocity_jumps, 1.0, 1, 0, _binary);
   //dumper.initVectorDumper("ST_Diagram_nor_tractions.cra", _interface_tractions, 1, 1.0, 1, 0, _binary);
-  dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 0, 1.0, 1, 0, _binary);
-  dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 0, 1.0, 1, 0, _binary);
-  dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 0, 1.0, 1, 0, _binary);
+  //dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 0, 1.0, 1, 0, _binary);
+  //dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 0, 1.0, 1, 0, _binary);
+  //dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 0, 1.0, 1, 0, _binary);
+  dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 0, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 0, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 0, 1.0, 1, 0, _text);
   dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _binary);
 
   /* -------------------------------------------------------------------------- */

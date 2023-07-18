@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
   // Loading case
   Real load = 1.8e6;
   Real psi = 90.0;
-  Real phi = 90.0;
+  Real phi = 0.0; //90.0;
 
   // Cohesive parameters
   Real crit_n_open = 0.0005;
@@ -172,11 +172,12 @@ int main(int argc, char *argv[]){
   //DataDumper dumper(*model);
   DataDumper dumper(*model);
 
+  dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 0, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_y_velo.cra", _top_velocities, 1, 1.0, 1, 0, _text);
   dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_shear_stress_x.cra", _interface_tractions, 0, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_shear_stress_y.cra", _interface_tractions, 1, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_shear_stress_z.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
   dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _text);
   dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0);
   dumper.initDumper("ST_Diagram_maximum_shear_strength.cra", _maximum_shear_strength, 1.0, 1, 0);

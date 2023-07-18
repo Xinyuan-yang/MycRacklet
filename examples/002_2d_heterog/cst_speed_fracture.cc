@@ -76,6 +76,9 @@ int main(int argc, char *argv[]){
   // False=simulation reading the loading file
   bool write = (bool)(std::atoi(argv[3]));
 
+  write = true;
+
+
   // Output folder
   std::string output_folder = "./";
   if(argc > 4)

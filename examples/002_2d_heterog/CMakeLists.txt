@@ -36,5 +36,9 @@ add_cracklet_simulation(cst_speed_fracture cst_speed_fracture.cc
   NU_TOP 35
   NU_BOT 35)
 
+add_cracklet_simulation(cst_speed_fracture_2 cst_speed_fracture_2.cc
+  NU_TOP 33
+  NU_BOT 33)
+
 add_cracklet_simulation(andrews_transition andrews_transition.cc
   )

@@ -108,12 +108,12 @@ int main(int argc, char *argv[]){
   //str_list = {3.4e6, 3.2e6, 1.8e6, 1.6e6};
 
 
-  Real G_length = 60 * 2*mu*crit_n_open*(max_n_str-res_n_str)/((load-res_n_str)*(load-res_n_str)*M_PI);
+  Real G_length = 40*2*mu*crit_n_open*(max_n_str-res_n_str)/((load-res_n_str)*(load-res_n_str)*M_PI);
   //Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
     std::cout << "G_length =" << G_length << std::endl;
   
-  Real dom_sizex = 15*G_length;
+  Real dom_sizex = 5*G_length;
   Real dx = dom_sizex/(Real)(nex);
 
   Real crack_size = 2*dx;

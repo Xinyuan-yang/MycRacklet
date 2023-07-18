@@ -52,12 +52,12 @@ int main(int argc, char *argv[]){
   // Note : Construct the pre-integrated material kernels before running this simulation
   // Use "invert_serial.f" to construct kernel files
 
-  std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps>" << std::endl;
+  std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <cr_speed>" << std::endl;
   
   std::string output_folder=argv[1];
   // Geometry description
 
-  Real cr_speed = std::atoi(argv[4]); 
+  Real cr_speed = std::atof(argv[4]); 
   UInt nb_time_steps = std::atoi(argv[3]); 
   UInt nex = std::atoi(argv[2]); 
   Real mu = 3e9;
@@ -75,6 +75,7 @@ int main(int argc, char *argv[]){
   Real phi = 90.0;
   Real start = 0.0; // valeur de départ
   Real end = 4.5e6; // valeur finale
+
   int n = 10000; // nombre d'éléments souhaité
   // Créer un vecteur de n éléments initialisé à 0
   std::vector<double> loads(n, 0.0);
@@ -138,6 +139,7 @@ int main(int argc, char *argv[]){
   //Real beta=0.002;
   //SimulationDriver sim_driver(*model, beta=beta);
   SimulationDriver sim_driver(*model, cr_speed, dom_sizex/2);
+  //SimulationDriver sim_driver(*model);
 
   Interfacer<_coupled_cohesive> interfacer(*model);   
 
@@ -154,11 +156,14 @@ int main(int argc, char *argv[]){
   
   cohesive_law.preventSurfaceOverlapping(NULL);
 
-  //cohesive_law.initRegularFormulation();
-  cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
+  cohesive_law.initRegularFormulation();
+  //cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
 
-  sim_driver.initConstantSpeed(load, psi, phi, max_s_str, 0.0, _space_control);
-    
+  sim_driver.initConstantSpeed(load, psi, phi, max_s_str, 0.0, _time_control);
+  //sim_driver.initConstantSpeed(load, psi, phi, max_s_str);
+  //sim_driver.initConstantLoading(load, psi, phi);
+
+
   /* -------------------------------------------------------------------------- */
   //Set-up simulation  outputs
      

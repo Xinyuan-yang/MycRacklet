@@ -102,7 +102,7 @@ public:
   /* ------------------------------------------------------------------------ */
 private:
 
-  // Abstract object representing the associated viscoelastic formulation
+  // Abstract object representing the associated formulation
   std::shared_ptr<CohesiveFormulation> formulation;
 };
 

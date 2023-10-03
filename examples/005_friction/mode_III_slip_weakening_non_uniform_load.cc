@@ -45,6 +45,9 @@
 #include <string>
 #include <iomanip>
 #include <sys/stat.h>
+
+#include <fstream>
+#include <iterator>
 /* -------------------------------------------------------------------------- */
 
 int main(int argc, char *argv[]){
@@ -59,7 +62,7 @@ int main(int argc, char *argv[]){
 
   UInt nb_time_steps = std::atoi(argv[3]); 
   UInt nex = std::atoi(argv[2]); 
-  Real mu = 3e8;
+  Real mu = 3e9;
   Real rho = 1200;
   Real nu =  0.33;
   Real E = 2*mu*(1+nu);
@@ -69,31 +72,37 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 0.36e6;
+  Real load = 1.8e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
-  Real start = 0.0;
-  Real end = 0.36e6;
-  int n = 5000; // nombre d'éléments souhaité
-  // Créer un vecteur de n éléments initialisé à 0
-  std::vector<double> loads(n, 0.0);
-  // Calculer l'incrément entre les valeurs
-  double increment = (end - start) / (n - 1);
-  // Remplir le vecteur avec les valeurs désirées
-  std::transform(loads.begin(), loads.end(), loads.begin(), [start, increment](double) mutable {
-      double value = start;
-      start += increment;
-      return value;
-  });
+  std::vector<Real> myload;
+  /*
+  for (int i = 0; i < 2*nex; ++i) {
+    myload[i] = 0; // For example, initialize the vector with some values
+  }
+  for (int i = 2*nex; i < myload.size(); ++i) {
+    myload[i] = load; // For example, initialize the vector with some values
+  }
+  */
+  for (int i = 0; i < nex; ++i) {
+    myload.push_back(0);
+    myload.push_back(0);
+    myload.push_back(load);
+  }
+  
+  std::ofstream outFile("my_file.txt");
+    // the important part
+  for (const auto &e : myload) outFile << e << "\n";
+  
 
   // Cohesive parameters
-  Real crit_n_open = 0.00005;
-  Real crit_s_open = 0.00005;
-  Real max_n_str = 0.36e6;
-  Real max_s_str = 0.36e6;
-  Real res_n_str = 0.1e6;
-  Real res_s_str = 0.1e6;
+  Real crit_n_open = 0.0005;
+  Real crit_s_open = 0.0005;
+  Real max_n_str = 2.5e6;
+  Real max_s_str = 2.5e6;
+  Real res_n_str = 0.25e6;
+  Real res_s_str = 0.25e6;
   Real nor_op_factor = 0.02;
   Real shr_op_factor = 0.02;
   Real nor_str_factor = 8;
@@ -142,10 +151,6 @@ int main(int argc, char *argv[]){
 	    << std::endl;
    
   /* -------------------------------------------------------------------------- */
-  // NEW
-  // Friction paramters
-  Real coef_frict = 0.25;
-  //std::shared_ptr<ContactLaw> contactlaw = std::make_shared<CoulombLaw>(coef_frict);
 
   UInt t = 0;
   UInt x_tip=0;
@@ -158,8 +163,8 @@ int main(int argc, char *argv[]){
 				sim_name, output_folder);      
 
   //Real beta=0.002;
+  //SimulationDriver sim_driver(*model, beta=beta);
   SimulationDriver sim_driver(*model);
-  //SimulationDriver sim_driver(*model);
 
   Interfacer<_coupled_cohesive> interfacer(*model);   
 
@@ -175,16 +180,18 @@ int main(int argc, char *argv[]){
 
   CohesiveLawAll& cohesive_law = dynamic_cast<CohesiveLawAll&>((model->getInterfaceLaw()));
   
-  //cohesive_law.preventSurfaceOverlapping(contactlaw); // NEW
-  cohesive_law.preventSurfaceOverlapping(NULL); // NEW
+  cohesive_law.preventSurfaceOverlapping(NULL);
 
-  cohesive_law.initRegularFormulationCoulomb(1e6, 0.36, 0.1);
+  cohesive_law.initRegularFormulation();
   //cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
   //cohesive_law.initTanhFormulation(0.5,0.15);
   //cohesive_law.initMultiFormulation(op_list, str_list);
 
-  model->setLoadingCase(0, psi, phi);
   //sim_driver.initConstantLoading(load, psi, phi);
+  //model->setLoadingCase(load, psi, phi);
+  //model->updateLoads();
+  model->setLoadingFromVector(myload);
+  model->initInterfaceFields();
     
   /* -------------------------------------------------------------------------- */
   //Set-up simulation  outputs
@@ -193,75 +200,48 @@ int main(int argc, char *argv[]){
   DataDumper dumper(*model);
 
   dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _text);
   dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_loading.cra", _top_loading, 1, 1.0, 1, 0, _text);
   dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_top_loading.cra", _top_loading, 2, 1.0, 1, 0, _text);
   dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _text);
+  dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0);
   dumper.initDumper("ST_Diagram_maximum_shear_strength.cra", _maximum_shear_strength, 1.0, 1, 0);
   dumper.initDumper("ST_Diagram_maximum_normal_strength.cra", _maximum_normal_strength, 1.0, 1, 0);
+  dumper.initDumper("ST_Diagram_shear_vel.cra", _shear_velocity_jumps, 1.0, 1, 0);
+  dumper.initVectorDumper("ST_Diagram_shear_tra.cra", _interface_tractions, 2, 1.0, 1, 0);
+  dumper.initVectorDumper("ST_Diagram_normal_tra.cra", _interface_tractions, 1, 1.0, 1, 0);
 
   /* -------------------------------------------------------------------------- */
     
   //sim_driver.launchCrack(dom_sizex/2.,45*G_length,0.075,false);
   //sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);
-  UInt i = 0;
+
   while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {
-
+    model->updateDisplacements();
+    model->fftOnDisplacements();
+    model->computeStress();
+    model->computeInterfaceFields();
+    model->increaseTimeStep();  
     //sim_driver.solveStep();
-    model->setLoadingCase(loads[i], psi, phi);
-    model->updateLoads();
+    x_tip = model->getCrackTipPosition(nex/2,nex);
+
+    if (t%10==0){
+      dumper.dumpAll();
+    }
+
+    if ((x_tip>x_lap)||(t%(UInt)(0.05*nb_time_steps)==0)) {
+      std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " << std::endl;
+      std::cout << "Crack at " << 100*x_tip/(Real)(nex) << "% " << std::endl;
+      std::cout << std::endl;
+      
+      if (x_tip>x_lap)
+	x_lap += 0.05*nex;
+    }
+
+    ++t;
     
-    model->updateDisplacements();
-    model->fftOnDisplacements();
-    model->computeStress();
-    model->computeInterfaceFields();
-    model->increaseTimeStep();  
-    x_tip = model->getCrackTipPosition(nex/2,nex);
-
-    if (t%10==0){
-      dumper.dumpAll();
-    }
-
-    if ((x_tip>x_lap)||(t%(UInt)(0.05*nb_time_steps)==0)) {
-      std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " << std::endl;
-      std::cout << "Crack at " << 100*x_tip/(Real)(nex) << "% " << std::endl;
-      std::cout << std::endl;
-      
-      if (x_tip>x_lap)
-	x_lap += 0.05*nex;
-    }
-
-    ++t;
-  ++i; // new
-  }
-  //delete model;
-  //return 0;
-  model->setLoadingCase(loads.back(), psi, phi);
-  model->updateLoads();
-  while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {   
-    model->updateDisplacements();
-    model->fftOnDisplacements();
-    model->computeStress();
-    model->computeInterfaceFields();
-    model->increaseTimeStep();  
-    x_tip = model->getCrackTipPosition(nex/2,nex);
-
-    if (t%10==0){
-      dumper.dumpAll();
-    }
-
-    if ((x_tip>x_lap)||(t%(UInt)(0.05*nb_time_steps)==0)) {
-      std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " << std::endl;
-      std::cout << "Crack at " << 100*x_tip/(Real)(nex) << "% " << std::endl;
-      std::cout << std::endl;
-      
-      if (x_tip>x_lap)
-	x_lap += 0.05*nex;
-    }
-
-    ++t;
-  ++i;
   }
   //delete model;
   return 0;

@@ -57,3 +57,8 @@ add_cracklet_simulation(mode_III_slip_weakening_load mode_III_slip_weakening_loa
 add_cracklet_simulation(mode_III_slip_weakening_v_const mode_III_slip_weakening_v_const.cc)
 
 add_cracklet_simulation(mode_III_slip_weakening_restart mode_III_slip_weakening_restart.cc)
+
+add_cracklet_simulation(mode_III_slip_weakening_non_uniform_load mode_III_slip_weakening_non_uniform_load.cc)
+
+add_cracklet_simulation(test_anna Anna/test_anna.cc)
+copy_input_file(input_pulse_PMMA.dat)

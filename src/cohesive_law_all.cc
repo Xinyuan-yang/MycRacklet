@@ -36,6 +36,14 @@ void CohesiveLawAll::initRegularFormulation() {
 }
 
 /* -------------------------------------------------------------------------- */
+void CohesiveLawAll::initRegularFormulationCoulomb(Real pressure, Real mus, Real mud) {
+    this->pressure = pressure;
+    this->mus = mus;
+    this->mud = mud;
+    formulation = std::make_shared<CohesiveFormulationCoulomb>();
+}
+
+/* -------------------------------------------------------------------------- */
 void CohesiveLawAll::initDualFormulation(Real nor_op_factor, Real shr_op_factor,
 Real nor_str_factor, Real shr_str_factor) {
   this->nor_op_factor = nor_op_factor;
@@ -122,7 +130,6 @@ void CohesiveLawAll::updateCohesiveLaw() {
       
       nor_strength[i] = max_nor_strength[i];
       shr_strength[i] = max_shr_strength[i];
-      
     }
 
     else {

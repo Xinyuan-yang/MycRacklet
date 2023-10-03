@@ -54,6 +54,8 @@ public:
 public:
   /** regular slip weakening law*/
   void initRegularFormulation();
+  /** regular slip weakening law with coulomb contact*/
+  void initRegularFormulationCoulomb(Real pressure, Real mus, Real mud);
   /** dual-scale slip weakening law*/
   void initDualFormulation(Real nor_op_factor, Real shr_op_factor, 
   Real nor_str_factor, Real shr_str_factor);
@@ -96,6 +98,9 @@ public:
   inline static Real smoothing;
   inline static std::vector<double> op_list;
   inline static std::vector<double> str_list;
+  inline static Real pressure; // for the Coulomb laws
+  inline static Real mus;
+  inline static Real mud;
 
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */

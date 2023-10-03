@@ -67,6 +67,50 @@ struct CohesiveFormulation {
 };
 
 /* -------------------------------------------------------------------------- */
+struct CohesiveFormulationCoulomb : public CohesiveFormulation {
+  CohesiveFormulationCoulomb(){};
+  virtual ~CohesiveFormulationCoulomb(){};
+  virtual inline Real getStrength(Real crit_nor_op, Real crit_shr_op, Real nor_op, Real shr_op, Real max_nor_str, 
+  Real max_shr_str, Real res_nor_str, Real res_shr_str, Real &nor_str, Real &shr_str){
+    Real aux;
+    UInt id_crack;
+    Real coeff;
+    Real pressure = CohesiveLawAll::pressure;
+    Real mud = CohesiveLawAll::mud;
+    Real mus = CohesiveLawAll::mus;
+    aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
+		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
+    
+    if (aux>=1) {
+
+      bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
+      // the case of contact is handled by the associated ContactLaw
+    
+      if (!in_contact) { 
+        id_crack = 2;
+        coeff = mud;
+        //nor_str = res_nor_str;
+        //shr_str= res_shr_str;
+      }
+    }
+
+    else {
+      id_crack = 1;
+      coeff = mus - (mus-mud)*aux;
+      //std::cout << coeff << std::endl;
+      //nor_str = max_nor_str - (max_nor_str-res_nor_str)*aux;
+      //shr_str = max_shr_str - (max_shr_str-res_shr_str)*aux;
+    }
+
+    nor_str = coeff * pressure;
+    shr_str = coeff * pressure;
+
+    return id_crack;
+  }
+};
+
+
+/* -------------------------------------------------------------------------- */
 struct DualCohesiveFormulation : public CohesiveFormulation {
   DualCohesiveFormulation(){};
   virtual ~DualCohesiveFormulation(){};

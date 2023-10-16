@@ -130,6 +130,9 @@ void CohesiveLawAll::updateCohesiveLaw() {
       
       nor_strength[i] = max_nor_strength[i];
       shr_strength[i] = max_shr_strength[i];
+      std::cout << "Case A" << std::endl;
+      std::cout << "shr_str = " << shr_strength[i] << std::endl;
+      std::cout << "aux = " << 0 << std::endl;
     }
 
     else {
@@ -139,7 +142,6 @@ void CohesiveLawAll::updateCohesiveLaw() {
         res_nor_strength[i], res_shr_strength[i], nor_strength[i], shr_strength[i]);
 
     }
-
   }
 
 }
@@ -168,8 +170,9 @@ void CohesiveLawAll::computeVelocities(){
     for (UInt j = 0; j < n_ele[1]; ++j) {
       
       Real trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim]/cs[0];
-      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0))
+      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0)) {
 	computeIndepNormalVelocities(i,j);
+      }
       else {
 	(*intfc_trac)[(i*dim+1)+j*n_ele[0]*dim] = trac;
 	computeShearVelocities(shr_strength[i+n_ele[0]*j], i+j*n_ele[0]);

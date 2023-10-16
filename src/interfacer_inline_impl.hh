@@ -31,6 +31,7 @@
 #include "cohesive_law.hh"
 #include "cohesive_law_viscoelastic.hh"
 #include "cohesive_law_all.hh"
+#include "cohesive_law_coulomb.hh"
 #include <random>
 #include <chrono>
 /* -------------------------------------------------------------------------- */
@@ -48,6 +49,18 @@ inline void Interfacer<_coupled_cohesive>::initInterfaceLaw() {
 template<>
 inline void Interfacer<_viscoelastic_coupled_cohesive>::initInterfaceLaw() {
   interface_law = std::make_shared<CohesiveLawViscoelastic>(); 
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_cohesive_coulomb>::initInterfaceLaw() {
+  interface_law = std::make_shared<CohesiveLawCoulomb>(); 
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_dual_cohesive_coulomb>::initInterfaceLaw() {
+  interface_law = std::make_shared<CohesiveLawCoulomb>(); 
 }
 
 /* -------------------------------------------------------------------------- */
@@ -139,6 +152,24 @@ inline void Interfacer<_regularized_weakening_rate_and_state>::createHeterogeneo
   std::shared_ptr<RateAndStateLaw> r_and_s = std::dynamic_pointer_cast<RateAndStateLaw>(interface_law);
   r_and_s->initRegularizedWeakeningFormulation(v0);
   
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_cohesive_coulomb>::createUniformInterface() {
+
+  createHomogeneousCoulombIntfc();
+  std::shared_ptr<CohesiveLawCoulomb> cohesive_law = std::dynamic_pointer_cast<CohesiveLawCoulomb>(interface_law);
+  cohesive_law->initStandardFormulation();
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_dual_cohesive_coulomb>::createUniformInterface() {
+
+  createHomogeneousCoulombIntfc();
+  std::shared_ptr<CohesiveLawCoulomb> cohesive_law = std::dynamic_pointer_cast<CohesiveLawCoulomb>(interface_law);
+  cohesive_law->initDualFormulation();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -515,6 +546,80 @@ inline void Interfacer<_linear_coupled_cohesive>::createThroughArea(Real area_st
       (*ind_crack)[index] = cracking_index;
     }
   }
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_cohesive_coulomb>::createThroughCrack(Real crack_start, Real crack_end) {
+  std::vector<Real> * cf_d = datas[_dynamic_friction_coefficient];  
+  std::vector<Real> * fric_strength = datas[_frictional_strength]; 
+  std::vector<UInt> * ind_crack = datas[_id_crack]; 
+
+  Real sigma_0 = DataRegister::getParameter<Real>("uniform_contact_pressure");
+
+  UInt i_start = (UInt)(crack_start/dx[0]);
+  UInt i_end = (UInt)(crack_end/dx[0]);
+
+  for (UInt ix = i_start; ix < i_end; ++ix) {
+    for (UInt iz = 0; iz < n_ele[1]; ++iz) {
+
+      UInt index = ix+iz*n_ele[0];
+
+      (*fric_strength)[index] = (*cf_d)[index]*sigma_0;      
+      (*ind_crack)[index] = 2;
+    }
+  }
+
+  Real initial_crack_size = crack_end-crack_start;
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " THROUGH CRACK " << std::endl
+	      << "* Initial crack size: " << initial_crack_size << std::endl
+	      << "* Crack starts at: " << crack_start << std::endl
+	      << "* Crack ends at: " << crack_end << std::endl
+	      << "* The Strength has been set to the residual value" << std::endl
+	      << std::endl;	
+
+  out_parameters << "a0 " << initial_crack_size << std::endl
+		 << "a_l " << crack_start << std::endl
+		 << "a_r " << crack_end << std::endl;  
+}
+
+/* -------------------------------------------------------------------------- */
+template<>
+inline void Interfacer<_dual_cohesive_coulomb>::createThroughCrack(Real crack_start, Real crack_end) {
+  std::vector<Real> * cf_d = datas[_dynamic_friction_coefficient];  
+  std::vector<Real> * fric_strength = datas[_frictional_strength]; 
+  std::vector<UInt> * ind_crack = datas[_id_crack]; 
+
+  Real sigma_0 = DataRegister::getParameter<Real>("uniform_contact_pressure");
+
+  UInt i_start = (UInt)(crack_start/dx[0]);
+  UInt i_end = (UInt)(crack_end/dx[0]);
+
+  for (UInt ix = i_start; ix < i_end; ++ix) {
+    for (UInt iz = 0; iz < n_ele[1]; ++iz) {
+
+      UInt index = ix+iz*n_ele[0];
+
+      (*fric_strength)[index] = (*cf_d)[index]*sigma_0;    
+      (*ind_crack)[index] = 2;
+    }
+  }
+
+  Real initial_crack_size = crack_end-crack_start;
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " THROUGH CRACK " << std::endl
+	      << "* Initial crack size: " << initial_crack_size << std::endl
+	      << "* Crack starts at: " << crack_start << std::endl
+	      << "* Crack ends at: " << crack_end << std::endl
+	      << "* The Strength has been set to the residual value" << std::endl
+	      << std::endl;	
+
+  out_parameters << "a0 " << initial_crack_size << std::endl
+		 << "a_l " << crack_start << std::endl
+		 << "a_r " << crack_end << std::endl;  
 }
 
 /* -------------------------------------------------------------------------- */

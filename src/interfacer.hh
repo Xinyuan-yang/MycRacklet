@@ -36,11 +36,14 @@
 #include "spectral_model.hh"
 #include "interface_law.hh"
 #include "rate_and_state_law.hh"
+#include "cohesive_law_coulomb.hh"
 /* -------------------------------------------------------------------------- */
 enum FractureLawType {
   _linear_coupled_cohesive,
   _coupled_cohesive,
   _viscoelastic_coupled_cohesive,
+  _cohesive_coulomb,
+  _dual_cohesive_coulomb,
   _rate_and_state,  
   _weakening_rate_and_state,
   _regularized_rate_and_state,
@@ -216,7 +219,8 @@ private:
   */
   void createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star);
 
-  
+  void createHomogeneousCoulombIntfc();
+
   /* ------------------------------------------------------------------------ */
   /* Class Members                                                            */
   /* ------------------------------------------------------------------------ */

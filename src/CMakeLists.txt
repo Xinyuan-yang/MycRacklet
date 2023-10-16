@@ -47,6 +47,7 @@ set(cRacklet_SRC
   cohesive_law.cc
   cohesive_law_all.cc
   cohesive_law_viscoelastic.cc
+  cohesive_law_coulomb.cc
   rate_and_state_law.cc
   coulomb_law.cc
   regularized_coulomb_law.cc
@@ -62,6 +63,8 @@ set(CRACKLET_LIBRARY_PUBLIC_HDRS
   cohesive_law_viscoelastic.hh
   cohesive_law_viscoelastic_formulations.hh
   cohesive_law_viscoelastic_inline_impl.hh
+  cohesive_law_coulomb.hh
+  cohesive_law_formulation_coulomb.hh
   contact_law.hh
   convolution_manager.hh
   convolution_manager_inline_impl.hh

@@ -30,6 +30,8 @@
  */
 /* -------------------------------------------------------------------------- */
 #include "interfacer.hh"
+#include <iostream>
+#include <fstream>
 /* -------------------------------------------------------------------------- */
 
 // Homogeneous rate and state friction interfaces
@@ -45,6 +47,59 @@ template void Interfacer<_rate_and_state>::createHeterogeneousRateandStateIntfc(
 template void Interfacer<_weakening_rate_and_state>::createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star);
 template void Interfacer<_regularized_rate_and_state>::createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star);
 template void Interfacer<_regularized_weakening_rate_and_state>::createHeterogeneousRateandStateIntfc(std::vector<Real> vec_D, std::vector<Real> vec_f0, std::vector<Real> vec_a, std::vector<Real> vec_b, std::vector<Real> vec_v_star, std::vector<Real> vec_phi_star);
+
+// Homegeneous cohesive coulomb interfaces
+template void Interfacer<_cohesive_coulomb>::createHomogeneousCoulombIntfc();
+template void Interfacer<_dual_cohesive_coulomb>::createHomogeneousCoulombIntfc();
+
+template<FractureLawType F>
+void Interfacer<F>::createHomogeneousCoulombIntfc() {
+  Real crit_nor_opening = DataRegister::getParameter<Real>("critical_normal_opening");
+  Real crit_shr_opening = DataRegister::getParameter<Real>("critical_shear_opening");
+  Real coef_static = DataRegister::getParameter<Real>("static_friction_coefficient");
+  Real coef_dynamic = DataRegister::getParameter<Real>("dynamic_friction_coefficient");
+  Real sigma_0 = DataRegister::getParameter<Real>("uniform_contact_pressure");
+
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+  std::vector<Real> * cf_s = datas[_static_friction_coefficient];
+  std::vector<Real> * cf_d = datas[_dynamic_friction_coefficient];
+  std::vector<Real> * fric_strength = datas[_frictional_strength];
+
+  std::fill(crit_n_open->begin(), crit_n_open->end(), crit_nor_opening);
+  std::fill(crit_s_open->begin(), crit_s_open->end(), crit_shr_opening);
+  std::fill(cf_s->begin(), cf_s->end(), coef_static);
+  std::fill(cf_d->begin(), cf_d->end(), coef_dynamic);
+  std::fill(fric_strength->begin(), fric_strength->end(), coef_static*sigma_0);
+
+  // For DualCohesiveCoulombFormulation
+  if (DataRegister::hasParameter("critical_int_opening")) {
+    Real crit_int_opening = DataRegister::getParameter<Real>("critical_int_opening");  
+    std::vector<Real> * crit_i_open = datas[_critical_int_opening];
+    std::fill(crit_i_open->begin(), crit_i_open->end(), crit_int_opening);
+  }
+  if (DataRegister::hasParameter("int_friction_coefficient")) {
+    Real coeff_int = DataRegister::getParameter<Real>("int_friction_coefficient");  
+    std::vector<Real> * cf_int = datas[_critical_int_opening];
+    std::fill(cf_int->begin(), cf_int->end(), coeff_int);
+  }
+
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " UNIFORM INTERFACE " << std::endl
+        << "* Critical normal opening: " << crit_nor_opening << std::endl
+	      << "* Critical shear opening: " << crit_shr_opening << std::endl
+	      << "* Static friction coefficient: " << coef_static << std::endl
+	      << "* Dynamic friction coefficient: " << coef_dynamic << std::endl
+	      << "* Uniform contact pressure: " << sigma_0 << std::endl
+	      << std::endl;	
+
+  out_parameters << "delta_c_nor " << crit_nor_opening << std::endl
+		    << "delta_c_shr " << crit_shr_opening << std::endl
+        << "cf_s " << coef_static << std::endl
+	      << "cf_d " << coef_dynamic << std::endl
+	      << "sigma_0 " << sigma_0 << std::endl;  
+}
 
 template<FractureLawType F>
 void Interfacer<F>::createHomogeneousRateandStateIntfc() {

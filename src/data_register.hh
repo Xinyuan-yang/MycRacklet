@@ -65,6 +65,12 @@ enum DataFields {
   _critical_normal_opening, //n_ele
   _critical_shear_opening, //n_ele
 
+  // For cohesive coulomb law
+  _dynamic_friction_coefficient, //n_ele
+  _static_friction_coefficient, //n_ele
+  _critical_int_opening, //n_ele
+  _int_friction_coefficient, //n_ele
+
   _residual_normal_strength, //n_ele
   _residual_shear_strength, //n_ele
   
@@ -105,6 +111,11 @@ static std::map<DataFields, std::string> datafields_name = {
   {_id_crack, "Crack index"},
   {_critical_normal_opening, "Critical normal opening displacement"},
   {_critical_shear_opening, "Critical shear opening displacement"},
+  
+  {_critical_int_opening, "Critical intermediate opening displacement of dual cohesive coulomb law"},
+  {_dynamic_friction_coefficient, "Dynamic friction coefficient of cohesive coulomb law"},
+  {_static_friction_coefficient, "Static friction coefficient of cohesive coulomb law"},
+  {_int_friction_coefficient, "Intermediate friction coefficient of dual cohesive coulomb law"},
 
   {_lim_velocity, "Limiting velocity for viscoelastic law"},
 

@@ -80,10 +80,10 @@ int main(int argc, char *argv[]){
   Real max_s_str = 2.5e6;
   Real res_n_str = 0.25e6;
   Real res_s_str = 0.25e6;
-  Real nor_op_factor = 0.02;
-  Real shr_op_factor = 0.02;
-  Real nor_str_factor = 8;
-  Real shr_str_factor = 8;
+  Real nor_op_factor = 0.5;
+  Real shr_op_factor = 0.5;
+  Real nor_str_factor = 2.5;
+  Real shr_str_factor = 2.5;
 
   //Real Gc = 0.5*crit_s_open*shr_op_factor*(max_s_str-res_s_str*shr_str_factor) + 0.5*crit_s_open*(1-shr_op_factor)*res_s_str*(shr_str_factor-1) + crit_s_open*res_s_str*(shr_str_factor-1);
   //Gc = 237500;
@@ -141,7 +141,8 @@ int main(int argc, char *argv[]){
 
   //Real beta=0.002;
   //SimulationDriver sim_driver(*model, beta=beta);
-  SimulationDriver sim_driver(*model);
+  //SimulationDriver sim_driver(*model);
+  model->initModel();
 
   Interfacer<_coupled_cohesive> interfacer(*model);   
 
@@ -151,22 +152,8 @@ int main(int argc, char *argv[]){
   DataRegister::registerParameter("max_shear_strength",max_s_str);
   DataRegister::registerParameter("res_shear_strength",res_s_str);
   DataRegister::registerParameter("res_normal_strength",res_n_str);
-  interfacer.createUniformInterface();
 
-  interfacer.createThroughCrack((dom_sizex-crack_size)/2.,(dom_sizex+crack_size)/2.);    
-
-  CohesiveLawAll& cohesive_law = dynamic_cast<CohesiveLawAll&>((model->getInterfaceLaw()));
-  
-  cohesive_law.preventSurfaceOverlapping(NULL);
-
-  cohesive_law.initRegularFormulation();
-  //cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
-  //cohesive_law.initTanhFormulation(0.5,0.15);
-  //cohesive_law.initMultiFormulation(op_list, str_list);
-
-  sim_driver.initConstantLoading(load, psi, phi);
-    
-  /* -------------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------------- */
   //Set-up simulation  outputs
      
   //DataDumper dumper(*model);
@@ -182,8 +169,27 @@ int main(int argc, char *argv[]){
   dumper.initDumper("ST_Diagram_maximum_shear_strength.cra", _maximum_shear_strength, 1.0, 1, 0);
   dumper.initDumper("ST_Diagram_maximum_normal_strength.cra", _maximum_normal_strength, 1.0, 1, 0);
   dumper.initDumper("ST_Diagram_shear_vel.cra", _shear_velocity_jumps, 1.0, 1, 0);
+  dumper.initDumper("ST_Diagram_shear_displ.cra", _shear_displacement_jumps, 1.0, 1, 0);
   dumper.initVectorDumper("ST_Diagram_shear_tra.cra", _interface_tractions, 2, 1.0, 1, 0);
   dumper.initVectorDumper("ST_Diagram_normal_tra.cra", _interface_tractions, 1, 1.0, 1, 0);
+  //dumper.initDumper("ST_Diagram_fric_coef.cra", _friction_coefficient, 1.0, 1, 0, _text);
+
+  interfacer.createUniformInterface();
+
+  interfacer.createThroughCrack((dom_sizex-crack_size)/2.,(dom_sizex+crack_size)/2.);    
+  CohesiveLawAll& cohesive_law = dynamic_cast<CohesiveLawAll&>((model->getInterfaceLaw()));
+  
+  cohesive_law.preventSurfaceOverlapping(NULL);
+
+  //cohesive_law.initRegularFormulation();
+  cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
+  //cohesive_law.initTanhFormulation(0.5,0.15);
+  //cohesive_law.initMultiFormulation(op_list, str_list);
+
+  //sim_driver.initConstantLoading(load, psi, phi);
+  model->setLoadingCase(load, psi, phi);
+  model->updateLoads();
+  model->initInterfaceFields();
 
   /* -------------------------------------------------------------------------- */
     
@@ -192,7 +198,12 @@ int main(int argc, char *argv[]){
 
   while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {
 
-    sim_driver.solveStep();
+    //sim_driver.solveStep();
+    model->updateDisplacements(); 
+    model->fftOnDisplacements();
+    model->computeStress();
+    model->computeInterfaceFields();
+    
     x_tip = model->getCrackTipPosition(nex/2,nex);
 
     if (t%10==0){
@@ -207,6 +218,8 @@ int main(int argc, char *argv[]){
       if (x_tip>x_lap)
 	x_lap += 0.05*nex;
     }
+
+    model->increaseTimeStep();
 
     ++t;
     

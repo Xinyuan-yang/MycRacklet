@@ -54,6 +54,9 @@ inline void Dumper::dump() {
   case _maximum_normal_strength:
   case _maximum_shear_strength:
   case _frictional_strength:
+  case _static_friction_coefficient:
+  case _dynamic_friction_coefficient:
+  case _int_friction_coefficient:
   case _state_variable:
   case _friction_coefficient:
     dump<std::vector<Real> >();

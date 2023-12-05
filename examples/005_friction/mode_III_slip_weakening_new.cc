@@ -69,21 +69,21 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 1.8e6;
+  Real load = 2.25e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
   // Cohesive parameters
-  Real crit_n_open = 0.0005;
-  Real crit_s_open = 0.0005;
+  Real crit_n_open = 50.0e-5;
+  Real crit_s_open = 50.0e-5;
   Real max_n_str = 2.5e6;
   Real max_s_str = 2.5e6;
   Real res_n_str = 0.25e6;
   Real res_s_str = 0.25e6;
-  Real nor_op_factor = 0.5;
-  Real shr_op_factor = 0.5;
-  Real nor_str_factor = 2.5;
-  Real shr_str_factor = 2.5;
+  Real nor_op_factor = 0.02;
+  Real shr_op_factor = 0.02;
+  Real nor_str_factor = 8;
+  Real shr_str_factor = 8;
 
   //Real Gc = 0.5*crit_s_open*shr_op_factor*(max_s_str-res_s_str*shr_str_factor) + 0.5*crit_s_open*(1-shr_op_factor)*res_s_str*(shr_str_factor-1) + crit_s_open*res_s_str*(shr_str_factor-1);
   //Gc = 237500;
@@ -101,6 +101,7 @@ int main(int argc, char *argv[]){
   }
 
   Gc = 0.5*crit_s_open*(max_s_str - res_s_str);
+  Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
   
   std::cout << "Gc =" << Gc << std::endl;
   op_list = {0.2, 0.4, 0.6, 0.8};
@@ -142,9 +143,7 @@ int main(int argc, char *argv[]){
   //Real beta=0.002;
   //SimulationDriver sim_driver(*model, beta=beta);
   //SimulationDriver sim_driver(*model);
-  model->initModel();
-
-  Interfacer<_coupled_cohesive> interfacer(*model);   
+  model->initModel();  
 
   DataRegister::registerParameter("critical_normal_opening",crit_n_open);
   DataRegister::registerParameter("critical_shear_opening",crit_s_open);
@@ -174,11 +173,11 @@ int main(int argc, char *argv[]){
   dumper.initVectorDumper("ST_Diagram_normal_tra.cra", _interface_tractions, 1, 1.0, 1, 0);
   //dumper.initDumper("ST_Diagram_fric_coef.cra", _friction_coefficient, 1.0, 1, 0, _text);
 
-  interfacer.createUniformInterface();
-
-  interfacer.createThroughCrack((dom_sizex-crack_size)/2.,(dom_sizex+crack_size)/2.);    
+  Interfacer<_coupled_cohesive> interfacer(*model); 
   CohesiveLawAll& cohesive_law = dynamic_cast<CohesiveLawAll&>((model->getInterfaceLaw()));
-  
+  interfacer.createUniformInterface();
+  interfacer.createThroughCrack((dom_sizex-crack_size)/2.,(dom_sizex+crack_size)/2.);    
+  dumper.dumpAll();
   cohesive_law.preventSurfaceOverlapping(NULL);
 
   //cohesive_law.initRegularFormulation();
@@ -195,7 +194,7 @@ int main(int argc, char *argv[]){
     
   //sim_driver.launchCrack(dom_sizex/2.,45*G_length,0.075,false);
   //sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);
-
+  dumper.dumpAll();
   while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {
 
     //sim_driver.solveStep();

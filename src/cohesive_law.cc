@@ -139,7 +139,6 @@ void CohesiveLaw::updateCohesiveLaw() {
 
       nor_strength[i] = max_nor_strength[i];
       shr_strength[i] = max_shr_strength[i];
-
     }
     
     else {
@@ -161,12 +160,13 @@ void CohesiveLaw::updateCohesiveLaw() {
       }
 
       else {
-
 	ind_crack[i] = 1;
 	nor_strength[i] = max_nor_strength[i] - (max_nor_strength[i]-res_nor_strength[i])*aux;
 	shr_strength[i] = max_shr_strength[i] - (max_shr_strength[i]-res_shr_strength[i])*aux;
+
       }
     }
+    
   }    
 }
 

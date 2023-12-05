@@ -76,19 +76,15 @@ void CohesiveLawCoulomb::updateCohesiveLaw() {
   for (UInt i = 0; i < n_ele; ++i) {
     aux = sqrt(((*nor_opening)[i]/crit_nor_opening[i])*((*nor_opening)[i]/crit_nor_opening[i])+
      ((*shr_opening)[i]/crit_shr_opening[i])*((*shr_opening)[i]/crit_shr_opening[i]));
-    std::cout << "ind_crack = " << ind_crack[i] << std::endl;
+
     if (((*nor_opening)[i]==0)&&((*shr_opening)[i]==0)&&(ind_crack[i]!=2)){
-      cf[i] = cf_s[i];
-      std::cout << "Case A" << std::endl;
+      cf[i] = cf[i]; //cf_s[i];
     }
 
-    /*
     else if ((aux>=1)||(fric_strength[i]==sigma_0*cf_d[i])){
       ind_crack[i] = 2;
       cf[i] = cf_d[i];
-      std::cout << "Case D" << std::endl;
     }
-    */
 
     else {
       //ind_crack[i] = 1;
@@ -96,8 +92,6 @@ void CohesiveLawCoulomb::updateCohesiveLaw() {
     }
 
     fric_strength[i] = sigma_0*cf[i];
-    std::cout << "fric_strength" << fric_strength[i] << std::endl;
-    std::cout << "aux = " << aux << std::endl;
   }
 }  
 

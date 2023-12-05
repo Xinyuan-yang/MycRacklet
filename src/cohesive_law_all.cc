@@ -130,9 +130,6 @@ void CohesiveLawAll::updateCohesiveLaw() {
       
       nor_strength[i] = max_nor_strength[i];
       shr_strength[i] = max_shr_strength[i];
-      std::cout << "Case A" << std::endl;
-      std::cout << "shr_str = " << shr_strength[i] << std::endl;
-      std::cout << "aux = " << 0 << std::endl;
     }
 
     else {

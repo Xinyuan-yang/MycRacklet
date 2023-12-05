@@ -72,9 +72,35 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 2.25e6;
   Real psi = 90.0;
-  Real phi = 90.0; 
+  Real phi = 90.0;
+  Real start = 0.0; // valeur de départ
+  Real load = 2.25e6;
+  Real end = 2.25e6; // valeur finale
+  int n = 5000; // nombre d'éléments souhaité
+  // Créer un vecteur de n éléments initialisé à 0
+  std::vector<double> loads(n, 0.0);
+  // Calculer l'incrément entre les valeurs
+  double increment = (end - start) / (n - 1);
+  // Remplir le vecteur avec les valeurs désirées
+  std::transform(loads.begin(), loads.end(), loads.begin(), [start, increment](double) mutable {
+      double value = start;
+      start += increment;
+      return value;
+  });
+
+  std::vector<Real> myload;
+
+  for (int i = 0; i < nex; ++i) {
+    myload.push_back(0);
+    myload.push_back(0);
+    myload.push_back(load);
+  }
+  
+  std::ofstream outFile("my_file.txt");
+    // the important part
+  for (const auto &e : myload) outFile << e << "\n";
+  
 
   // Cohesive parameters
   Real crit_n_open = 50.0e-5;
@@ -92,7 +118,6 @@ int main(int argc, char *argv[]){
   //Gc = 237500;
   //Real Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
   
-  /*
   std::vector<double> op_list = {0.2, 0.4, 0.6, 0.8};
   std::vector<double> str_list = {3.4e6, 3.2e6, 1.8e6, 1.6e6};
   str_list.insert(str_list.begin(), max_s_str);
@@ -109,11 +134,9 @@ int main(int argc, char *argv[]){
   std::cout << "Gc =" << Gc << std::endl;
   op_list = {0.2, 0.4, 0.6, 0.8};
   str_list = {3.4e6, 3.2e6, 1.8e6, 1.6e6};
-  */
+
 
   //Real G_length = 2*mu*crit_n_open*(max_n_str-res_n_str)/((load-res_n_str)*(load-res_n_str)*M_PI);
-  Real Lc = mu * crit_s_open / max_s_str;
-  Real Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
   Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
   std::cout << "G_length =" << G_length << std::endl;
@@ -122,37 +145,8 @@ int main(int argc, char *argv[]){
   Real dx = dom_sizex/(Real)(nex);
 
   //Real crack_size = 2*dx;
-  Real crack_size = 2*G_length;
-  //Real crack_size = 2*Lc;
-  UInt crack_dx = 2*std::round(std::ceil(crack_size / dx) / 2) * 2;
-  std::cout << "crack_size = " << crack_size << std::endl;
-  std::cout << "crack_size / dx = " << crack_dx << std::endl; 
-
-  // create load vector
-  std::vector<Real> myload;
-
-  for (int i = 0; i < (nex/2 - crack_dx/2); ++i) {
-    myload.push_back(0);
-    myload.push_back(0);
-    myload.push_back(load);
-  }
-
-  for (int i = 0; i < crack_dx; ++i) {
-    myload.push_back(0);
-    myload.push_back(0);
-    myload.push_back(1.05*max_s_str);
-  }
-
-  for (int i = 0; i < (nex/2 - crack_dx/2); ++i) {
-    myload.push_back(0);
-    myload.push_back(0);
-    myload.push_back(load);
-  }
-  
-  std::ofstream outFile("my_file.txt");
-  for (const auto &e : myload) outFile << e << "\n";
-
-
+  Real crack_size = 1*G_length;
+   
   std::string sim_name = "Mode-III crack tip equation of motion";
 
   std::cout << "./mode_III_rate_and_state " 
@@ -194,18 +188,15 @@ int main(int argc, char *argv[]){
   
   cohesive_law.preventSurfaceOverlapping(NULL);
 
-  //cohesive_law.initRegularFormulation();
-  cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
+  cohesive_law.initRegularFormulation();
+  //cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
   //cohesive_law.initTanhFormulation(0.5,0.15);
   //cohesive_law.initMultiFormulation(op_list, str_list);
 
   //sim_driver.initConstantLoading(load, psi, phi);
   //model->setLoadingCase(load, psi, phi);
   //model->updateLoads();
-  
-  model->setLoadingCase(load, psi, phi);
-  model->updateLoads();
-  //model->setLoadingFromVector(myload);
+  model->setLoadingFromVector(myload);
   model->initInterfaceFields();
     
   /* -------------------------------------------------------------------------- */

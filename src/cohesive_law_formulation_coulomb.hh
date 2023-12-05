@@ -67,23 +67,17 @@ struct DualCohesiveCoulombFormulation : public CohesiveCoulombFormulation {
     if (shr_op <= crit_int_op[i]) {
       id_crack = 1;
       coeff = cf_s + ((cf_int[i] - cf_s) / (crit_int_op[i]))*shr_op; 
-      std::cout << "Case B" << std::endl;
     }
 
     else if (aux < 1) {
       id_crack = 1;
       coeff = ((cf_int[i] - cf_d) / (crit_int_op[i] - crit_shr_op[i])) * (shr_op - crit_int_op[i]) + cf_int[i];
-      std::cout << "Case C" << std::endl;
     }
 
     else {
       id_crack = 2;
       coeff = cf_d;
-      std::cout << "Case D" << std::endl;
     }
-
-          std::cout << "shr_op = " << shr_op << std::endl;
-      std::cout << "crit_int_op[i] = " << crit_int_op[i] << std::endl;
 
     return coeff;
   }

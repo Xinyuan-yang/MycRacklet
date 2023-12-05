@@ -64,12 +64,14 @@ void Interfacer<F>::createHomogeneousCoulombIntfc() {
   std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
   std::vector<Real> * cf_s = datas[_static_friction_coefficient];
   std::vector<Real> * cf_d = datas[_dynamic_friction_coefficient];
+  std::vector<Real> * cf = datas[_friction_coefficient];
   std::vector<Real> * fric_strength = datas[_frictional_strength];
 
   std::fill(crit_n_open->begin(), crit_n_open->end(), crit_nor_opening);
   std::fill(crit_s_open->begin(), crit_s_open->end(), crit_shr_opening);
   std::fill(cf_s->begin(), cf_s->end(), coef_static);
   std::fill(cf_d->begin(), cf_d->end(), coef_dynamic);
+  std::fill(cf->begin(), cf->end(), coef_static);
   std::fill(fric_strength->begin(), fric_strength->end(), coef_static*sigma_0);
 
   // For DualCohesiveCoulombFormulation
@@ -80,7 +82,7 @@ void Interfacer<F>::createHomogeneousCoulombIntfc() {
   }
   if (DataRegister::hasParameter("int_friction_coefficient")) {
     Real coeff_int = DataRegister::getParameter<Real>("int_friction_coefficient");  
-    std::vector<Real> * cf_int = datas[_critical_int_opening];
+    std::vector<Real> * cf_int = datas[_int_friction_coefficient];
     std::fill(cf_int->begin(), cf_int->end(), coeff_int);
   }
 

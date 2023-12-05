@@ -589,6 +589,7 @@ inline void Interfacer<_cohesive_coulomb>::createThroughCrack(Real crack_start, 
 template<>
 inline void Interfacer<_dual_cohesive_coulomb>::createThroughCrack(Real crack_start, Real crack_end) {
   std::vector<Real> * cf_d = datas[_dynamic_friction_coefficient];  
+  std::vector<Real> * cf = datas[_friction_coefficient];  
   std::vector<Real> * fric_strength = datas[_frictional_strength]; 
   std::vector<UInt> * ind_crack = datas[_id_crack]; 
 
@@ -604,6 +605,7 @@ inline void Interfacer<_dual_cohesive_coulomb>::createThroughCrack(Real crack_st
 
       (*fric_strength)[index] = (*cf_d)[index]*sigma_0;    
       (*ind_crack)[index] = 2;
+      (*cf)[index] = (*cf_d)[index];
     }
   }
 

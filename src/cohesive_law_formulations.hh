@@ -131,16 +131,12 @@ struct DualCohesiveFormulation : public CohesiveFormulation {
       id_crack = 1;
       nor_str = max_nor_str - (max_nor_str-res_nor_str*nor_str_factor)/(nor_op_factor)*aux;
       shr_str = max_shr_str - (max_shr_str-res_shr_str*shr_str_factor)/(shr_op_factor)*aux;
-      std::cout << "Case B" << std::endl;
-      std::cout << "max_shr_str = " << max_shr_str << std::endl;
-      std::cout << "res_shr_str = " << res_shr_str << std::endl;
     }
 
     else if (aux < 1) {
       id_crack = 1;
       shr_str = (res_shr_str*(1-shr_str_factor)/(1-shr_op_factor)) * (aux - 1) + res_shr_str;
       nor_str = (res_nor_str*(1-nor_str_factor)/(1-nor_op_factor)) * (aux - 1) + res_nor_str;
-      std::cout << "Case C" << std::endl;
     }
 
     else {
@@ -151,11 +147,8 @@ struct DualCohesiveFormulation : public CohesiveFormulation {
         nor_str = res_nor_str;
         shr_str = res_shr_str;
       }
-      std::cout << "Case D" << std::endl;
 
     }
-  std::cout << "shr_str = " << shr_str << std::endl;
-  std::cout << "aux =  = " << aux << std::endl;
     return id_crack; 
   }
 };

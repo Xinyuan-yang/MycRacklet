@@ -86,39 +86,39 @@ int main(int argc, char *argv[]){
   });
 
   // Cohesive parameters
-  Real crit_n_open = 0.00025; //50.0e-5;
-  Real crit_s_open = 0.00025; //50.0e-5;
+  Real crit_n_open = 50.0e-5;
+  Real crit_s_open = 50.0e-5;
   Real max_n_str = 2.5e6;
   Real max_s_str = 2.5e6;
-  Real res_n_str = 0.2e6;
-  Real res_s_str = 0.2e6;
-  Real nor_op_factor = 0.2;
-  Real shr_op_factor = 0.2;
-  Real nor_str_factor = 6;
-  Real shr_str_factor = 6;
+  Real res_n_str = 0.25e6;
+  Real res_s_str = 0.25e6;
+  Real nor_op_factor = 0.02;
+  Real shr_op_factor = 0.02;
+  Real nor_str_factor = 8;
+  Real shr_str_factor = 8;
 
   //Real Gc = 0.5*crit_s_open*shr_op_factor*(max_s_str-res_s_str*shr_str_factor) + 0.5*crit_s_open*(1-shr_op_factor)*res_s_str*(shr_str_factor-1) + crit_s_open*res_s_str*(shr_str_factor-1);
   //Gc = 237500;
-  //Real Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
+  Real Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
   
-  std::vector<double> op_list = {0.1, 0.5};
+  //std::vector<double> op_list = {0.1, 0.5};
   //std::vector<double> str_list = {3.4e6, 3.2e6, 1.8e6, 1.6e6};
-  std::vector<double> str_list = {2.0e6, 0.6e6};
-  str_list.insert(str_list.begin(), max_s_str);
-  str_list.insert(str_list.end(), res_s_str);
-  op_list.insert(op_list.begin(), 0.0);
-  op_list.insert(op_list.end(), 1.0);
-  Real Gc = 0;
-  for (int i=1; i<op_list.size(); i++) {
-    Gc = Gc + crit_s_open*(op_list[i] - op_list[i-1])*(0.5*(str_list[i-1]-str_list[i]) + (str_list[i] - str_list.back()));
-  }
+  //std::vector<double> str_list = {2.0e6, 0.6e6};
+  //str_list.insert(str_list.begin(), max_s_str);
+  //str_list.insert(str_list.end(), res_s_str);
+  //op_list.insert(op_list.begin(), 0.0);
+  //op_list.insert(op_list.end(), 1.0);
+  //Real Gc = 0;
+  //for (int i=1; i<op_list.size(); i++) {
+  //  Gc = Gc + crit_s_open*(op_list[i] - op_list[i-1])*(0.5*(str_list[i-1]-str_list[i]) + (str_list[i] - str_list.back()));
+  //}
   
   
   
   std::cout << "Gc =" << Gc << std::endl;
-  op_list = {0.1, 0.5};
+  //op_list = {0.1, 0.5};
   //str_list = {3.4e6, 3.2e6, 1.8e6, 1.6e6};
-  str_list = {2.0e6, 0.6e6};
+  //str_list = {2.0e6, 0.6e6};
 
 
   //Real G_length = 2*mu*crit_n_open*(max_n_str-res_n_str)/((load-res_n_str)*(load-res_n_str)*M_PI);
@@ -158,7 +158,8 @@ int main(int argc, char *argv[]){
   //SimulationDriver sim_driver(*model, beta=beta);
   SimulationDriver sim_driver(*model);
 
-  model->setLoadingCase(0, psi, phi);
+  //model->setLoadingCase(0, psi, phi);
+  model->setLoadingCase(end, psi, phi);
 
   Interfacer<_coupled_cohesive> interfacer(*model);   
 
@@ -177,9 +178,9 @@ int main(int argc, char *argv[]){
   cohesive_law.preventSurfaceOverlapping(NULL);
 
   //cohesive_law.initRegularFormulation();
-  //cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
+  cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
   //cohesive_law.initTanhFormulation(0.5,0.15);
-  cohesive_law.initMultiFormulation(op_list, str_list);
+  //cohesive_law.initMultiFormulation(op_list, str_list);
 
   //sim_driver.initConstantLoading(load, psi, phi);
     

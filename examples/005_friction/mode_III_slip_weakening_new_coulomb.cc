@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 1.8e6;
+  Real load = 2.5e6; //2.25e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
@@ -76,14 +76,14 @@ int main(int argc, char *argv[]){
   // Cohesive parameters
   Real coeff_s = 0.25;
   Real coeff_d = 0.025;
-  Real coeff_int = 0.1;
+  Real coeff_int = 0.2;
   Real crit_n_open = 0.0005;
   Real crit_s_open = 0.0005;
-  Real crit_int_open = 0.00025;
-  Real nor_op_factor = 0.02;
-  Real shr_op_factor = 0.02;
-  Real nor_str_factor = 8;
-  Real shr_str_factor = 8;
+  Real crit_int_open = 0.00001;
+  //Real nor_op_factor = 0.02;
+  //Real shr_op_factor = 0.02;
+  //Real nor_str_factor = 8;
+  //Real shr_str_factor = 8;
 
   Real Gc = 0.5*crit_s_open*(coeff_s - coeff_d)*sigma_0;
 
@@ -167,7 +167,7 @@ int main(int argc, char *argv[]){
   
   interfacer.createThroughCrack((dom_sizex-crack_size)/2.,(dom_sizex+crack_size)/2.);    
   //CohesiveLawAll& cohesive_law = dynamic_cast<CohesiveLawAll&>((model->getInterfaceLaw()));
-  
+  dumper.dumpAll();
   //cohesive_law.preventSurfaceOverlapping(NULL);
 
   //cohesive_law.initRegularFormulation();

@@ -102,19 +102,19 @@ int main(int argc, char *argv[]){
   std::cout << "Gc =" << Gc << std::endl;
 
   // Compute the equivalent crit_open
-  crit_n_open = 0.5*Gc / (max_n_str - res_n_str);
-  crit_s_open = 0.5*Gc / (max_s_str - res_s_str);
+  crit_n_open = 2*Gc / (max_n_str - res_n_str);
+  crit_s_open = 2*Gc / (max_s_str - res_s_str);
 
-  Real G_length = 4*mu*Gc/(M_PI*std::pow(loads.back()-res_s_str, 2));
+  Real G_length = mu*Gc/(M_PI*std::pow(loads.back()-res_s_str, 2));
 
 
-    std::cout << "G_length =" << G_length << std::endl;
+  std::cout << "G_length =" << G_length << std::endl;
   
-  Real dom_sizex = 15*G_length;
+  Real dom_sizex = 60*G_length;
   Real dx = dom_sizex/(Real)(nex);
 
   //Real crack_size = 2*dx;
-  Real crack_size = 2*G_length;
+  Real crack_size = 8*G_length;
    
   std::string sim_name = "Mode-III crack tip equation of motion";
 

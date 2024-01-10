@@ -85,39 +85,75 @@ int main(int argc, char *argv[]){
   Real nor_str_factor = 8;
   Real shr_str_factor = 8;
 
-  //Real Gc = 0.5*crit_s_open*shr_op_factor*(max_s_str-res_s_str*shr_str_factor) + 0.5*crit_s_open*(1-shr_op_factor)*res_s_str*(shr_str_factor-1) + crit_s_open*res_s_str*(shr_str_factor-1);
-  //Gc = 237500;
-  //Real Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
-  
-  std::vector<double> op_list = {0.2, 0.4, 0.6, 0.8};
-  std::vector<double> str_list = {3.4e6, 3.2e6, 1.8e6, 1.6e6};
-  str_list.insert(str_list.begin(), max_s_str);
-  str_list.insert(str_list.end(), res_s_str);
-  op_list.insert(op_list.begin(), 0.0);
-  op_list.insert(op_list.end(), 1.0);
-  Real Gc = 0;
-  for (int i=1; i<op_list.size(); i++) {
-    Gc = Gc + crit_s_open*(op_list[i] - op_list[i-1])*(0.5*(str_list[i-1]-str_list[i]) + (str_list[i] - str_list.back()));
-  }
-
-  Gc = 0.5*crit_s_open*(max_s_str - res_s_str);
-  Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
+  Real Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
   
   std::cout << "Gc =" << Gc << std::endl;
-  op_list = {0.2, 0.4, 0.6, 0.8};
-  str_list = {3.4e6, 3.2e6, 1.8e6, 1.6e6};
-
 
   //Real G_length = 2*mu*crit_n_open*(max_n_str-res_n_str)/((load-res_n_str)*(load-res_n_str)*M_PI);
   Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
+  
+  // NEW
+  Real Lc = mu * shr_op_factor * crit_s_open / max_s_str;
 
   std::cout << "G_length =" << G_length << std::endl;
   
-  Real dom_sizex = 15*G_length;
+  Real dom_sizex = 300*Lc;//15*G_length;
   Real dx = dom_sizex/(Real)(nex);
 
   //Real crack_size = 2*dx;
-  Real crack_size = 2*G_length;
+
+  //NEW
+  Real crack_size = G_length;
+  UInt crack_dx = std::round(std::ceil(crack_size / dx) / 2) * 2;
+  //UInt barrier_dx = std::round(std::ceil(120*Lc / dx) / 2) * 2;
+  //UInt barrier_dx = std::round(std::ceil(120*Lc / dx) / 2) * 2;
+  UInt barrier_dx = (nex-barrier_dx)/2;
+  Real load_barrier = std::atof(argv[4])*max_s_str; 
+
+  std::cout << "crack_dx =" << crack_dx << std::endl;
+  std::cout << "barrier_dx =" << barrier_dx << std::endl;
+  //Real crack_size = 2*G_length;
+
+  std::vector<Real> myload;
+  for (int i = 0; i < (nex/2 - barrier_dx/2); ++i) {
+    myload.push_back(0);
+    myload.push_back(0);
+    myload.push_back(load_barrier);
+  }
+
+  for (int i = 0; i < (barrier_dx/2 - crack_dx/2); ++i) {
+    myload.push_back(0);
+    myload.push_back(0);
+    myload.push_back(load);
+  }
+
+  for (int i = 0; i < crack_dx; ++i) {
+    myload.push_back(0);
+    myload.push_back(0);
+    myload.push_back(1.05*max_s_str);
+  }
+
+  for (int i = 0; i < (barrier_dx/2 - crack_dx/2); ++i) {
+    myload.push_back(0);
+    myload.push_back(0);
+    myload.push_back(load);
+  }
+
+  for (int i = 0; i < (nex/2 - barrier_dx/2); ++i) {
+    myload.push_back(0);
+    myload.push_back(0);
+    myload.push_back(load_barrier);
+  }
+
+  // Compute the equivalent crit_open
+  crit_n_open = 2*Gc / (max_n_str - res_n_str);
+  crit_s_open = 2*Gc / (max_s_str - res_s_str);
+
+  std::cout << "myload size = " << myload.size() << std::endl;
+
+  // print load vector to a file
+  std::ofstream outFile("myload.txt");
+  for (const auto &e : myload) outFile << e << "\n";
    
   std::string sim_name = "Mode-III crack tip equation of motion";
 
@@ -171,6 +207,7 @@ int main(int argc, char *argv[]){
   dumper.initDumper("ST_Diagram_shear_displ.cra", _shear_displacement_jumps, 1.0, 1, 0);
   dumper.initVectorDumper("ST_Diagram_shear_tra.cra", _interface_tractions, 2, 1.0, 1, 0);
   dumper.initVectorDumper("ST_Diagram_normal_tra.cra", _interface_tractions, 1, 1.0, 1, 0);
+  dumper.initVectorDumper("ST_Diagram_top_loading.cra", _top_loading, 1, 1.0, 1, 0, _text);
   //dumper.initDumper("ST_Diagram_fric_coef.cra", _friction_coefficient, 1.0, 1, 0, _text);
 
   Interfacer<_coupled_cohesive> interfacer(*model); 
@@ -180,14 +217,15 @@ int main(int argc, char *argv[]){
   dumper.dumpAll();
   cohesive_law.preventSurfaceOverlapping(NULL);
 
-  //cohesive_law.initRegularFormulation();
-  cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
+  cohesive_law.initRegularFormulation();
+  //cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
   //cohesive_law.initTanhFormulation(0.5,0.15);
   //cohesive_law.initMultiFormulation(op_list, str_list);
 
   //sim_driver.initConstantLoading(load, psi, phi);
-  model->setLoadingCase(load, psi, phi);
-  model->updateLoads();
+  //model->setLoadingCase(load, psi, phi);
+  model->setLoadingFromVector(myload);
+  //model->updateLoads();
   model->initInterfaceFields();
 
   /* -------------------------------------------------------------------------- */

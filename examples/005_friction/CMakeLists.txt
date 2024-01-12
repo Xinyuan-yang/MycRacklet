@@ -83,4 +83,8 @@ add_cracklet_simulation(mode_III_slip_weakening_new_with_load_equivalent_increas
 
 add_cracklet_simulation(mode_III_slip_weakening_nucleation mode_III_slip_weakening_nucleation.cc)
 
+add_cracklet_simulation(mode_III_slip_weakening_equivalent_GL mode_III_slip_weakening_equivalent_GL.cc)
+
+add_cracklet_simulation(mode_III_slip_weakening_GL mode_III_slip_weakening_GL.cc)
+
 copy_input_file(input_pulse_PMMA.dat)

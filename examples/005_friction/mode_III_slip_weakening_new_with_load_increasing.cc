@@ -78,12 +78,12 @@ int main(int argc, char *argv[]){
   Real crit_s_open = 50.0e-5;
   Real max_n_str = 2.5e6;
   Real max_s_str = 2.5e6;
-  Real res_n_str = 0.25e6;
-  Real res_s_str = 0.25e6;
+  Real res_n_str = 1e6;
+  Real res_s_str = 1e6;
   Real nor_op_factor = 0.02;
   Real shr_op_factor = 0.02;
-  Real nor_str_factor = 8;
-  Real shr_str_factor = 8;
+  Real nor_str_factor = 2;
+  Real shr_str_factor = 2;
 
   Real Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
   

@@ -72,109 +72,45 @@ int main(int argc, char *argv[]){
   Real load = 2.25e6;
   Real psi = 90.0;
   Real phi = 90.0;
+  Real start = 0.0; // valeur de départ
+  Real end = 2.25e6; // valeur finale
+  int n = 5000; // nombre d'éléments souhaité
+  // Créer un vecteur de n éléments initialisé à 0
+  std::vector<double> loads(n, 0.0);
+  // Calculer l'incrément entre les valeurs
+  double increment = (end - start) / (n - 1);
+  // Remplir le vecteur avec les valeurs désirées
+  std::transform(loads.begin(), loads.end(), loads.begin(), [start, increment](double) mutable {
+      double value = start;
+      start += increment;
+      return value;
+  });
 
   // Cohesive parameters
   Real crit_n_open = 50.0e-5;
   Real crit_s_open = 50.0e-5;
   Real max_n_str = 2.5e6;
   Real max_s_str = 2.5e6;
-  Real res_n_str = 1e6;
-  Real res_s_str = 1e6;
+  Real res_n_str = 0.25e6;
+  Real res_s_str = 0.25e6;
   Real nor_op_factor = 0.02;
   Real shr_op_factor = 0.02;
-  Real nor_str_factor = 2;
-  Real shr_str_factor = 2;
+  Real nor_str_factor = 8;
+  Real shr_str_factor = 8;
 
   Real Gc = shr_op_factor*crit_s_open*(0.5*(max_s_str - shr_str_factor*res_s_str) + shr_str_factor*res_s_str - res_s_str) + 0.5*crit_s_open*(1-shr_op_factor)*(shr_str_factor*res_s_str-res_s_str);
   
   std::cout << "Gc =" << Gc << std::endl;
 
+  UInt factor = std::atoi(argv[4]); 
   //Real G_length = 2*mu*crit_n_open*(max_n_str-res_n_str)/((load-res_n_str)*(load-res_n_str)*M_PI);
-  Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
-  
-  // NEW
-  Real Lc = mu * shr_op_factor * crit_s_open / max_s_str;
-
+  Real G_length = factor*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
+  Real G_length_ref = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
   std::cout << "G_length =" << G_length << std::endl;
   
-  Real dom_sizex = 1200*Lc;//15*G_length;
+  Real dom_sizex = 15*G_length_ref;
   Real dx = dom_sizex/(Real)(nex);
-
-  //Real crack_size = 2*dx;
-
-  //NEW
   Real crack_size = G_length;
-  UInt crack_dx = std::round(std::ceil(crack_size / dx) / 2) * 2;
-  //UInt barrier_dx = std::round(std::ceil(120*Lc / dx) / 2) * 2;
-  //UInt barrier_dx = std::round(std::ceil(120*Lc / dx) / 2) * 2;
-  UInt barrier_dx = 3000;
-
-  std::cout << "crack_dx =" << crack_dx << std::endl;
-  std::cout << "barrier_dx =" << barrier_dx << std::endl;
-  //Real crack_size = 2*G_length;
-
-  Real start = 0.0; // valeur de départ
-  Real end = load; // valeur finale
-  int n = (nex-barrier_dx)/2; // nombre d'éléments souhaité
-  std::cout << "n = " << n << std::endl;
-  // Créer un vecteur de n éléments initialisé à 0
-  std::vector<double> loads1(n, 0.0);
-  std::vector<double> loads2(n, 0.0);
-  // Calculer l'incrément entre les valeurs
-  double increment = (end - start) / (n - 1);
-  // Remplir le vecteur avec les valeurs désirées
-  std::transform(loads1.begin(), loads1.end(), loads1.begin(), [start, increment](double) mutable {
-      double value = start;
-      start += increment;
-      return value;
-  });
-
-  std::transform(loads2.begin(), loads2.end(), loads2.begin(), [end, increment](Real) mutable {
-        Real value = end;
-        end -= increment;
-        return value;
-  });
-
-  std::vector<Real> myload;
-  for (int i = 0; i < (nex/2 - barrier_dx/2); ++i) {
-    myload.push_back(0);
-    myload.push_back(0);
-    myload.push_back(loads1[i]);
-  }
-
-  for (int i = 0; i < (barrier_dx/2 - crack_dx/2); ++i) {
-    myload.push_back(0);
-    myload.push_back(0);
-    myload.push_back(load);
-  }
-
-  for (int i = 0; i < crack_dx; ++i) {
-    myload.push_back(0);
-    myload.push_back(0);
-    myload.push_back(1.05*max_s_str);
-  }
-
-  for (int i = 0; i < (barrier_dx/2 - crack_dx/2); ++i) {
-    myload.push_back(0);
-    myload.push_back(0);
-    myload.push_back(load);
-  }
-
-  for (int i = 0; i < (nex/2 - barrier_dx/2); ++i) {
-    myload.push_back(0);
-    myload.push_back(0);
-    myload.push_back(loads2[i]);
-  }
-
-  // Compute the equivalent crit_open
-  crit_n_open = 2*Gc / (max_n_str - res_n_str);
-  crit_s_open = 2*Gc / (max_s_str - res_s_str);
-
-  std::cout << "myload size = " << myload.size() << std::endl;
-
-  // print load vector to a file
-  std::ofstream outFile("myload.txt");
-  for (const auto &e : myload) outFile << e << "\n";
    
   std::string sim_name = "Mode-III crack tip equation of motion";
 
@@ -238,22 +174,52 @@ int main(int argc, char *argv[]){
   dumper.dumpAll();
   cohesive_law.preventSurfaceOverlapping(NULL);
 
-  cohesive_law.initRegularFormulation();
-  //cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
+  //cohesive_law.initRegularFormulation();
+  cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);  
   //cohesive_law.initTanhFormulation(0.5,0.15);
   //cohesive_law.initMultiFormulation(op_list, str_list);
 
   //sim_driver.initConstantLoading(load, psi, phi);
-  //model->setLoadingCase(load, psi, phi);
-  model->setLoadingFromVector(myload);
-  //model->updateLoads();
+  model->setLoadingCase(0, psi, phi);
+  model->updateLoads();
   model->initInterfaceFields();
 
   /* -------------------------------------------------------------------------- */
+
+  UInt i = 0;
+  while ((t < n)&&(x_tip<0.9*nex)) {
+
+    //sim_driver.solveStep();
+    model->setLoadingCase(loads[i], psi, phi);
+    model->updateLoads();
     
-  //sim_driver.launchCrack(dom_sizex/2.,45*G_length,0.075,false);
-  //sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);
-  dumper.dumpAll();
+    model->updateDisplacements();
+    model->fftOnDisplacements();
+    model->computeStress();
+    model->computeInterfaceFields();
+    model->increaseTimeStep();  
+    x_tip = model->getCrackTipPosition(nex/2,nex);
+
+    if (t%10==0){
+      dumper.dumpAll();
+    }
+
+    if ((x_tip>x_lap)||(t%(UInt)(0.05*nb_time_steps)==0)) {
+      std::cout << "Process at " << (Real)t/(Real)nb_time_steps*100 << "% " << std::endl;
+      std::cout << "Crack at " << 100*x_tip/(Real)(nex) << "% " << std::endl;
+      std::cout << std::endl;
+      
+      if (x_tip>x_lap)
+	x_lap += 0.05*nex;
+    }
+
+    ++t;
+  ++i;
+  }
+
+
+  model->setLoadingCase(loads.back(), psi, phi);
+  model->updateLoads();
   while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {
 
     //sim_driver.solveStep();

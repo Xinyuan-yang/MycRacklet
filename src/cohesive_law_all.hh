@@ -59,8 +59,13 @@ public:
   /** dual-scale slip weakening law*/
   void initDualFormulation(Real nor_op_factor, Real shr_op_factor, 
   Real nor_str_factor, Real shr_str_factor);
+  /** dual-scale smooth slip weakening law*/
+  void initSmoothDualFormulation(Real nor_op_factor, Real shr_op_factor, 
+  Real nor_str_factor, Real shr_str_factor);
   /** tanh smoothing between the maximum and residul strength */
   void initTanhFormulation(Real center, Real smoothing);
+  /** halg tanh smoothing between the maximum and residul strength */
+  void initSmoothFormulation(Real smoothing);
   /** multi-scale slip weakening law */
   void initMultiFormulation(std::vector<double> op_list, std::vector<double> str_list);
 

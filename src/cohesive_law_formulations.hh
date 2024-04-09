@@ -188,6 +188,84 @@ struct TanhCohesiveFormulation : CohesiveFormulation {
 };
 
 /* -------------------------------------------------------------------------- */
+struct SmoothCohesiveFormulation : CohesiveFormulation {
+  SmoothCohesiveFormulation(){};
+  virtual ~SmoothCohesiveFormulation(){};
+  virtual inline Real getStrength(Real crit_nor_op, Real crit_shr_op, Real nor_op, 
+  Real shr_op, Real max_nor_str, Real max_shr_str, Real res_nor_str, 
+  Real res_shr_str, Real &nor_str, Real &shr_str){
+    Real aux;
+    UInt id_crack;
+    Real center = CohesiveLawAll::center;
+    Real smoothing = CohesiveLawAll::smoothing;
+
+    aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
+		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
+    
+    if (aux > 4) {
+      bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
+      // the case of contact is handled by the associated ContactLaw
+      if (!in_contact) { 
+        id_crack = 2;
+        nor_str = res_nor_str;
+        shr_str = res_shr_str;
+      }      
+    }
+  
+    else {
+      id_crack = 1;
+      //nor_str = max_nor_str + (max_nor_str - res_nor_str)*std::tanh(aux);
+      //shr_str = max_shr_str + (max_shr_str - res_shr_str)*std::tanh(aux);
+      nor_str = (1 + (1 - res_nor_str/max_nor_str)*std::tanh(-aux))*max_nor_str;
+      shr_str = (1 + (1 - res_shr_str/max_shr_str)*std::tanh(-aux))*max_shr_str;
+    }
+    return id_crack;
+  }
+};
+
+/* -------------------------------------------------------------------------- */
+struct SmoothDualCohesiveFormulation : public CohesiveFormulation {
+  SmoothDualCohesiveFormulation(){};
+  virtual ~SmoothDualCohesiveFormulation(){};
+  virtual inline Real getStrength(Real crit_nor_op, Real crit_shr_op, Real nor_op, 
+  Real shr_op, Real max_nor_str, Real max_shr_str, Real res_nor_str, 
+  Real res_shr_str, Real &nor_str, Real &shr_str){
+    Real aux;
+    UInt id_crack;
+    Real nor_op_factor = CohesiveLawAll::nor_op_factor;
+    Real shr_op_factor = CohesiveLawAll::shr_op_factor;
+    Real nor_str_factor = CohesiveLawAll::nor_str_factor;
+    Real shr_str_factor = CohesiveLawAll::shr_str_factor;
+
+    aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
+		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
+
+    if (aux/shr_op_factor <= 1) {
+      id_crack = 1;
+      nor_str = max_nor_str - (max_nor_str-res_nor_str*nor_str_factor)/(nor_op_factor)*aux;
+      shr_str = max_shr_str - (max_shr_str-res_shr_str*shr_str_factor)/(shr_op_factor)*aux;
+    }
+
+    else if (aux > 4) {
+      bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
+      // the case of contact is handled by the associated ContactLaw
+      if (!in_contact) { 
+        id_crack = 2;
+        nor_str = res_nor_str;
+        shr_str = res_shr_str;
+      }
+    }
+
+    else {
+      id_crack = 1;
+      nor_str = (1 + (1 - 1/nor_str_factor)*std::tanh(nor_op_factor-aux))*res_nor_str*nor_str_factor;
+      shr_str = (1 + (1 - 1/shr_str_factor)*std::tanh(shr_op_factor-aux))*res_shr_str*shr_str_factor;
+    }
+    return id_crack; 
+  }
+};
+
+/* -------------------------------------------------------------------------- */
 struct MultiCohesiveFormulation : CohesiveFormulation {
   MultiCohesiveFormulation(){};
   virtual ~MultiCohesiveFormulation(){};

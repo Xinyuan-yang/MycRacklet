@@ -61,6 +61,22 @@ void CohesiveLawAll::initTanhFormulation(Real center, Real smoothing) {
 }
 
 /* -------------------------------------------------------------------------- */
+void CohesiveLawAll::initSmoothFormulation(Real smoothing) {
+  this->smoothing = smoothing;
+  formulation = std::make_shared<SmoothCohesiveFormulation>();  
+}
+
+/* -------------------------------------------------------------------------- */
+void CohesiveLawAll::initSmoothDualFormulation(Real nor_op_factor, Real shr_op_factor,
+Real nor_str_factor, Real shr_str_factor) {
+  this->nor_op_factor = nor_op_factor;
+  this->shr_op_factor = shr_op_factor;
+  this->nor_str_factor = nor_str_factor;
+  this->shr_str_factor = shr_str_factor;
+  formulation = std::make_shared<SmoothDualCohesiveFormulation>();
+}
+
+/* -------------------------------------------------------------------------- */
 void CohesiveLawAll::initMultiFormulation(std::vector<double> op_list, std::vector<double> str_list) {
   this->op_list = op_list;
   this->str_list = str_list;

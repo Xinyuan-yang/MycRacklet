@@ -68,7 +68,8 @@ public:
   void initSmoothFormulation(Real smoothing);
   /** multi-scale slip weakening law */
   void initMultiFormulation(std::vector<double> op_list, std::vector<double> str_list);
-
+  /** Exponential weakening law*/
+  void initExponentialFormulation();
   /** Initialize interface fields */
   void initInterfaceConditions();
   /** Compute interface tractions and velocities in function of the new strength profile */

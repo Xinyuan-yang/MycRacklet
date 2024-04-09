@@ -83,6 +83,10 @@ void CohesiveLawAll::initMultiFormulation(std::vector<double> op_list, std::vect
   formulation = std::make_shared<MultiCohesiveFormulation>();
 }
 
+void CohesiveLawAll::initExponentialFormulation(){
+  formulation = std::make_shared<ExponentialFormulation>();
+}
+
 /* -------------------------------------------------------------------------- */
 void CohesiveLawAll::initInterfaceConditions() {
   

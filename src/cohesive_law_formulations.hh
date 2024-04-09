@@ -330,3 +330,36 @@ struct MultiCohesiveFormulation : CohesiveFormulation {
   return Gc;
   }
 };
+
+struct ExponentialFormulation : public CohesiveFormulation{
+  ExponentialFormulation(){};
+  virtual ~ExponentialFormulation(){};
+  virtual inline Real getStrength(Real crit_nor_op, Real crit_shr_op, Real nor_op, Real shr_op, Real max_nor_str, 
+  Real max_shr_str, Real res_nor_str, Real res_shr_str, Real &nor_str, Real &shr_str){
+    Real aux;
+    UInt id_crack;
+    aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
+		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
+    
+    if ((aux>=3)||(nor_str==res_nor_str)||(shr_str==res_shr_str)) {
+
+      bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
+      // the case of contact is handled by the associated ContactLaw
+    
+      if (!in_contact) { 
+        id_crack = 2;
+        nor_str = res_nor_str;
+        shr_str = res_shr_str;
+      }
+    }
+
+    else {
+      id_crack = 1;
+      nor_str = (max_nor_str-res_nor_str)*std::exp(-aux*2)+res_nor_str;
+      shr_str = (max_shr_str-res_shr_str)*std::exp(-aux*2)+res_shr_str;
+    }
+
+
+    return id_crack;
+  }
+};

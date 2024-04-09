@@ -62,6 +62,8 @@ struct CohesiveFormulation {
       shr_str = max_shr_str - (max_shr_str-res_shr_str)*aux;
     }
 
+    // dummy comment
+
     return id_crack;
   }
 };

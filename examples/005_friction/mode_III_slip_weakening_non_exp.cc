@@ -3,7 +3,7 @@
  * @author Fabian Barras <fabian.barras@epfl.ch>
  * @date   Mon Mar 19 15:47:26 2018
  *
- * @brief  Mode-III cract tip equation of motion
+ * @brief  Mode-III crack tip equation of motion
  *
  * @section LICENSE
  *

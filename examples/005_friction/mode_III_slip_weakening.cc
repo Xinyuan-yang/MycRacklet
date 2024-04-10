@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 4e6;
+  Real load = 2e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
@@ -105,7 +105,8 @@ int main(int argc, char *argv[]){
 				nu, E, cs, tcut,
 				sim_name, output_folder);      
   
-  SimulationDriver sim_driver(*model);
+  //SimulationDriver sim_driver(*model);
+  model->initModel();
    
   Interfacer<_linear_coupled_cohesive> interfacer(*model);   
 
@@ -120,7 +121,8 @@ int main(int argc, char *argv[]){
   CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model->getInterfaceLaw()));
   cohesive_law.preventSurfaceOverlapping(NULL);
     
-  sim_driver.initConstantLoading(load, psi, phi);
+  //sim_driver.initConstantLoading(load, psi, phi);
+  model->setLoadingCase(load, psi, phi);
     
   /* -------------------------------------------------------------------------- */
   //Set-up simulation  outputs
@@ -138,7 +140,12 @@ int main(int argc, char *argv[]){
 
   while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {
 
-    sim_driver.solveStep();
+    //sim_driver.solveStep();
+    model->updateDisplacements(); 
+    model->fftOnDisplacements();
+    model->computeStress();
+    model->computeInterfaceFields();
+    model->increaseTimeStep();
     x_tip = model->getCrackTipPosition(nex/2,nex);
           
     if (t%10==0){

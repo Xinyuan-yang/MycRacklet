@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 2.5e6;
+  Real load = 3e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]){
   
   Real dom_sizex = 15*G_length;
   Real dx = dom_sizex/(Real)(nex);
-  Real crack_size = 0.75*G_length;
+  Real crack_size = cr_ratio*G_length;
 
   Real lpz = mu*crit_n_open*(max_n_str-res_n_str)/(max_n_str*max_n_str);
   UInt n_ele_ind = std::round(dom_sizex/lpz)*20;
@@ -102,8 +102,8 @@ int main(int argc, char *argv[]){
 	    << "nb_elements alog x: " << nex << "\n"
 	    << "nb_time_steps: " << nb_time_steps << "\n"
 	    << "griffith crack length: " << G_length << "\n"
-        << "reference number of elements: " << n_ele_ind << '\n'
-        << "crack length ratio: " << cr_ratio << '\n'
+      << "reference number of elements: " << n_ele_ind << '\n'
+      << "crack length ratio: " << cr_ratio << '\n'
 	    << std::endl;
    
   /* -------------------------------------------------------------------------- */
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
   //Real beta=0.002;
   //SimulationDriver sim_driver(*model, beta=beta);
   SimulationDriver sim_driver(*model);
-
+  
   Interfacer<_coupled_cohesive> interfacer(*model);   
 
   DataRegister::registerParameter("critical_normal_opening",crit_n_open);
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]){
 
   //DataRegister::restart_dir = "restart_files/";
   //model->restartModel();
-
+  std::ofstream outputFile(output_folder+"ST_cra_tip.cra");
   while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {
 
     //model->pauseModel();
@@ -181,6 +181,7 @@ int main(int argc, char *argv[]){
 
     if (t%10==0){
       dumper.dumpAll();
+      outputFile << x_tip/(Real)(nex) << std::endl;
     }
 
     if ((x_tip>x_lap)||(t%(UInt)(0.05*nb_time_steps)==0)) {
@@ -195,7 +196,9 @@ int main(int argc, char *argv[]){
     ++t;
     
   }
+  outputFile.close();
   model->pauseModel();
+  
   //delete model;
   return 0;
 }

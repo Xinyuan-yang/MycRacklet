@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     // Note : Construct the pre-integrated material kernels before running this simulation
     // Use "invert_serial.f" to construct kernel files
     
-    std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps>" << std::endl;
+    std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <nb_factor>" << std::endl;
 
     std::string output_folder = argv[1];
     // Geometry description
@@ -144,8 +144,13 @@ int main(int argc, char *argv[])
 
     // sim_driver.initConstantLoading(load, psi, phi);
     std::vector<Real> pointload(nex * 3, 0.0);
-    for(UInt i=0; i<nex;i++){
+    //gaussian
+    /* for(UInt i=0; i<nex;i++){
         pointload[i*3 +2] = load*std::exp(-0.5*(i-nex*0.5)*(i-nex*0.5)*25/(crack_size/dx)/(crack_size/dx))*factor;
+    } */
+    //Ring load (in 1d case, a ladder function)
+    for(UInt i=0; i<crack_size/10/dx;i++){
+        pointload[(nex/2 -std::round(crack_size/20/dx)+i)*3+2] = load*factor;
     }
     model->setLoadingFromVector(pointload);
     model->initInterfaceFields();

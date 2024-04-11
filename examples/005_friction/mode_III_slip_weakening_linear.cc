@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 3e6;
+  Real load = 1e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
@@ -88,12 +88,12 @@ int main(int argc, char *argv[]){
 
     std::cout << "G_length =" << G_length << std::endl;
   
-  Real dom_sizex = 15*G_length;
+  Real dom_sizex = 10*G_length;
   Real dx = dom_sizex/(Real)(nex);
   Real crack_size = cr_ratio*G_length;
 
   Real lpz = mu*crit_n_open*(max_n_str-res_n_str)/(max_n_str*max_n_str);
-  UInt n_ele_ind = std::round(dom_sizex/lpz)*20;
+  UInt n_ele_ind = std::round(dom_sizex/lpz)*10;
    
   std::string sim_name = "Mode-III crack tip equation of motion";
 

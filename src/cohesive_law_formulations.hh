@@ -83,7 +83,7 @@ struct CohesiveFormulationCoulomb : public CohesiveFormulation {
     aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
 		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
     
-    if (aux>=1) {
+    if ((aux>=1)||(nor_str==res_nor_str)||(shr_str==res_shr_str)) {
 
       bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
       // the case of contact is handled by the associated ContactLaw
@@ -129,7 +129,18 @@ struct DualCohesiveFormulation : public CohesiveFormulation {
     aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
 		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
 
-    if (aux/shr_op_factor <= 1) {
+
+    if ((aux>=1)||(nor_str==res_nor_str)||(shr_str==res_shr_str)){
+      bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
+      // the case of contact is handled by the associated ContactLaw
+      if (!in_contact) { 
+        id_crack = 2;
+        nor_str = res_nor_str;
+        shr_str = res_shr_str;
+      }
+
+    }
+    else if (aux/shr_op_factor <= 1) {
       id_crack = 1;
       nor_str = max_nor_str - (max_nor_str-res_nor_str*nor_str_factor)/(nor_op_factor)*aux;
       shr_str = max_shr_str - (max_shr_str-res_shr_str*shr_str_factor)/(shr_op_factor)*aux;
@@ -139,17 +150,6 @@ struct DualCohesiveFormulation : public CohesiveFormulation {
       id_crack = 1;
       shr_str = (res_shr_str*(1-shr_str_factor)/(1-shr_op_factor)) * (aux - 1) + res_shr_str;
       nor_str = (res_nor_str*(1-nor_str_factor)/(1-nor_op_factor)) * (aux - 1) + res_nor_str;
-    }
-
-    else {
-      bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
-      // the case of contact is handled by the associated ContactLaw
-      if (!in_contact) { 
-        id_crack = 2;
-        nor_str = res_nor_str;
-        shr_str = res_shr_str;
-      }
-
     }
     return id_crack; 
   }
@@ -170,7 +170,7 @@ struct TanhCohesiveFormulation : CohesiveFormulation {
     aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
 		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
     
-    if (aux > 1) {
+    if ((aux>=1)||(nor_str==res_nor_str)||(shr_str==res_shr_str)) {
       bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
       // the case of contact is handled by the associated ContactLaw
       if (!in_contact) { 
@@ -204,7 +204,7 @@ struct SmoothCohesiveFormulation : CohesiveFormulation {
     aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
 		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
     
-    if (aux > 4) {
+    if ((aux>=4)||(nor_str==res_nor_str)||(shr_str==res_shr_str)) {
       bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
       // the case of contact is handled by the associated ContactLaw
       if (!in_contact) { 
@@ -242,13 +242,7 @@ struct SmoothDualCohesiveFormulation : public CohesiveFormulation {
     aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
 		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
 
-    if (aux/shr_op_factor <= 1) {
-      id_crack = 1;
-      nor_str = max_nor_str - (max_nor_str-res_nor_str*nor_str_factor)/(nor_op_factor)*aux;
-      shr_str = max_shr_str - (max_shr_str-res_shr_str*shr_str_factor)/(shr_op_factor)*aux;
-    }
-
-    else if (aux > 4) {
+    if((aux>=4)||(nor_str==res_nor_str)||(shr_str==res_shr_str)){
       bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
       // the case of contact is handled by the associated ContactLaw
       if (!in_contact) { 
@@ -256,6 +250,11 @@ struct SmoothDualCohesiveFormulation : public CohesiveFormulation {
         nor_str = res_nor_str;
         shr_str = res_shr_str;
       }
+    }
+    else if (aux/shr_op_factor <= 1) {
+      id_crack = 1;
+      nor_str = max_nor_str - (max_nor_str-res_nor_str*nor_str_factor)/(nor_op_factor)*aux;
+      shr_str = max_shr_str - (max_shr_str-res_shr_str*shr_str_factor)/(shr_op_factor)*aux;
     }
 
     else {
@@ -288,7 +287,7 @@ struct MultiCohesiveFormulation : CohesiveFormulation {
     aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
 		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
 
-    if (aux > 1) {
+    if ((aux>=1)||(nor_str==res_nor_str)||(shr_str==res_shr_str)) {
       bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
       // the case of contact is handled by the associated ContactLaw
       if (!in_contact) { 

@@ -46,15 +46,22 @@
 #include <iomanip>
 #include <sys/stat.h>
 #include <gsl/gsl_sf_expint.h>
+#include <gsl/gsl_sf_result.h>
+#include <gsl/gsl_errno.h>
 /* -------------------------------------------------------------------------- */
 // fluid overpressure
-inline void fluidoverpressure(std::vector<Real> &load, Uint nex, Real delta_p_star, Real alpha, Real dx, Real t)
+inline std::vector<Real> fluidoverpressure(std::vector<Real> load, UInt nex, Real delta_p_star, Real alpha, Real dx, Real t)
 {
-    for (UInt i = 0; i++; i < nex)
+    // To avoid underflow report errors
+    gsl_set_error_handler_off();
+    for (UInt i = 0; i < nex; i++)
     {
-        Real r = (i - 0.5 * nex) * dx;
-        load[i * 3 + 2] += delta_p_star * gsl_sf_expint_E1(r * r / 4 / alpha / t);
+        Real r = (i - (Real)nex / 2) * dx;
+        if(r==0){r = 0.5*dx;}
+        load[i * 3 + 1] += 10000*delta_p_star * gsl_sf_expint_E1(r * r / 4 / alpha / t);
     }
+
+    return load;
 }
 
 int main(int argc, char *argv[])
@@ -70,10 +77,8 @@ int main(int argc, char *argv[])
 
     UInt nb_time_steps = std::atoi(argv[3]);
     UInt nex = std::atoi(argv[2]);
-    Real mu = 3e9;
+    Real mu = 11.84e9;
     Real rho = 1200;
-    // The factor is set to amplify the gaussian
-    Real factor = std::atof(argv[4]);
     Real nu = 0.33;
     Real E = 2 * mu * (1 + nu);
     Real cs = sqrt(mu / rho);
@@ -82,20 +87,22 @@ int main(int argc, char *argv[])
     UInt tcut = 100;
 
     // Loading case
-    Real load = 3e6;
+    Real load = 2e6;
     Real psi = 90.0;
     Real phi = 90.0;
     // Cohesive parameters
-    Real crit_n_open = 50.0e-5;
-    Real crit_s_open = 50.0e-5;
+    Real crit_n_open = 0.37e-3;
+    Real crit_s_open = 0.37e-3;
     Real max_n_str = 5e6;
     Real max_s_str = 5e6;
     Real res_n_str = 0.25e6;
     Real res_s_str = 0.25e6;
     Real delta_p_star = 3.17e6 / 4 / M_PI;
     Real alpha = 0.048;
+    Real mus = 0.6;
+    Real mud = 0.42;
 
-    Real G_length = 2 * mu * crit_n_open * (max_n_str - res_n_str) / ((load - res_n_str) * (load - res_n_str) * M_PI);
+    Real G_length = 2 * mu * crit_n_open * (max_s_str - res_s_str) / ((load - res_s_str) * (load - res_s_str) * M_PI);
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
     std::cout << "G_length =" << G_length << std::endl;
@@ -103,10 +110,10 @@ int main(int argc, char *argv[])
     Real dom_sizex = 15 * G_length;
     // Real dom_sizex = 1.5;
     Real dx = dom_sizex / (Real)(nex);
-    Real crack_size = 0.5 * G_length;
+    Real crack_size = 0.9 * G_length;
     // Real crack_size = 0.1;
 
-    Real lpz = mu * crit_n_open * (max_n_str - res_n_str) / (max_n_str * max_n_str);
+    Real lpz = mu * crit_n_open * (max_s_str - res_s_str) / (max_s_str * max_s_str);
     UInt n_ele_ind = std::round(dom_sizex / lpz) * 20;
 
     std::string sim_name = "Mode-III crack tip equation of motion";
@@ -131,7 +138,7 @@ int main(int argc, char *argv[])
                               nu, E, cs, tcut,
                               sim_name, output_folder);
 
-    // Real beta=0.002;
+    Real beta = 0.2;
     // SimulationDriver sim_driver(*model, beta=beta);
     // SimulationDriver sim_driver(*model);
     model->initModel();
@@ -152,17 +159,20 @@ int main(int argc, char *argv[])
 
     cohesive_law.preventSurfaceOverlapping(NULL);
 
-    cohesive_law.initRegularFormulation();
-
+    cohesive_law.initRegularFormulationCoulomb(load, mus, mud);
+    //cohesive_law.initRegularFormulation();
     // sim_driver.initConstantLoading(load, psi, phi);
+
     // initialize load
     std::vector<Real> initload(nex * 3, 0.0);
+    std::vector<Real> load_actu(nex * 3, 0.0);
     for (UInt i = 0; i < nex; i++)
     {
         // initload[i*3 +2] = load*std::exp(-0.5*(i-nex*0.5)*(i-nex*0.5)*25/(crack_size/dx)/(crack_size/dx))*factor;
         initload[i * 3 + 2] = load;
+        initload[i * 3 + 1] = -load;
     }
-    fluidoverpressure(initload, nex, delta_p_star, alpha, dx, 0);
+    // actualload = fluidoverpressure(initload, nex, delta_p_star, alpha, dx, 0);
     model->setLoadingFromVector(initload);
     model->initInterfaceFields();
     /* -------------------------------------------------------------------------- */
@@ -201,8 +211,8 @@ int main(int argc, char *argv[])
         model->fftOnDisplacements();
         model->computeStress();
         model->computeInterfaceFields();
-        Real it = model->increaseTimeStep();
-        fluidoverpressure(initload, nex, delta_p_star, alpha, dx, it);
+        model->increaseTimeStep();
+
         x_tip = model->getCrackTipPosition(nex / 2, nex);
 
         if (t % 10 == 0)
@@ -222,6 +232,10 @@ int main(int argc, char *argv[])
         }
 
         ++t;
+        // update loading case
+        Real time = t * beta * dx / cs;
+        load_actu = fluidoverpressure(initload, nex, delta_p_star, alpha, dx, time);
+        model->setLoadingFromVector(load_actu);
     }
     outputFile.close();
     model->pauseModel();

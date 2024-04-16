@@ -95,4 +95,6 @@ add_cracklet_simulation(mode_III_slip_weakening_pointload mode_III_slip_weakenin
 
 add_cracklet_simulation(mode_III_slip_weakening_dual_cohesive mode_III_slip_weakening_dual_cohesive.cc)
 
+add_cracklet_simulation(mode_III_slip_weakening_fluidpression mode_III_slip_weakening_fluidpression.cc)
+
 copy_input_file(input_pulse_PMMA.dat)

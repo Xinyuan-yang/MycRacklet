@@ -53,37 +53,35 @@ int main(int argc, char *argv[])
   // Note : Construct the pre-integrated material kernels before running this simulation
   // Use "invert_serial.f" to construct kernel files
 
-  std::cout << "./mode_III_slip_weakening <output_folder_name> <crack_length_ratio> <load_control>" << std::endl;
-
-  std::string output_folder = argv[1];
+  std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <crack_length_ratio>" << std::endl;
+  
+  std::string output_folder=argv[1];
   // Geometry description
 
-  // UInt nb_time_steps = std::atoi(argv[3]);
-  // UInt nex = std::atoi(argv[2]);
-  Real cr_ratio = std::atof(argv[2]);
+  UInt nb_time_steps = std::atoi(argv[3]); 
+  UInt nex = std::atoi(argv[2]);
+  Real cr_ratio = std::atof(argv[4]);
   Real mu = 3e9;
   Real rho = 1200;
-  Real nu = 0.33;
-  Real E = 2 * mu * (1 + nu);
-  Real cs = sqrt(mu / rho);
-  Real load_ctrl = std::atof(argv[3]);
+  Real nu =  0.33;
+  Real E = 2*mu*(1+nu);
+  Real cs = sqrt(mu/rho);
   std::cout << "cs = " << cs << std::endl;
   // Cut of the loaded material kernels
-  UInt tcut = 100;
-
+  UInt tcut = 100; 
+  
   // Loading case
-  // Real load = 3e6;
+  Real load = 3e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
   // Cohesive parameters
-  Real crit_n_open = 2e-5;
-  Real crit_s_open = 2e-5;
+  Real crit_n_open = 50.0e-5;
+  Real crit_s_open = 50.0e-5;
   Real max_n_str = 5e6;
   Real max_s_str = 5e6;
   Real res_n_str = 0.25e6;
   Real res_s_str = 0.25e6;
-  Real load = load_ctrl * max_s_str;
 
   Real G_length = 2 * mu * crit_n_open * (max_n_str - res_n_str) / ((load - res_n_str) * (load - res_n_str) * M_PI);
   // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
@@ -96,8 +94,6 @@ int main(int argc, char *argv[])
 
   Real lpz = mu * crit_n_open * (max_n_str - res_n_str) / (max_n_str * max_n_str);
   UInt n_ele_ind = std::round(dom_sizex / lpz) * 20;
-  UInt nex = 2000;
-  UInt nb_time_steps = 5 * nex;
   Real dx = dom_sizex / (Real)(nex);
 
   std::string sim_name = "Mode-III crack tip equation of motion";

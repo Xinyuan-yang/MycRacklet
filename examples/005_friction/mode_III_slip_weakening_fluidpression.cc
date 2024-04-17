@@ -57,8 +57,11 @@ inline std::vector<Real> fluidoverpressure(std::vector<Real> load, UInt nex, Rea
     for (UInt i = 0; i < nex; i++)
     {
         Real r = (i - (Real)nex / 2) * dx;
-        if(r==0){r = 0.5*dx;}
-        load[i * 3 + 1] += 10000*delta_p_star * gsl_sf_expint_E1(r * r / 4 / alpha / t);
+        if (r == 0)
+        {
+            r = dx;
+        }
+        load[i * 3 + 1] += 1*delta_p_star * gsl_sf_expint_E1(r * r / 4 / alpha / t);
     }
 
     return load;
@@ -110,7 +113,7 @@ int main(int argc, char *argv[])
     Real dom_sizex = 15 * G_length;
     // Real dom_sizex = 1.5;
     Real dx = dom_sizex / (Real)(nex);
-    Real crack_size = 0.9 * G_length;
+    Real crack_size = 0.5 * G_length;
     // Real crack_size = 0.1;
 
     Real lpz = mu * crit_n_open * (max_s_str - res_s_str) / (max_s_str * max_s_str);
@@ -143,25 +146,23 @@ int main(int argc, char *argv[])
     // SimulationDriver sim_driver(*model);
     model->initModel();
 
-    Interfacer<_coupled_cohesive> interfacer(*model);
-
     DataRegister::registerParameter("critical_normal_opening", crit_n_open);
     DataRegister::registerParameter("critical_shear_opening", crit_s_open);
-    DataRegister::registerParameter("max_normal_strength", max_n_str);
-    DataRegister::registerParameter("max_shear_strength", max_s_str);
-    DataRegister::registerParameter("res_shear_strength", res_s_str);
-    DataRegister::registerParameter("res_normal_strength", res_n_str);
+    DataRegister::registerParameter("static_friction_coefficient", mus);
+    DataRegister::registerParameter("dynamic_friction_coefficient", mud);
+    DataRegister::registerParameter("uniform_contact_pressure", load);
+
+    Interfacer<_cohesive_coulomb> interfacer(*model);
     interfacer.createUniformInterface();
 
     interfacer.createThroughCrack((dom_sizex - crack_size) / 2., (dom_sizex + crack_size) / 2.);
 
-    CohesiveLawAll &cohesive_law = dynamic_cast<CohesiveLawAll &>((model->getInterfaceLaw()));
+    CohesiveLawCoulomb &cohesive_law = dynamic_cast<CohesiveLawCoulomb &>((model->getInterfaceLaw()));
 
-    cohesive_law.preventSurfaceOverlapping(NULL);
+    cohesive_law.initStandardFormulation();
 
-    cohesive_law.initRegularFormulationCoulomb(load, mus, mud);
-    //cohesive_law.initRegularFormulation();
-    // sim_driver.initConstantLoading(load, psi, phi);
+    // cohesive_law.initRegularFormulation();
+    //  sim_driver.initConstantLoading(load, psi, phi);
 
     // initialize load
     std::vector<Real> initload(nex * 3, 0.0);
@@ -169,7 +170,7 @@ int main(int argc, char *argv[])
     for (UInt i = 0; i < nex; i++)
     {
         // initload[i*3 +2] = load*std::exp(-0.5*(i-nex*0.5)*(i-nex*0.5)*25/(crack_size/dx)/(crack_size/dx))*factor;
-        initload[i * 3 + 2] = load;
+        initload[i * 3 + 2] = 0.58*load;
         initload[i * 3 + 1] = -load;
     }
     // actualload = fluidoverpressure(initload, nex, delta_p_star, alpha, dx, 0);
@@ -188,8 +189,6 @@ int main(int argc, char *argv[])
     dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
     dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _text);
     dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0);
-    dumper.initDumper("ST_Diagram_maximum_shear_strength.cra", _maximum_shear_strength, 1.0, 1, 0);
-    dumper.initDumper("ST_Diagram_maximum_normal_strength.cra", _maximum_normal_strength, 1.0, 1, 0);
     dumper.initDumper("ST_Diagram_shear_vel.cra", _shear_velocity_jumps, 1.0, 1, 0);
     dumper.initVectorDumper("ST_Diagram_shear_tra.cra", _interface_tractions, 2, 1.0, 1, 0);
     dumper.initVectorDumper("ST_Diagram_normal_tra.cra", _interface_tractions, 1, 1.0, 1, 0);
@@ -230,7 +229,6 @@ int main(int argc, char *argv[])
             if (x_tip > x_lap)
                 x_lap += 0.05 * nex;
         }
-
         ++t;
         // update loading case
         Real time = t * beta * dx / cs;

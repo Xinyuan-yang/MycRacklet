@@ -88,7 +88,7 @@ void CohesiveLawCoulomb::updateCohesiveLaw()
       cf[i] = cf[i]; // cf_s[i];
     }
 
-    else if ((aux >= 1) || (fric_strength[i] == std::fabs((*loads)[i * 3 + 1]) * cf_d[i])|| ind_crack[i] == 2 )
+    else if ((aux >= 1) || (fric_strength[i] == -(*loads)[i * 3 + 1] * cf_d[i])|| ind_crack[i] == 2 )
     {
       ind_crack[i] = 2;
       cf[i] = cf_d[i];
@@ -99,7 +99,7 @@ void CohesiveLawCoulomb::updateCohesiveLaw()
       // ind_crack[i] = 1;
       cf[i] = (*formulation)(cf_s[i], cf_d[i], aux, (*shr_opening)[i], i, ind_crack[i]);
     }
-    fric_strength[i] = std::max(std::fabs((*loads)[i * 3 + 1]) * cf[i],0.0);
+    fric_strength[i] = std::max(-(*loads)[i * 3 + 1] * cf[i],0.0);
   }
 }
 

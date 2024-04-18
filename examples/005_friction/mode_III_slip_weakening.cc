@@ -67,7 +67,7 @@ int main(int argc, char *argv[]){
   UInt tcut = 100; 
   
   // Loading case
-  Real load = 2e6;
+  Real load = 3e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]){
   Real dom_sizex = 15*G_length;
   Real dx = dom_sizex/(Real)(nex);
 
-  Real crack_size = 0.5*G_length;
+  Real crack_size = 2*dx;
    
   std::string sim_name = "Mode-III crack tip equation of motion";
 
@@ -105,8 +105,7 @@ int main(int argc, char *argv[]){
 				nu, E, cs, tcut,
 				sim_name, output_folder);      
   
-  //SimulationDriver sim_driver(*model);
-  model->initModel();
+  SimulationDriver sim_driver(*model);
    
   Interfacer<_linear_coupled_cohesive> interfacer(*model);   
 
@@ -121,8 +120,7 @@ int main(int argc, char *argv[]){
   CohesiveLaw& cohesive_law = dynamic_cast<CohesiveLaw&>((model->getInterfaceLaw()));
   cohesive_law.preventSurfaceOverlapping(NULL);
     
-  //sim_driver.initConstantLoading(load, psi, phi);
-  model->setLoadingCase(load, psi, phi);
+  sim_driver.initConstantLoading(load, psi, phi);
     
   /* -------------------------------------------------------------------------- */
   //Set-up simulation  outputs
@@ -136,16 +134,11 @@ int main(int argc, char *argv[]){
 
   /* -------------------------------------------------------------------------- */
     
-  //sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);
+  sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);
 
   while ((t < nb_time_steps)&&(x_tip<0.9*nex)) {
 
-    //sim_driver.solveStep();
-    model->updateDisplacements(); 
-    model->fftOnDisplacements();
-    model->computeStress();
-    model->computeInterfaceFields();
-    model->increaseTimeStep();
+    sim_driver.solveStep();
     x_tip = model->getCrackTipPosition(nex/2,nex);
           
     if (t%10==0){

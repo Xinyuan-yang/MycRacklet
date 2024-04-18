@@ -54,22 +54,23 @@ int main(int argc, char *argv[])
   // Use "invert_serial.f" to construct kernel files
 
   std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <crack_length_ratio>" << std::endl;
-  
-  std::string output_folder=argv[1];
+
+  std::string output_folder = argv[1];
   // Geometry description
 
-  UInt nb_time_steps = std::atoi(argv[3]); 
+  UInt nb_time_steps = std::atoi(argv[3]);
   UInt nex = std::atoi(argv[2]);
   Real cr_ratio = std::atof(argv[4]);
   Real mu = 3e9;
   Real rho = 1200;
-  Real nu =  0.33;
-  Real E = 2*mu*(1+nu);
-  Real cs = sqrt(mu/rho);
+  Real nu = 0.33;
+  Real E = 2 * mu * (1 + nu);
+  Real cs = sqrt(mu / rho);
   std::cout << "cs = " << cs << std::endl;
+  bool incre = true;
   // Cut of the loaded material kernels
-  UInt tcut = 100; 
-  
+  UInt tcut = 100;
+
   // Loading case
   Real load = 3e6;
   Real psi = 90.0;
@@ -80,10 +81,14 @@ int main(int argc, char *argv[])
   Real crit_s_open = 50.0e-5;
   Real max_n_str = 5e6;
   Real max_s_str = 5e6;
-  Real res_n_str = 0.25e6;
-  Real res_s_str = 0.25e6;
+  Real res_n_str = 0.00e6;
+  Real res_s_str = 0.00e6;
 
-  Real G_length = 2 * mu * crit_n_open * (max_n_str - res_n_str) / ((load - res_n_str) * (load - res_n_str) * M_PI);
+  Real incr_x;
+  Real incr_y;
+  Real incr_z;
+
+  Real G_length = 2 * mu * crit_n_open * (max_n_str - res_n_str) / ((load-res_n_str) * (load-res_n_str) * M_PI);
   // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
   std::cout << "G_length =" << G_length << std::endl;
@@ -115,13 +120,13 @@ int main(int argc, char *argv[])
 
   SpectralModel *model;
 
-  model = new SpectralModel(nex, 0, dom_sizex,
+  model = new SpectralModel(nex, nb_time_steps, dom_sizex,
                             nu, E, cs, tcut,
                             sim_name, output_folder);
 
   // Real beta=0.002;
   // SimulationDriver sim_driver(*model, beta=beta);
-  SimulationDriver sim_driver(*model);
+  model->initModel();
 
   Interfacer<_coupled_cohesive> interfacer(*model);
 
@@ -144,7 +149,19 @@ int main(int argc, char *argv[])
   // cohesive_law.initExponentialFormulation();
   // cohesive_law.initMultiFormulation(op_list, str_list);
 
-  sim_driver.initConstantLoading(load, psi, phi);
+  model->setLoadingCase(load, psi, phi);
+  if (incre)
+  {
+    psi *= M_PI/180;
+    phi *= M_PI/180;
+    model->setLoadingCase(0, psi, phi);
+    incr_x = load * sin(psi) * cos(phi) / nb_time_steps * 2.0;
+    incr_y = load * cos(psi) / nb_time_steps * 2.0;
+    incr_z = load * sin(psi) * sin(phi) / nb_time_steps * 2.0;
+  }
+  std::cout<< sin(psi) << std::endl;
+  model->updateLoads();
+  model->initInterfaceFields();
 
   /* -------------------------------------------------------------------------- */
   // Set-up simulation  outputs
@@ -152,27 +169,26 @@ int main(int argc, char *argv[])
   // DataDumper dumper(*model);
   DataDumper dumper(*model);
 
-/*   dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _text);
-  dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
-  dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _text);
-  dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0);
-  dumper.initDumper("ST_Diagram_maximum_shear_strength.cra", _maximum_shear_strength, 1.0, 1, 0);
-  dumper.initDumper("ST_Diagram_maximum_normal_strength.cra", _maximum_normal_strength, 1.0, 1, 0);
-  dumper.initDumper("ST_Diagram_shear_vel.cra", _shear_velocity_jumps, 1.0, 1, 0);
-  dumper.initVectorDumper("ST_Diagram_shear_tra.cra", _interface_tractions, 2, 1.0, 1, 0);
-  dumper.initVectorDumper("ST_Diagram_normal_tra.cra", _interface_tractions, 1, 1.0, 1, 0); */
+    dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _text);
+    dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _text);
+    dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _text);
+    dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _text);
+    dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
+    dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _text);
+    dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0);
+    dumper.initDumper("ST_Diagram_maximum_shear_strength.cra", _maximum_shear_strength, 1.0, 1, 0);
+    dumper.initDumper("ST_Diagram_maximum_normal_strength.cra", _maximum_normal_strength, 1.0, 1, 0);
+    dumper.initDumper("ST_Diagram_shear_vel.cra", _shear_velocity_jumps, 1.0, 1, 0);
+    dumper.initVectorDumper("ST_Diagram_shear_tra.cra", _interface_tractions, 2, 1.0, 1, 0);
+    dumper.initVectorDumper("ST_Diagram_normal_tra.cra", _interface_tractions, 1, 1.0, 1, 0); 
 
-  /* -------------------------------------------------------------------------- */
 
   // sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);
 
   // DataRegister::restart_dir = "restart_files/";
   // model->restartModel();
   std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
-  while ((t < nb_time_steps) && (x_tip < 0.6 * nex))
+  while ((t < nb_time_steps) && (x_tip < 0.9 * nex))
   {
 
     // model->pauseModel();
@@ -186,6 +202,12 @@ int main(int argc, char *argv[])
     model->increaseTimeStep();
 
     x_tip = model->getCrackTipPosition(nex / 2, nex);
+    if (incre && (t < nb_time_steps / 2.))
+    {
+      model->incrementLoad(incr_x, 0);
+      model->incrementLoad(incr_y, 1);
+      model->incrementLoad(incr_z, 2);
+    }
 
     if (t % 10 == 0)
     {

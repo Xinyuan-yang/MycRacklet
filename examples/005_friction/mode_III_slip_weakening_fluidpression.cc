@@ -61,7 +61,7 @@ inline std::vector<Real> fluidoverpressure(std::vector<Real> load, UInt nex, Rea
         {
             r = dx;
         }
-        load[i * 3 + 1] += 1*delta_p_star * gsl_sf_expint_E1(r * r / 4 / alpha / t);
+        load[i * 3 + 1] += 1* delta_p_star * gsl_sf_expint_E1(r * r / 4 / alpha / t);
     }
 
     return load;
@@ -90,9 +90,8 @@ int main(int argc, char *argv[])
     UInt tcut = 100;
 
     // Loading case
-    Real load = 2e6;
-    Real psi = 90.0;
-    Real phi = 90.0;
+    Real load_nor = 5.08e6;
+    Real load_shr = 2.41e6;
     // Cohesive parameters
     Real crit_n_open = 0.37e-3;
     Real crit_s_open = 0.37e-3;
@@ -101,11 +100,11 @@ int main(int argc, char *argv[])
     Real res_n_str = 0.25e6;
     Real res_s_str = 0.25e6;
     Real delta_p_star = 3.17e6 / 4 / M_PI;
-    Real alpha = 0.048;
+    Real alpha = 0.048e6;
     Real mus = 0.6;
     Real mud = 0.42;
 
-    Real G_length = 2 * mu * crit_n_open * (max_s_str - res_s_str) / ((load - res_s_str) * (load - res_s_str) * M_PI);
+    Real G_length = 2 * mu * crit_n_open * load_nor * (mus - mud) / (load_shr * load_shr * (1 - mud) * (1 - mud) * M_PI);
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
     std::cout << "G_length =" << G_length << std::endl;
@@ -113,7 +112,7 @@ int main(int argc, char *argv[])
     Real dom_sizex = 15 * G_length;
     // Real dom_sizex = 1.5;
     Real dx = dom_sizex / (Real)(nex);
-    Real crack_size = 0.5 * G_length;
+    Real crack_size = 0.8 * G_length;
     // Real crack_size = 0.1;
 
     Real lpz = mu * crit_n_open * (max_s_str - res_s_str) / (max_s_str * max_s_str);
@@ -150,7 +149,7 @@ int main(int argc, char *argv[])
     DataRegister::registerParameter("critical_shear_opening", crit_s_open);
     DataRegister::registerParameter("static_friction_coefficient", mus);
     DataRegister::registerParameter("dynamic_friction_coefficient", mud);
-    DataRegister::registerParameter("uniform_contact_pressure", load);
+    DataRegister::registerParameter("uniform_contact_pressure", load_nor);
 
     Interfacer<_cohesive_coulomb> interfacer(*model);
     interfacer.createUniformInterface();
@@ -170,8 +169,8 @@ int main(int argc, char *argv[])
     for (UInt i = 0; i < nex; i++)
     {
         // initload[i*3 +2] = load*std::exp(-0.5*(i-nex*0.5)*(i-nex*0.5)*25/(crack_size/dx)/(crack_size/dx))*factor;
-        initload[i * 3 + 2] = 0.58*load;
-        initload[i * 3 + 1] = -load;
+        initload[i * 3 + 2] = load_shr;
+        initload[i * 3 + 1] = -load_nor;
     }
     // actualload = fluidoverpressure(initload, nex, delta_p_star, alpha, dx, 0);
     model->setLoadingFromVector(initload);

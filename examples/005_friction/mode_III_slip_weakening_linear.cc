@@ -87,8 +87,9 @@ int main(int argc, char *argv[])
   Real incr_x;
   Real incr_y;
   Real incr_z;
+  Real load_actu = 0;
 
-  Real G_length = 2 * mu * crit_n_open * (max_n_str - res_n_str) / ((load-res_n_str) * (load-res_n_str) * M_PI);
+  Real G_length = 2.0 * mu * crit_n_open * (max_n_str - res_n_str) / ((load-res_n_str) * (load-res_n_str) * M_PI);
   // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
   std::cout << "G_length =" << G_length << std::endl;
@@ -162,6 +163,8 @@ int main(int argc, char *argv[])
   std::cout<< sin(psi) << std::endl;
   model->updateLoads();
   model->initInterfaceFields();
+  x_tip = model->getCrackTipPosition(nex / 2, nex);
+  x_lap = x_tip + 0.01 * nex;
 
   /* -------------------------------------------------------------------------- */
   // Set-up simulation  outputs
@@ -188,7 +191,7 @@ int main(int argc, char *argv[])
   // DataRegister::restart_dir = "restart_files/";
   // model->restartModel();
   std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
-  while ((t < nb_time_steps) && (x_tip < 0.9 * nex))
+  while ((t < nb_time_steps) && (x_tip < 0.6 * nex))
   {
 
     // model->pauseModel();
@@ -202,17 +205,18 @@ int main(int argc, char *argv[])
     model->increaseTimeStep();
 
     x_tip = model->getCrackTipPosition(nex / 2, nex);
-    if (incre && (t < nb_time_steps / 2.))
+    //if (incre && (t < nb_time_steps / 2.))
     {
       model->incrementLoad(incr_x, 0);
       model->incrementLoad(incr_y, 1);
       model->incrementLoad(incr_z, 2);
+      load_actu += incr_z;
     }
 
     if (t % 10 == 0)
     {
       dumper.dumpAll();
-      outputFile << x_tip / (Real)(nex) << std::endl;
+      outputFile <<  load_actu << std::endl;
     }
 
     if ((x_tip > x_lap) || (t % (UInt)(0.05 * nb_time_steps) == 0))
@@ -222,7 +226,8 @@ int main(int argc, char *argv[])
       std::cout << std::endl;
 
       if (x_tip > x_lap)
-        x_lap += 0.05 * nex;
+        {x_lap += 0.01 * nex;
+        break;}
     }
 
     ++t;

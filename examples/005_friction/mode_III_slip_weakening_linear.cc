@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   UInt tcut = 100;
 
   // Loading case
-  Real load = 3e6;
+  Real load = 1.5e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
@@ -89,12 +89,14 @@ int main(int argc, char *argv[])
   Real incr_z;
   Real load_actu = 0;
 
-  Real G_length = 2.0 * mu * crit_n_open * (max_n_str - res_n_str) / ((load-res_n_str) * (load-res_n_str) * M_PI);
-  // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
+  Real Gc = 0.5*crit_n_open*(max_n_str-res_n_str);
+  Real G_length = 4.0 * mu * Gc / (M_PI*std::pow(load-res_s_str, 2));
+  //Real G_length = 2*E/(1-nu*nu)*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
   std::cout << "G_length =" << G_length << std::endl;
 
   Real dom_sizex = 15 * G_length;
+  //dom_sizex = 8;
 
   Real crack_size = cr_ratio * G_length;
 
@@ -197,7 +199,7 @@ int main(int argc, char *argv[])
     model->increaseTimeStep();
 
     x_tip = model->getCrackTipPosition(nex / 2, nex);
-    //if (incre && (t < nb_time_steps / 2.))
+    if (incre && (t < nb_time_steps / 2.))
     {
       model->incrementLoad(incr_x, 0);
       model->incrementLoad(incr_y, 1);
@@ -205,7 +207,7 @@ int main(int argc, char *argv[])
       load_actu += incr_z;
     }
 
-    if (t % 10 == 0)
+    if (t % 45 == 0)
     {
       dumper.dumpAll();
       outputFile <<  load_actu << std::endl;
@@ -219,7 +221,7 @@ int main(int argc, char *argv[])
 
       if (x_tip > x_lap)
         {x_lap += 0.01 * nex;
-        break;}
+      }
     }
 
     ++t;

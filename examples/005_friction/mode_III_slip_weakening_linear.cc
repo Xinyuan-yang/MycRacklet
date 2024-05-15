@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   UInt tcut = 100;
 
   // Loading case
-  Real load = 1.2e6;
+  Real load = 1e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
   UInt n_ele_ind = std::round(dom_sizex / lpz) * 20;
   Real dx = dom_sizex / (Real)(nex);
 
-  if(lpz >= G_length/10) std::cerr << "\033[33mWarning : process zone size not small enough compared to the Griffith crack length, Griffith's theory may not be valid\033[0m"<<std::endl;
+  if(lpz >= G_length/20) std::cerr << "\033[33mWarning : process zone size not small enough compared to the Griffith crack length, Griffith's theory may not be valid\033[0m"<<std::endl;
 
   std::string sim_name = "Mode-III crack tip equation of motion";
 
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
       load_actu += incr_z;
     }
 
-    if (t % 45 == 0)
+    if (t % 10 == 0)
     {
       dumper.dumpAll();
       outputload <<  load_actu << std::endl;
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
       std::cout << std::endl;
 
       if (x_tip > x_lap)
-        {x_lap += 0.01 * nex;
+        {x_lap += 0.05 * nex;
       }
     }
 

@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   bool incre = true;
 
   // Loading case
-  Real load = 1.2e6;
+  Real load = 1e6;
   Real psi = 90.0;
   Real phi = 90.0;
   Real incr_x = 0;

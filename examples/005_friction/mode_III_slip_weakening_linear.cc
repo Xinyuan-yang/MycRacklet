@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   UInt tcut = 100;
 
   // Loading case
-  Real load = 1.5e6;
+  Real load = 1.2e6;
   Real psi = 90.0;
   Real phi = 90.0;
 
@@ -103,6 +103,8 @@ int main(int argc, char *argv[])
   Real lpz = mu * crit_n_open * (max_n_str - res_n_str) / (max_n_str * max_n_str);
   UInt n_ele_ind = std::round(dom_sizex / lpz) * 20;
   Real dx = dom_sizex / (Real)(nex);
+
+  if(lpz >= G_length/10) std::cerr << "\033[33mWarning : process zone size not small enough compared to the Griffith crack length, Griffith's theory may not be valid\033[0m"<<std::endl;
 
   std::string sim_name = "Mode-III crack tip equation of motion";
 
@@ -184,7 +186,8 @@ int main(int argc, char *argv[])
 
   // DataRegister::restart_dir = "restart_files/";
   // model->restartModel();
-  std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
+  std::ofstream outputtip(output_folder + "ST_cra_tip.cra");
+  std::ofstream outputload(output_folder + "ST_load.cra");
   while ((t < nb_time_steps) && (x_tip < 0.6 * nex))
   {
 
@@ -210,7 +213,8 @@ int main(int argc, char *argv[])
     if (t % 45 == 0)
     {
       dumper.dumpAll();
-      outputFile <<  load_actu << std::endl;
+      outputload <<  load_actu << std::endl;
+      outputtip << x_tip / (Real)(nex) << std::endl;
     }
 
     if ((x_tip > x_lap) || (t % (UInt)(0.05 * nb_time_steps) == 0))
@@ -226,7 +230,8 @@ int main(int argc, char *argv[])
 
     ++t;
   }
-  outputFile.close();
+  outputtip.close();
+  outputload.close();
   model->pauseModel();
 
   // delete model;

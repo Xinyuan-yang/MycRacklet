@@ -341,7 +341,7 @@ struct ExponentialFormulation : public CohesiveFormulation{
     aux = sqrt((nor_op/crit_nor_op)*(nor_op/crit_nor_op)+
 		(shr_op/crit_shr_op)*(shr_op/crit_shr_op));
     
-    if ((aux>=3)||(nor_str==res_nor_str)||(shr_str==res_shr_str)) {
+    if ((aux>=7)||(nor_str==res_nor_str)||(shr_str==res_shr_str)) {
 
       bool in_contact = ((nor_str == res_nor_str)&&(cRacklet::is_negative((nor_op))));
       // the case of contact is handled by the associated ContactLaw

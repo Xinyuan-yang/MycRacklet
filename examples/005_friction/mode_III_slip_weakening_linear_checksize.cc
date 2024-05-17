@@ -86,10 +86,10 @@ int main(int argc, char *argv[])
   Real incr_y;
   Real incr_z;
   Real load_actu = 0;
+  UInt nb_dumps = 2000;
 
-
-  Real Gc = 0.5*crit_n_open*(max_n_str-res_n_str);
-  Real G_length = 4.0 * mu * Gc / (M_PI*std::pow(load-res_s_str, 2));
+  Real Gc = 0.5 * crit_n_open * (max_n_str - res_n_str);
+  Real G_length = 4.0 * mu * Gc / (M_PI * std::pow(load - res_s_str, 2));
   // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
   std::cout << "G_length =" << G_length << std::endl;
@@ -145,39 +145,39 @@ int main(int argc, char *argv[])
 
   cohesive_law.preventSurfaceOverlapping(NULL);
 
-  cohesive_law.initRegularFormulation();
+  // cohesive_law.initRegularFormulation();
   // cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);
-  // cohesive_law.initExponentialFormulation();
+  cohesive_law.initExponentialFormulation();
   // cohesive_law.initMultiFormulation(op_list, str_list);
 
   model->setLoadingCase(load, psi, phi);
   if (incre)
   {
-    psi *= M_PI/180;
-    phi *= M_PI/180;
+    psi *= M_PI / 180;
+    phi *= M_PI / 180;
     model->setLoadingCase(0, psi, phi);
     incr_x = load * sin(psi) * cos(phi) / nb_time_steps * 2.0;
     incr_y = load * cos(psi) / nb_time_steps * 2.0;
     incr_z = load * sin(psi) * sin(phi) / nb_time_steps * 2.0;
   }
-  std::cout<< sin(psi) << std::endl;
+  std::cout << sin(psi) << std::endl;
   model->updateLoads();
   model->initInterfaceFields();
   x_tip = model->getCrackTipPosition(n_ele_ind / 2, n_ele_ind);
-  x_lap = x_tip + 0.01 * n_ele_ind;
+  x_lap = x_tip;
 
   /* -------------------------------------------------------------------------- */
   // Set-up simulation  outputs
-
+  UInt nb_t = nb_time_steps / nb_dumps;
   // DataDumper dumper(*model);
   DataDumper dumper(*model);
 
-    dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _text);
-    dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _text);
-    dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _text);
-    dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _text);
-    dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
-    dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _text);
+  dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
+  dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _text);
   // sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);
 
   // DataRegister::restart_dir = "restart_files/";
@@ -205,10 +205,10 @@ int main(int argc, char *argv[])
       load_actu += incr_z;
     }
 
-    if (t % 10 == 0)
+    if (t % nb_t == 0)
     {
       dumper.dumpAll();
-      outputFile <<  load_actu << std::endl;
+      outputFile << load_actu << std::endl;
     }
 
     if ((x_tip > x_lap) || (t % (UInt)(0.05 * nb_time_steps) == 0))
@@ -218,8 +218,13 @@ int main(int argc, char *argv[])
       std::cout << std::endl;
 
       if (x_tip > x_lap)
-        {x_lap += 0.01 * n_ele_ind;
-        break;}
+      {
+        std::cout << "Process at " << (Real)t / (Real)nb_time_steps * 100 << "% " << std::endl;
+        std::cout << "Crack at " << 100 * x_tip / (Real)(n_ele_ind) << "% " << std::endl;
+        std::cout << std::endl;
+        x_lap += 0.01 * n_ele_ind;
+        break;
+      }
     }
 
     ++t;

@@ -187,7 +187,7 @@ void CohesiveLawAll::computeVelocities(){
     for (UInt j = 0; j < n_ele[1]; ++j) {
       
       Real trac = (*stresses[0])[(i*dim+1)+j*n_ele[0]*dim] - mu[0]*eta[0]* (*velocities[0])[(i*dim+1)+j*n_ele[0]*dim]/cs[0];
-      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0)) {
+      if ((nor_strength[i+n_ele[0]*j] < trac)||(nor_strength[i+n_ele[0]*j]==0)&&(res_nor_strength[i + n_ele[0]*j]!=0)) {
 	computeIndepNormalVelocities(i,j);
       }
       else {

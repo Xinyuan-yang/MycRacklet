@@ -40,7 +40,7 @@ struct CohesiveCoulombFormulation {
     if (aux >= 1) {
       id_crack = 2;
       coeff = cf_d;
-      std::cout << "Case D" << std::endl;
+      //std::cout << "Case D" << std::endl;
     }
     
     else {
@@ -80,5 +80,26 @@ struct DualCohesiveCoulombFormulation : public CohesiveCoulombFormulation {
     }
 
     return coeff;
+  }
+};
+
+struct ExpCoulombFormulation : public CohesiveCoulombFormulation{
+  ExpCoulombFormulation(){};
+  virtual ~ExpCoulombFormulation(){};
+  virtual inline Real operator()(Real cf_s, Real cf_d, Real aux, Real shr_op, UInt i, UInt &id_crack){ 
+    Real coeff;
+
+    if (aux >= 5) {
+      id_crack = 2;
+      coeff = cf_d;
+      //std::cout << "Case D" << std::endl;
+    }
+    
+    else {
+    id_crack = 1;
+    coeff = cf_d + (cf_s-cf_d) * std::exp(-aux*2);
+    }
+    return coeff;
+
   }
 };

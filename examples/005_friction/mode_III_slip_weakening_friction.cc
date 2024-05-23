@@ -45,27 +45,8 @@
 #include <string>
 #include <iomanip>
 #include <sys/stat.h>
-#include <gsl/gsl_sf_expint.h>
-#include <gsl/gsl_sf_result.h>
-#include <gsl/gsl_errno.h>
-/* -------------------------------------------------------------------------- */
-// fluid overpressure
-inline std::vector<Real> fluidoverpressure(std::vector<Real> load, UInt nex, Real delta_p_star, Real alpha, Real dx, Real t)
-{
-    // To avoid underflow report errors
-    gsl_set_error_handler_off();
-    for (UInt i = 0; i < nex; i++)
-    {
-        Real r = (i - (Real)nex / 2) * dx;
-        if (r == 0)
-        {
-            r = dx;
-        }
-        load[i * 3 + 1] += 1 * delta_p_star * std::min(gsl_sf_expint_E1(r * r / 4 / alpha / t), 10.0);
-    }
 
-    return load;
-}
+/* -------------------------------------------------------------------------- */
 
 int main(int argc, char *argv[])
 {
@@ -73,14 +54,16 @@ int main(int argc, char *argv[])
     // Note : Construct the pre-integrated material kernels before running this simulation
     // Use "invert_serial.f" to construct kernel files
 
-    std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps>" << std::endl;
+    std::cout << "./mode_III_slip_weakening <output_folder_name> <load_ratio> <cr_ratio> <exponential_law>" << std::endl;
 
     std::string output_folder = argv[1];
     // Geometry description
 
-    UInt nb_time_steps = std::atoi(argv[3]);
-    UInt nex = std::atoi(argv[2]);
-    Real mu = 11.84e9;
+    //UInt nb_time_steps = std::atoi(argv[3]);
+    //UInt nex = std::atoi(argv[2]);
+    Real load_ratio = std::atof(argv[2]);
+    Real cr_ratio = std::atof(argv[3]);
+    Real mu = 3e9;
     Real rho = 1200;
     Real nu = 0.33;
     Real E = 2 * mu * (1 + nu);
@@ -88,33 +71,35 @@ int main(int argc, char *argv[])
     std::cout << "cs = " << cs << std::endl;
     // Cut of the loaded material kernels
     UInt tcut = 100;
+    bool exp_law = std::atoi(argv[4]);
 
     // Loading case
-    Real load_nor = 5.08e6;
-    Real load_shr = 1.83e6;
+    Real load_nor = 9.00e6;
     // Cohesive parameters
-    Real crit_n_open = 0.37e-3;
-    Real crit_s_open = 0.37e-3;
+    Real crit_n_open = 0.5e-3;
+    Real crit_s_open = 0.5e-3;
     Real max_n_str = 5e6;
     Real max_s_str = 5e6;
     Real res_n_str = 0.25e6;
     Real res_s_str = 0.25e6;
-    Real delta_p_star =0.05*load_nor;
-    Real alpha = 0.058e6;
     Real mus = 0.6;
-    Real mud = 0.42;
+    Real mud = 0.0;
+    Real load_shr = load_ratio*load_nor*mus;
+    Real load_actu = 0;
 
-    Real G_length = 2 * mu * crit_n_open * load_nor * (mus - mud) / (load_shr * load_shr * (1 - mud) * (1 - mud) * M_PI);
+    Real Gc = 0.5 * load_nor * (mus - mud) * crit_n_open;
+    Real G_length = 4 * mu * Gc / M_PI / (load_shr - load_nor * mud) / (load_shr - load_nor * mud);
     Real R_w = mu * crit_n_open / (mus - mud) / load_nor;
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
-    Real dom_sizex = 20 * R_w;
-    Real dx = dom_sizex / (Real)(nex);
-    Real crack_size = 0.0 * G_length;
+    Real dom_sizex = 15 * G_length;
+    Real crack_size = cr_ratio * G_length;
     // Real crack_size = 0.1;
 
-    Real lpz = mu * crit_n_open * (max_s_str - res_s_str) / (max_s_str * max_s_str);
-    UInt n_ele_ind = std::round(dom_sizex / lpz) * 20;
+    Real lpz = mu * crit_n_open / (load_nor * mus - load_nor * mud);
+    UInt nex = std::round(dom_sizex / lpz) * 15;
+    UInt nb_time_steps = nex * 50; 
+    Real dx = dom_sizex / (Real)(nex);
 
     std::string sim_name = "Mode-III crack tip equation of motion";
 
@@ -123,8 +108,7 @@ int main(int argc, char *argv[])
               << "nb_elements alog x: " << nex << "\n"
               << "nb_time_steps: " << nb_time_steps << "\n"
               << "griffith crack length: " << G_length << "\n"
-              << "reference number of elements: " << n_ele_ind << '\n'
-              << "dt: " << 0.2 * dx / cs <<'\n'
+              << "dt: " << 0.2 * dx / cs << '\n'
               << std::endl;
 
     /* -------------------------------------------------------------------------- */
@@ -157,21 +141,28 @@ int main(int argc, char *argv[])
 
     CohesiveLawCoulomb &cohesive_law = dynamic_cast<CohesiveLawCoulomb &>((model->getInterfaceLaw()));
 
-    cohesive_law.initStandardFormulation();
+    if(exp_law) cohesive_law.initExpFormulation();
+    else cohesive_law.initStandardFormulation();
 
     // cohesive_law.initRegularFormulation();
     //  sim_driver.initConstantLoading(load, psi, phi);
 
     // initialize load
     std::vector<Real> initload(nex * 3, 0.0);
-    std::vector<Real> load_actu(nex * 3, 0.0);
     for (UInt i = 0; i < nex; i++)
     {
         // initload[i*3 +2] = load*std::exp(-0.5*(i-nex*0.5)*(i-nex*0.5)*25/(crack_size/dx)/(crack_size/dx))*factor;
-        initload[i * 3 + 2] = load_shr;
+        initload[i * 3 + 2] = load_nor * mud;
         initload[i * 3 + 1] = -load_nor;
     }
     // actualload = fluidoverpressure(initload, nex, delta_p_star, alpha, dx, 0);
+
+    Real psi = 90 * M_PI / 180;
+    Real phi = 90 * M_PI / 180;
+    Real incr_x = load_shr * sin(psi) * cos(phi) / nb_time_steps * 2.0;
+    Real incr_y = load_shr * cos(psi) / nb_time_steps * 2.0;
+    Real incr_z = (load_shr - load_nor * mud) * sin(psi) * sin(phi) / nb_time_steps * 2.0;
+
     model->setLoadingFromVector(initload);
     model->initInterfaceFields();
     /* -------------------------------------------------------------------------- */
@@ -182,14 +173,8 @@ int main(int argc, char *argv[])
 
     dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _text);
     dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _text);
-    dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _text);
-    dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _text);
     dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 2, 1.0, 1, 0, _text);
     dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _text);
-    dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0);
-    dumper.initDumper("ST_Diagram_shear_vel.cra", _shear_velocity_jumps, 1.0, 1, 0);
-    dumper.initVectorDumper("ST_Diagram_shear_tra.cra", _interface_tractions, 2, 1.0, 1, 0);
-    dumper.initVectorDumper("ST_Diagram_normal_tra.cra", _interface_tractions, 1, 1.0, 1, 0);
 
     /* -------------------------------------------------------------------------- */
 
@@ -199,8 +184,9 @@ int main(int argc, char *argv[])
     // model->restartModel();
     UInt nb_dumps = 2000;
     UInt nb_t = nb_time_steps / nb_dumps;
-    std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
-    while ((t < nb_time_steps) && (x_tip < 0.9 * nex))
+    std::ofstream outputtip(output_folder + "ST_cra_tip.cra");
+    std::ofstream outputload(output_folder + "ST_load.cra");
+    while ((t < nb_time_steps) && (x_tip < 0.6 * nex))
     {
 
         // model->pauseModel();
@@ -214,10 +200,19 @@ int main(int argc, char *argv[])
 
         x_tip = model->getCohesiveTipPosition(nex / 2, nex);
 
+        if (t < nb_time_steps / 2)
+        {
+            model->incrementLoad(incr_x, 0);
+            model->incrementLoad(incr_y, 1);
+            model->incrementLoad(incr_z, 2);
+            load_actu += incr_z;
+        }
+
         if (t % nb_t == 0)
         {
             dumper.dumpAll();
-            outputFile << x_tip / (Real)(nex) << std::endl;
+            outputload << load_actu << std::endl;
+            outputtip << x_tip / (Real)(nex) << std::endl;
         }
 
         if ((x_tip > x_lap) || (t % (UInt)(0.05 * nb_time_steps) == 0))
@@ -230,13 +225,9 @@ int main(int argc, char *argv[])
                 x_lap += 0.05 * nex;
         }
         ++t;
-        // update loading case
-        Real time = t * beta * dx / cs;
-        load_actu = fluidoverpressure(initload, nex, delta_p_star, alpha, dx, time);
-
-        model->setLoadingFromVector(load_actu);
     }
-    outputFile.close();
+    outputtip.close();
+    outputload.close();
     model->pauseModel();
 
     // delete model;

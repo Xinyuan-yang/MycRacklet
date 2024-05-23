@@ -118,7 +118,10 @@ public:
   /* ------------------------------------------------------------------------ */
 public:
   void initStandardFormulation();
+  /** Dual Formulation*/
   void initDualFormulation();
+  /** Exponential Formulation*/
+  void initExpFormulation();
   /** Initialize interface fields */
   void initInterfaceConditions();
   /** Compute interface tractions and velocities in function of the new strength profile */

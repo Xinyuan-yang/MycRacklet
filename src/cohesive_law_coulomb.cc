@@ -49,6 +49,10 @@ void CohesiveLawCoulomb::initDualFormulation()
   formulation = std::make_shared<DualCohesiveCoulombFormulation>();
 }
 
+void CohesiveLawCoulomb::initExpFormulation()
+{
+  formulation = std::make_shared<ExpCoulombFormulation>();
+}
 /* -------------------------------------------------------------------------- */
 void CohesiveLawCoulomb::initInterfaceConditions()
 {
@@ -88,7 +92,7 @@ void CohesiveLawCoulomb::updateCohesiveLaw()
       cf[i] = cf[i]; // cf_s[i];
     }
 
-    else if ((aux >= 1) || (fric_strength[i] == -(*loads)[i * 3 + 1] * cf_d[i])|| ind_crack[i] == 2 )
+    else if ((false) || (fric_strength[i] == -(*loads)[i * 3 + 1] * cf_d[i])|| ind_crack[i] == 2 )
     {
       ind_crack[i] = 2;
       cf[i] = cf_d[i];

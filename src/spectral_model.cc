@@ -95,7 +95,7 @@ void SpectralModel::initModel(Real reset_beta, bool blank) {
   nele_fft[1]=n_ele[1];
   
   //for 2D 
-  if (n_ele[1]==1) {dxmin=dx[0]; dx[1] = 1.; q0[1]=0.;}
+  if (n_ele[1]==1) {dxmin=dx[0]; dx[1] = 0.01; q0[1]=0.;}
   else if (n_ele[0]==1)
     cRacklet::error("1D Interface are build along x-axis by convention");
   //3D

@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     // Note : Construct the pre-integrated material kernels before running this simulation
     // Use "invert_serial.f" to construct kernel files
 
-    std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps>" << std::endl;
+    std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <bool_exp>" << std::endl;
 
     std::string output_folder = argv[1];
     // Geometry description
@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
     std::cout << "cs = " << cs << std::endl;
     // Cut of the loaded material kernels
     UInt tcut = 100;
+    bool exp = std::atoi(argv[4]);
 
     // Loading case
     Real load_nor = 5.08e6;
@@ -166,7 +167,8 @@ int main(int argc, char *argv[])
 
     CohesiveLawCoulomb &cohesive_law = dynamic_cast<CohesiveLawCoulomb &>((model->getInterfaceLaw()));
 
-    cohesive_law.initStandardFormulation();
+    if(exp) cohesive_law.initExpFormulation();
+    else   cohesive_law.initStandardFormulation();
 
     // cohesive_law.initRegularFormulation();
     //  sim_driver.initConstantLoading(load, psi, phi);

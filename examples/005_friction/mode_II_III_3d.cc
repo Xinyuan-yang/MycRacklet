@@ -66,7 +66,7 @@ inline std::vector<Real> fluidoverpressure(std::vector<Real> load, UInt nex, UIn
             {
                 r = dx;
             }
-            load[x * 3 + z * nex * 3 + 1] += 1 * delta_p_star * std::min(gsl_sf_expint_E1(r * r / 4 / alpha / t), 10.0);
+            load[x * 3 + z * nex * 3 + 1] += 1 * delta_p_star * gsl_sf_expint_E1(r * r / 4 / alpha / t);
         }
     }
 
@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
     Real max_s_str = 5e6;
     Real res_n_str = 0.25e6;
     Real res_s_str = 0.25e6;
-    Real delta_p_star = 0.05 * load_nor;
-    Real alpha = 0.088e6;
+    Real delta_p_star = 0.035 * load_nor;
+    Real alpha = 0.88e6;
     Real mus = 0.6;
     Real mud = 0.42;
 
@@ -196,11 +196,11 @@ int main(int argc, char *argv[])
     // DataDumper dumper(*model);
     DataDumper dumper(*model);
 
-    dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _binary);
-    dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _binary);
+    //dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _binary);
+    //dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _binary);
     dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _binary);
     dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _binary);
-    dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 0, 1.0, 1, 0, _binary);
+    //dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 0, 1.0, 1, 0, _binary);
     dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0,_binary);
     dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _binary);
 

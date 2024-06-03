@@ -61,7 +61,7 @@ inline std::vector<Real> fluidoverpressure(std::vector<Real> load, UInt nex, UIn
     {
         for (UInt z = 0; z < nez; z++)
         {
-            r = sqrt((x - x_mid) * (x - x_mid) + (z-z_mid)*(z-z_mid) ) * dx;
+            r = sqrt((x - x_mid) * (x - x_mid) + (z - z_mid) * (z - z_mid)) * dx;
             if (r == 0)
             {
                 r = dx;
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     // Note : Construct the pre-integrated material kernels before running this simulation
     // Use "invert_serial.f" to construct kernel files
 
-    std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <bool_exp>" << std::endl;
+    std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <bool_exp> <S> <P> <F>" << std::endl;
 
     std::string output_folder = argv[1];
     // Geometry description
@@ -95,11 +95,48 @@ int main(int argc, char *argv[])
     std::cout << "cs = " << cs << std::endl;
     // Cut of the loaded material kernels
     UInt tcut = 100;
-    bool exp = std::atoi(argv[4]);
+    bool exp;
+    Real S,P,F;
+    switch (argc)
+    {
+    case 4:
+        std::cout << "Not enough number of arugments entered, using default value: linear law, S=0.6, P=0.05, F=0.7" << std::endl;
+        exp = false;
+        S = 0.6;
+        P = 0.05;
+        F = 0.7;
+        break;
+    case 5:
+        std::cout << "Not enough number of arugments entered, using default value: S=0.6, P=0.05, F=0.7" << std::endl;
+        exp = std::atoi(argv[4]);
+        S = 0.6;
+        P = 0.05;
+        F = 0.7;
+        break;
+    case 6:
+        std::cout << "Not enough number of arugments entered, using default value: P=0.05, F=0.7" << std::endl;
+        exp = std::atoi(argv[4]);
+        S = std::atof(argv[5]);
+        P = 0.05;
+        F = 0.7;
+        break;
+    case 7:
+        std::cout << "Not enough number of arugments entered, using default value: F=0.7" << std::endl;
+        exp = std::atoi(argv[4]);
+        S = std::atof(argv[5]);
+        P = std::atof(argv[6]);
+        F = 0.7;
+        break;
+    case 8:
+        exp = std::atoi(argv[4]);
+        S = std::atof(argv[5]);
+        P = std::atof(argv[6]);
+        F = std::atof(argv[7]);
+        break;
+    }
 
     // Loading case
     Real load_nor = 5.08e6;
-    Real load_shr = 1.83e6;
     // Cohesive parameters
     Real crit_n_open = 0.37e-3;
     Real crit_s_open = 0.37e-3;
@@ -107,16 +144,18 @@ int main(int argc, char *argv[])
     Real max_s_str = 5e6;
     Real res_n_str = 0.25e6;
     Real res_s_str = 0.25e6;
-    Real delta_p_star = 0.035 * load_nor;
+
+    Real delta_p_star = P * load_nor;
     Real alpha = 0.88e6;
     Real mus = 0.6;
-    Real mud = 0.42;
+    Real mud = F*mus;
+    Real load_shr = mus*load_nor*S;
 
     Real G_length = 2 * mu * crit_n_open * load_nor * (mus - mud) / (load_shr * load_shr * (1 - mud) * (1 - mud) * M_PI);
     Real R_w = mu * crit_n_open / (mus - mud) / load_nor;
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
-    Real dom_sizex = 20 * R_w;
+    Real dom_sizex = 50 * R_w;
     Real dom_sizez = dom_sizex;
     Real dx = dom_sizex / (Real)(nex);
     Real crack_size = 0 * G_length;
@@ -158,7 +197,6 @@ int main(int argc, char *argv[])
     DataRegister::registerParameter("static_friction_coefficient", mus);
     DataRegister::registerParameter("dynamic_friction_coefficient", mud);
     DataRegister::registerParameter("uniform_contact_pressure", load_nor);
-    
 
     Interfacer<_cohesive_coulomb> interfacer(*model);
     interfacer.createUniformInterface();
@@ -167,8 +205,10 @@ int main(int argc, char *argv[])
 
     CohesiveLawCoulomb &cohesive_law = dynamic_cast<CohesiveLawCoulomb &>((model->getInterfaceLaw()));
 
-    if(exp) cohesive_law.initExpFormulation();
-    else   cohesive_law.initStandardFormulation();
+    if (exp)
+        cohesive_law.initExpFormulation();
+    else
+        cohesive_law.initStandardFormulation();
 
     // cohesive_law.initRegularFormulation();
     //  sim_driver.initConstantLoading(load, psi, phi);
@@ -196,14 +236,13 @@ int main(int argc, char *argv[])
     // DataDumper dumper(*model);
     DataDumper dumper(*model);
 
-    //dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _binary);
-    //dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _binary);
+    // dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _binary);
+    // dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _binary);
     dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _binary);
     dumper.initVectorDumper("ST_Diagram_top_x_displ.cra", _top_displacements, 1, 1.0, 1, 0, _binary);
-    //dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 0, 1.0, 1, 0, _binary);
-    dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0,_binary);
+    // dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 0, 1.0, 1, 0, _binary);
+    dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0, _binary);
     dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _binary);
-
 
     /* -------------------------------------------------------------------------- */
 
@@ -214,6 +253,15 @@ int main(int argc, char *argv[])
     UInt nb_dumps = 2000;
     UInt nb_t = nb_time_steps / nb_dumps;
     std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
+    outputFile << "Key values:"<< std::endl;
+    outputFile << "Normal load(Pa): "<<load_nor << std::endl;
+    outputFile << "Shear load(Pa): "<<load_shr << std::endl;
+    outputFile << "Shear Modulus(Pa): "<< mu << std::endl;
+    outputFile << "Critical opening length(m): " << crit_n_open << std::endl;
+    outputFile << "Static friction coefficient: " << mus << std::endl;
+    outputFile << "Dynamic friction coefficient: " << mud << std::endl;
+    outputFile << "Caracteristic overpressure(Pa): " << delta_p_star << std::endl;
+    outputFile << "Diffusivity(m^2/s): " << alpha << std::endl;
     while ((t < nb_time_steps) && (x_tip < 0.9 * nex))
     {
 
@@ -226,7 +274,7 @@ int main(int argc, char *argv[])
         model->computeInterfaceFields();
         model->increaseTimeStep();
 
-        x_tip = model->getCohesiveTipPosition(nex / 2, nex, nez/2);
+        x_tip = model->getCohesiveTipPosition(nex / 2, nex, nez / 2);
 
         if (t % nb_t == 0)
         {

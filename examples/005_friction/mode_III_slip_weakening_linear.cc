@@ -72,15 +72,15 @@ int main(int argc, char *argv[])
   UInt tcut = 100;
 
   // Loading case
-  Real load = 0.5e6;
+  Real load = 4.5e5;
   Real psi = 90.0;
   Real phi = 90.0;
 
   // Cohesive parameters
   Real crit_n_open = 50.0e-5;
   Real crit_s_open = 50.0e-5;
-  Real max_n_str = 5e6;
-  Real max_s_str = 5e6;
+  Real max_n_str = 2.5e6;
+  Real max_s_str = 2.5e6;
   Real res_n_str = 0.00e6;
   Real res_s_str = 0.00e6;
 
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
   // model->restartModel();
   std::ofstream outputtip(output_folder + "ST_cra_tip.cra");
   std::ofstream outputload(output_folder + "ST_load.cra");
-  while ((t < nb_time_steps) && (x_tip < 0.6 * nex))
+  while ((t < 15000) && (x_tip < 0.6 * nex))
   {
 
     // model->pauseModel();

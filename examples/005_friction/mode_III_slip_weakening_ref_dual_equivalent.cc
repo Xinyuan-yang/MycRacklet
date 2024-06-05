@@ -72,8 +72,8 @@ int main(int argc, char *argv[]){
   Real psi = 90.0;
   Real phi = 90.0;
   Real start = 0.0; // valeur de départ
-  Real end = 2.25e6; // valeur finale
-  int n = 5000; // nombre d'éléments souhaité
+  Real end = 4.5e5; // valeur finale
+  int n = 15000; // nombre d'éléments souhaité
   // Créer un vecteur de n éléments initialisé à 0
   std::vector<double> loads(n, 0.0);
   // Calculer l'incrément entre les valeurs
@@ -105,16 +105,15 @@ int main(int argc, char *argv[]){
   crit_n_open = 2*Gc / (max_n_str - res_n_str);
   crit_s_open = 2*Gc / (max_s_str - res_s_str);
 
-  Real G_length = 4*mu*Gc/(M_PI*std::pow(loads.back()-res_s_str, 2));
+  UInt factor = std::atoi(argv[4]); 
 
-
+  Real G_length = factor*4*mu*Gc/(M_PI*std::pow(loads.back()-res_s_str, 2));
+  Real G_length_ref = 4*mu*Gc/(M_PI*std::pow(loads.back()-res_s_str, 2));
   std::cout << "G_length =" << G_length << std::endl;
   
-  Real dom_sizex = 30*G_length;
+  Real dom_sizex = 15*G_length_ref;
   Real dx = dom_sizex/(Real)(nex);
-
-  //Real crack_size = 2*dx;
-  Real crack_size = 2*G_length;
+  Real crack_size = G_length;
    
   std::string sim_name = "Mode-III crack tip equation of motion";
 

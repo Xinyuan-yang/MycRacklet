@@ -82,8 +82,8 @@ int main(int argc, char *argv[])
   Real crit_s_open = 50.0e-5;
   Real max_n_str = 2.5e6;
   Real max_s_str = 2.5e6;
-  Real res_n_str = 0.00e6;
-  Real res_s_str = 0.00e6;
+  Real res_n_str = 0.25e6;
+  Real res_s_str = 0.25e6;
 
   Real incr_x;
   Real incr_y;
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
   Real G_length = 4.0 * mu * Gc / (M_PI*std::pow(load-res_s_str, 2));
   //Real G_length = 2*E/(1-nu*nu)*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
-  std::cout << "G_length =" << G_length << std::endl;
+  std::cout << "Gc =" << Gc << std::endl;
 
   Real dom_sizex = 15 * G_length;
   //dom_sizex = 8;

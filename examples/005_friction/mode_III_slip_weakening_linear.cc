@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   // Note : Construct the pre-integrated material kernels before running this simulation
   // Use "invert_serial.f" to construct kernel files
 
-  std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <crack_length_ratio>" << std::endl;
+  std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <crack_length_ratio> <exp_law>" << std::endl;
 
   std::string output_folder = argv[1];
   // Geometry description
@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
   Real cs = sqrt(mu / rho);
   std::cout << "cs = " << cs << std::endl;
   bool incre = true;
+  bool exp = std::atoi(argv[5]);
   // Cut of the loaded material kernels
   UInt tcut = 100;
 
@@ -149,9 +150,10 @@ int main(int argc, char *argv[])
 
   cohesive_law.preventSurfaceOverlapping(NULL);
 
-  cohesive_law.initRegularFormulation();
+  // cohesive_law.initRegularFormulation();
   // cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);
-  // cohesive_law.initExponentialFormulation();
+  if(exp) cohesive_law.initExponentialFormulation();
+  else cohesive_law.initRegularFormulation();
   // cohesive_law.initMultiFormulation(op_list, str_list);
 
   model->setLoadingCase(load, psi, phi);
@@ -160,9 +162,9 @@ int main(int argc, char *argv[])
     psi *= M_PI/180;
     phi *= M_PI/180;
     model->setLoadingCase(0, psi, phi);
-    incr_x = load * sin(psi) * cos(phi) / nb_time_steps * 2.0;
-    incr_y = load * cos(psi) / nb_time_steps * 2.0;
-    incr_z = load * sin(psi) * sin(phi) / nb_time_steps * 2.0;
+    incr_x = load * sin(psi) * cos(phi) / 15000;
+    incr_y = load * cos(psi) /15000;
+    incr_z = load * sin(psi) * sin(phi) / 15000;
   }
   std::cout<< sin(psi) << std::endl;
   model->updateLoads();
@@ -188,7 +190,7 @@ int main(int argc, char *argv[])
   // model->restartModel();
   std::ofstream outputtip(output_folder + "ST_cra_tip.cra");
   std::ofstream outputload(output_folder + "ST_load.cra");
-  while ((t < 15000) && (x_tip < 0.6 * nex))
+  while ((t < nb_time_steps) && (x_tip < 0.6 * nex))
   {
 
     // model->pauseModel();
@@ -202,7 +204,7 @@ int main(int argc, char *argv[])
     model->increaseTimeStep();
 
     x_tip = model->getCrackTipPosition(nex / 2, nex);
-    if (incre && (t < nb_time_steps / 2.))
+    if (incre && (t < 15000))
     {
       model->incrementLoad(incr_x, 0);
       model->incrementLoad(incr_y, 1);

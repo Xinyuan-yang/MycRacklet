@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
     Real R_w = mu * crit_n_open / (mus - mud) / load_nor;
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
-    Real dom_sizex = 50 * R_w;
+    Real dom_sizex = 100 * R_w;
     Real dom_sizez = dom_sizex;
     Real dx = dom_sizex / (Real)(nex);
     Real crack_size = 0 * G_length;
@@ -250,10 +250,12 @@ int main(int argc, char *argv[])
 
     // DataRegister::restart_dir = "restart_files/";
     // model->restartModel();
-    UInt nb_dumps = 2000;
+    UInt nb_dumps = 1000;
     UInt nb_t = nb_time_steps / nb_dumps;
     std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
     outputFile << "Key values:"<< std::endl;
+    if(exp) outputFile<<"Law: linear"<<std::endl;
+    else outputFile<<"Law: Exponential"<<std::endl;
     outputFile << "Normal load(Pa): "<<load_nor << std::endl;
     outputFile << "Shear load(Pa): "<<load_shr << std::endl;
     outputFile << "Shear Modulus(Pa): "<< mu << std::endl;
@@ -262,7 +264,7 @@ int main(int argc, char *argv[])
     outputFile << "Dynamic friction coefficient: " << mud << std::endl;
     outputFile << "Caracteristic overpressure(Pa): " << delta_p_star << std::endl;
     outputFile << "Diffusivity(m^2/s): " << alpha << std::endl;
-    while ((t < nb_time_steps) && (x_tip < 0.9 * nex))
+    while ((t < nb_time_steps) && (x_tip < 0.75 * nex))
     {
 
         // model->pauseModel();

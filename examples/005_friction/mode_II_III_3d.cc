@@ -250,12 +250,12 @@ int main(int argc, char *argv[])
 
     // DataRegister::restart_dir = "restart_files/";
     // model->restartModel();
-    UInt nb_dumps = 1000;
+    UInt nb_dumps = 2000;
     UInt nb_t = nb_time_steps / nb_dumps;
     std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
     outputFile << "Key values:"<< std::endl;
-    if(exp) outputFile<<"Law: linear"<<std::endl;
-    else outputFile<<"Law: Exponential"<<std::endl;
+    if(exp) outputFile<<"Law: Exponential"<<std::endl;
+    else outputFile<<"Law: linear"<<std::endl;
     outputFile << "Normal load(Pa): "<<load_nor << std::endl;
     outputFile << "Shear load(Pa): "<<load_shr << std::endl;
     outputFile << "Shear Modulus(Pa): "<< mu << std::endl;

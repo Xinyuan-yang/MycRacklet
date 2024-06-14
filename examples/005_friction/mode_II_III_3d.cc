@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
     Real R_w = mu * crit_n_open / (mus - mud) / load_nor;
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
-    Real dom_sizex = 100 * R_w;
+    Real dom_sizex = 50 * R_w;
     Real dom_sizez = dom_sizex;
     Real dx = dom_sizex / (Real)(nex);
     Real crack_size = 0 * G_length;

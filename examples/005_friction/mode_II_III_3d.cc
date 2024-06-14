@@ -264,7 +264,7 @@ int main(int argc, char *argv[])
     outputFile << "Dynamic friction coefficient: " << mud << std::endl;
     outputFile << "Caracteristic overpressure(Pa): " << delta_p_star << std::endl;
     outputFile << "Diffusivity(m^2/s): " << alpha << std::endl;
-    while ((t < nb_time_steps) && (x_tip < 0.75 * nex))
+    while ((t < nb_time_steps) && (x_tip < 0.9 * nex))
     {
 
         // model->pauseModel();

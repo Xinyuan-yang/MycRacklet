@@ -100,28 +100,28 @@ int main(int argc, char *argv[])
     switch (argc)
     {
     case 4:
-        std::cout << "Not enough number of arugments entered, using default value: linear law, S=0.6, P=0.05, F=0.7" << std::endl;
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: linear law, S=0.6, P=0.05, F=0.7\033[0m"<<std::endl;
         exp = false;
         S = 0.6;
         P = 0.05;
         F = 0.7;
         break;
     case 5:
-        std::cout << "Not enough number of arugments entered, using default value: S=0.6, P=0.05, F=0.7" << std::endl;
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: S=0.6, P=0.05, F=0.7\033[0m"<<std::endl;
         exp = std::atoi(argv[4]);
         S = 0.6;
         P = 0.05;
         F = 0.7;
         break;
     case 6:
-        std::cout << "Not enough number of arugments entered, using default value: P=0.05, F=0.7" << std::endl;
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: P=0.05, F=0.7\033[0m"<<std::endl;
         exp = std::atoi(argv[4]);
         S = std::atof(argv[5]);
         P = 0.05;
         F = 0.7;
         break;
     case 7:
-        std::cout << "Not enough number of arugments entered, using default value: F=0.7" << std::endl;
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: F=0.7\033[0m"<<std::endl;
         exp = std::atoi(argv[4]);
         S = std::atof(argv[5]);
         P = std::atof(argv[6]);
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 
     SpectralModel *model;
 
-    model = new SpectralModel({nex, nez}, 0, {dom_sizex, dom_sizez},
+    model = new SpectralModel({nex, nez}, 0.33, {dom_sizex, dom_sizez},
                               nu, E, cs, tcut,
                               sim_name, output_folder);
 

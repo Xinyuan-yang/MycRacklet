@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
     Real res_s_str = 0.25e6;
 
     Real delta_p_star = P * load_nor;
-    Real alpha = 0.88e6;
+    Real alpha = 0.88e2;
     Real mus = 0.6;
     Real mud = F*mus;
     Real load_shr = mus*load_nor*S;
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
     Real R_w = mu * crit_n_open / (mus - mud) / load_nor;
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
-    Real dom_sizex = 50 * R_w;
+    Real dom_sizex = 10 * R_w;
     Real dom_sizez = dom_sizex;
     Real dx = dom_sizex / (Real)(nex);
     Real crack_size = 0 * G_length;
@@ -173,6 +173,7 @@ int main(int argc, char *argv[])
               << "griffith crack length: " << G_length << "\n"
               << "reference number of elements: " << n_ele_ind << '\n'
               << "dt: " << 0.2 * dx / cs << '\n'
+              << "domain size: "<< int(dom_sizex/R_w) <<'\n'
               << std::endl;
 
     /* -------------------------------------------------------------------------- */
@@ -183,7 +184,7 @@ int main(int argc, char *argv[])
 
     SpectralModel *model;
 
-    model = new SpectralModel({nex, nez}, 0.33, {dom_sizex, dom_sizez},
+    model = new SpectralModel({nex, nez}, 0, {dom_sizex, dom_sizez},
                               nu, E, cs, tcut,
                               sim_name, output_folder);
 
@@ -264,7 +265,7 @@ int main(int argc, char *argv[])
     outputFile << "Dynamic friction coefficient: " << mud << std::endl;
     outputFile << "Caracteristic overpressure(Pa): " << delta_p_star << std::endl;
     outputFile << "Diffusivity(m^2/s): " << alpha << std::endl;
-    while ((t < nb_time_steps) && (x_tip < 0.9 * nex))
+    while ((t < nb_time_steps) && (x_tip < 0.75 * nex))
     {
 
         // model->pauseModel();

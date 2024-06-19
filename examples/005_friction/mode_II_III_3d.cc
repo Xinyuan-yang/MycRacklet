@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
     Real res_s_str = 0.25e6;
 
     Real delta_p_star = P * load_nor;
-    Real alpha = 0.88e3;
+    Real alpha = 0.88e5;
     Real mus = 0.6;
     Real mud = F*mus;
     Real load_shr = mus*load_nor*S;

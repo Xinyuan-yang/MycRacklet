@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
     Real res_s_str = 0.25e6;
 
     Real delta_p_star = P * load_nor;
-    Real alpha = 0.88e2;
+    Real alpha = 0.88e3;
     Real mus = 0.6;
     Real mud = F*mus;
     Real load_shr = mus*load_nor*S;
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
     Real R_w = mu * crit_n_open / (mus - mud) / load_nor;
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
-    Real dom_sizex = 10 * R_w;
+    Real dom_sizex = 40 * R_w;
     Real dom_sizez = dom_sizex;
     Real dx = dom_sizex / (Real)(nex);
     Real crack_size = 0 * G_length;

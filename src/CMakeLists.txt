@@ -53,6 +53,7 @@ set(cRacklet_SRC
   regularized_coulomb_law.cc
   data_dumper.cc
   simulation_driver.cc
+  find_stable_alpha.cc
   )
 
 set(CRACKLET_LIBRARY_PUBLIC_HDRS
@@ -88,6 +89,7 @@ set(CRACKLET_LIBRARY_PUBLIC_HDRS
   spectral_convolution_manager.hh
   spectral_model.hh
   spectral_model_inline_impl.hh
+  find_stable_alpha.hh
   )
 
 set_source_files_properties(${RELEASE_FILE} PROPERTIES GENERATED 1)

@@ -48,6 +48,7 @@
 #include <gsl/gsl_sf_expint.h>
 #include <gsl/gsl_sf_result.h>
 #include <gsl/gsl_errno.h>
+#include "find_stable_alpha.hh"
 /* -------------------------------------------------------------------------- */
 // fluid overpressure
 inline std::vector<Real> fluidoverpressure(std::vector<Real> load, UInt nex, UInt nez, Real delta_p_star, Real alpha, Real dx, Real t)
@@ -95,33 +96,34 @@ int main(int argc, char *argv[])
     std::cout << "cs = " << cs << std::endl;
     // Cut of the loaded material kernels
     UInt tcut = 100;
+    UInt nb_dumps = 2000;
     bool exp;
-    Real S,P,F;
+    Real S, P, F;
     switch (argc)
     {
     case 4:
-        std::cerr << "\033[33mNot enough number of arugments entered, using default value: linear law, S=0.6, P=0.05, F=0.7\033[0m"<<std::endl;
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: linear law, S=0.6, P=0.05, F=0.7\033[0m" << std::endl;
         exp = false;
         S = 0.6;
         P = 0.05;
         F = 0.7;
         break;
     case 5:
-        std::cerr << "\033[33mNot enough number of arugments entered, using default value: S=0.6, P=0.05, F=0.7\033[0m"<<std::endl;
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: S=0.6, P=0.05, F=0.7\033[0m" << std::endl;
         exp = std::atoi(argv[4]);
         S = 0.6;
         P = 0.05;
         F = 0.7;
         break;
     case 6:
-        std::cerr << "\033[33mNot enough number of arugments entered, using default value: P=0.05, F=0.7\033[0m"<<std::endl;
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: P=0.05, F=0.7\033[0m" << std::endl;
         exp = std::atoi(argv[4]);
         S = std::atof(argv[5]);
         P = 0.05;
         F = 0.7;
         break;
     case 7:
-        std::cerr << "\033[33mNot enough number of arugments entered, using default value: F=0.7\033[0m"<<std::endl;
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: F=0.7\033[0m" << std::endl;
         exp = std::atoi(argv[4]);
         S = std::atof(argv[5]);
         P = std::atof(argv[6]);
@@ -146,16 +148,15 @@ int main(int argc, char *argv[])
     Real res_s_str = 0.25e6;
 
     Real delta_p_star = P * load_nor;
-    Real alpha = 0.88e4;
     Real mus = 0.6;
-    Real mud = F*mus;
-    Real load_shr = mus*load_nor*S;
+    Real mud = F * mus;
+    Real load_shr = mus * load_nor * S;
 
     Real G_length = 2 * mu * crit_n_open * load_nor * (mus - mud) / (load_shr * load_shr * (1 - mud) * (1 - mud) * M_PI);
     Real R_w = mu * crit_n_open / (mus - mud) / load_nor;
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
-    Real dom_sizex = 40 * R_w;
+    Real dom_sizex = 100 * R_w;
     Real dom_sizez = dom_sizex;
     Real dx = dom_sizex / (Real)(nex);
     Real crack_size = 0 * G_length;
@@ -166,6 +167,17 @@ int main(int argc, char *argv[])
 
     std::string sim_name = "Mode-III crack tip equation of motion";
 
+    Real gamma = 0.577216;
+    Real lambda_p;
+    Real T = (mus * load_nor - load_shr) / (mus * delta_p_star);
+
+    Parameters params = {
+        /* T = */ T
+    };
+
+    lambda_p = newton_raphson(1e-3, 1e-6, 100, params);
+    Real alpha = 2.5 / nb_time_steps * Real(nex) * cs / dom_sizex * R_w * R_w / lambda_p / lambda_p;
+
     std::cout << "./mode_III_slip_weakening "
               << "output folder: " << output_folder << "\n"
               << "nb_elements alog x: " << nex << "\n"
@@ -173,7 +185,7 @@ int main(int argc, char *argv[])
               << "griffith crack length: " << G_length << "\n"
               << "reference number of elements: " << n_ele_ind << '\n'
               << "dt: " << 0.2 * dx / cs << '\n'
-              << "domain size: "<< int(dom_sizex/R_w) <<'\n'
+              << "domain size: " << int(dom_sizex / R_w) << '\n'
               << std::endl;
 
     /* -------------------------------------------------------------------------- */
@@ -251,15 +263,16 @@ int main(int argc, char *argv[])
 
     // DataRegister::restart_dir = "restart_files/";
     // model->restartModel();
-    UInt nb_dumps = 2000;
     UInt nb_t = nb_time_steps / nb_dumps;
     std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
-    outputFile << "Key values:"<< std::endl;
-    if(exp) outputFile<<"Law: Exponential"<<std::endl;
-    else outputFile<<"Law: linear"<<std::endl;
-    outputFile << "Normal load(Pa): "<<load_nor << std::endl;
-    outputFile << "Shear load(Pa): "<<load_shr << std::endl;
-    outputFile << "Shear Modulus(Pa): "<< mu << std::endl;
+    outputFile << "Key values:" << std::endl;
+    if (exp)
+        outputFile << "Law: Exponential" << std::endl;
+    else
+        outputFile << "Law: linear" << std::endl;
+    outputFile << "Normal load(Pa): " << load_nor << std::endl;
+    outputFile << "Shear load(Pa): " << load_shr << std::endl;
+    outputFile << "Shear Modulus(Pa): " << mu << std::endl;
     outputFile << "Critical opening length(m): " << crit_n_open << std::endl;
     outputFile << "Static friction coefficient: " << mus << std::endl;
     outputFile << "Dynamic friction coefficient: " << mud << std::endl;

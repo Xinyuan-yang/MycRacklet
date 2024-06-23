@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
     };
 
     lambda_p = newton_raphson(1e-3, 1e-6, 100, params);
-    Real alpha = 10 / nb_time_steps * Real(nex) * cs / dom_sizex * R_w * R_w / lambda_p / lambda_p;
+    Real alpha = 10.0 / nb_time_steps * Real(nex) * cs / dom_sizex * R_w * R_w / lambda_p / lambda_p;
 
     std::cout << "./mode_III_slip_weakening "
               << "output folder: " << output_folder << "\n"

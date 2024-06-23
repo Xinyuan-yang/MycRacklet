@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
     };
 
     lambda_p = newton_raphson(1e-3, 1e-6, 100, params);
-    Real alpha = 2.5 / nb_time_steps * Real(nex) * cs / dom_sizex * R_w * R_w / lambda_p / lambda_p;
+    Real alpha = 10 / nb_time_steps * Real(nex) * cs / dom_sizex * R_w * R_w / lambda_p / lambda_p;
 
     std::cout << "./mode_III_slip_weakening "
               << "output folder: " << output_folder << "\n"
@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
     // dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 0, 1.0, 1, 0, _binary);
     dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0, _binary);
     dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _binary);
-
+    //dumper.initIntegratorsDumper("energy.cra");
     /* -------------------------------------------------------------------------- */
 
     // sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);

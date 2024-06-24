@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     UInt nb_dumps = 2000;
     bool exp=0;
     Real S=0.6, P=0.05, F=0.7;
-
+    
     // Loading case
     Real load_nor = 5.08e6;
     // Cohesive parameters
@@ -160,15 +160,15 @@ int main(int argc, char *argv[])
 
     SpectralModel *model;
 
-    model = new SpectralModel({nex, nez}, c_fl, {dom_sizex, dom_sizez},
+    model = new SpectralModel({nex, nez}, 0, {dom_sizex, dom_sizez},
                               nu, E, cs, tcut,
                               sim_name, output_folder);
 
     Real beta = 0.2;
     // SimulationDriver sim_driver(*model, beta=beta);
     // SimulationDriver sim_driver(*model);
-    model->initModel();
-
+    model->initModel(c_fl);
+    
     DataRegister::registerParameter("critical_normal_opening", crit_n_open);
     DataRegister::registerParameter("critical_shear_opening", crit_s_open);
     DataRegister::registerParameter("static_friction_coefficient", mus);
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
     dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _binary);
     //dumper.initIntegratorsDumper("energy.cra");
     /* -------------------------------------------------------------------------- */
-
+    
     // sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);
 
     // DataRegister::restart_dir = "restart_files/";

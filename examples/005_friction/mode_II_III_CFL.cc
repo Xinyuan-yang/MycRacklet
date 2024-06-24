@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
         }
         ++t;
         // update loading case
-        Real time = t * beta * dx / cs;
+        Real time = t * c_fl * dx / cs;
         load_actu = fluidoverpressure(initload, nex, nez, delta_p_star, alpha, dx, time);
 
         model->setLoadingFromVector(load_actu);

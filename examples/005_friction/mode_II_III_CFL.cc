@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     UInt tcut = 100;
     UInt nb_dumps = 2000;
     bool exp=0;
-    Real S=0.6, P=0.05, F=0.7;
+    Real S=0.6, P=0.035, F=0.7;
     
     // Loading case
     Real load_nor = 5.08e6;

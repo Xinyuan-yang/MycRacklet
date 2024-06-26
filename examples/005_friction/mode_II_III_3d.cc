@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
 
     // DataDumper dumper(*model);
     DataDumper dumper(*model);
-
+    std::vector<IntegratorTypes> ener_types = {_frictional_energy,_radiated_energy};
     // dumper.initVectorDumper("ST_Diagram_top_z_velo.cra", _top_velocities, 2, 1.0, 1, 0, _binary);
     // dumper.initVectorDumper("ST_Diagram_top_z_displ.cra", _top_displacements, 2, 1.0, 1, 0, _binary);
     dumper.initVectorDumper("ST_Diagram_top_x_velo.cra", _top_velocities, 1, 1.0, 1, 0, _binary);
@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
     // dumper.initVectorDumper("ST_Diagram_shear_stress.cra", _interface_tractions, 0, 1.0, 1, 0, _binary);
     dumper.initDumper("ST_Diagram_normal_stress.cra", _interface_tractions, 1.0, 1, 0, _binary);
     dumper.initDumper("ST_Diagram_id.cra", _id_crack, 1.0, 1, 0, _binary);
-    //dumper.initIntegratorsDumper("energy.cra");
+    dumper.initIntegratorsDumper("energy.cra",ener_types,{"fric","rad"});
     /* -------------------------------------------------------------------------- */
 
     // sim_driver.launchCrack(dom_sizex/2.,1.75*G_length,0.075,false);

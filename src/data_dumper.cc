@@ -217,6 +217,38 @@ void DataDumper::initIntegratorsDumper(const std::string filename, OutputFormat 
 }
 
 /* -------------------------------------------------------------------------- */
+void DataDumper::initIntegratorsDumper(const std::string filename, 
+                                       std::vector<IntegratorTypes> inte_types, 
+                                       std::vector<std::string> integrator_names, 
+                                       OutputFormat format){
+
+  std::vector<UInt> n_ele = model->getNbElements();
+  std::vector<Real> dx = model->getElementSize();
+  std::vector<UInt> start(2);
+  std::vector<UInt> end(2);
+
+  for (UInt i = 0; i < 2; ++i) {
+    start[i] = (UInt)(0./dx[i]);
+    end[i] = (UInt)(n_ele[i]*dx[i]/dx[i]);
+  }
+
+  if(n_ele[1]==1){
+    start[1]=0;
+    end[1]=1;
+  }
+  
+  std::vector<UInt> int_points;
+  
+  for (UInt ix = start[0]; ix < std::min(n_ele[0],end[0]); ++ix) {
+    for (UInt iz = start[1]; iz < std::min(n_ele[1],end[1]); ++iz) {
+      int_points.push_back(ix+iz*n_ele[0]);
+    }
+  }
+  this->initIntegratorsDumper(filename,int_points,
+			      inte_types,integrator_names,format);
+}
+
+/* -------------------------------------------------------------------------- */
 void DataDumper::initSurfingIntegratorsDumper(const std::string filename,  UInt integration_width,
 					      UInt crack_start, UInt crack_end,
 					      std::vector<IntegratorTypes> inte_types,

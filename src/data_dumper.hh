@@ -284,6 +284,9 @@ public:
 			     std::vector<Real> end_corner, OutputFormat format=_text);
   /// Create a IntegratorsDumper with standard energies integrated over the entire plane
   void initIntegratorsDumper(const std::string filename, OutputFormat format=_text);
+  /// Create a IntegratorDumper with desired energies integrated over the entire plane
+  void initIntegratorsDumper(const std::string filename, std::vector<IntegratorTypes> inte_types, 
+                              std::vector<std::string> integrator_names, OutputFormat format=_text);
   /// Create a IntegratorsDumper which follows the propagating tip with an integration domain of a given width
   /// Crack position is tracked between crack_start and crack_end
   void initSurfingIntegratorsDumper(const std::string filename,  UInt integration_width,

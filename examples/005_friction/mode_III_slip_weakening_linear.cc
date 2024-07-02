@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   UInt tcut = 100;
 
   // Loading case
-  Real load = 4.5e5;
+  Real load = 6e5;
   Real psi = 90.0;
   Real phi = 90.0;
 
@@ -82,8 +82,8 @@ int main(int argc, char *argv[])
   Real crit_s_open = 50.0e-5;
   Real max_n_str = 2.5e6;
   Real max_s_str = 2.5e6;
-  Real res_n_str = 0.25e6;
-  Real res_s_str = 0.25e6;
+  Real res_n_str = 0.0e6;
+  Real res_s_str = 0.0e6;
 
   Real incr_x;
   Real incr_y;
@@ -162,15 +162,15 @@ int main(int argc, char *argv[])
     psi *= M_PI/180;
     phi *= M_PI/180;
     model->setLoadingCase(0, psi, phi);
-    incr_x = load * sin(psi) * cos(phi) / 15000;
-    incr_y = load * cos(psi) /15000;
-    incr_z = load * sin(psi) * sin(phi) / 15000;
+    incr_x = load * sin(psi) * cos(phi) / nb_time_steps*2;
+    incr_y = load * cos(psi) /nb_time_steps*2;
+    incr_z = load * sin(psi) * sin(phi) / nb_time_steps*2;
   }
   std::cout<< sin(psi) << std::endl;
   model->updateLoads();
   model->initInterfaceFields();
   x_tip = model->getCrackTipPosition(nex / 2, nex);
-  x_lap = x_tip + 0.01 * nex;
+  x_lap = x_tip+0.01*nex;
 
   /* -------------------------------------------------------------------------- */
   // Set-up simulation  outputs
@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
     model->increaseTimeStep();
 
     x_tip = model->getCrackTipPosition(nex / 2, nex);
-    if (incre && (t < 15000))
+    if (incre)
     {
       model->incrementLoad(incr_x, 0);
       model->incrementLoad(incr_y, 1);
@@ -227,6 +227,7 @@ int main(int argc, char *argv[])
 
       if (x_tip > x_lap)
         {x_lap += 0.05 * nex;
+        break;
       }
     }
 

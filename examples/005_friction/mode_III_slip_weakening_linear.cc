@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   UInt tcut = 100;
 
   // Loading case
-  Real load = 6e5;
+  Real load = 1e5;
   Real psi = 90.0;
   Real phi = 90.0;
 

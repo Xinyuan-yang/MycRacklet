@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   // Note : Construct the pre-integrated material kernels before running this simulation
   // Use "invert_serial.f" to construct kernel files
 
-  std::cout << "./mode_III_slip_weakening <output_folder_name> <load_ratio>" << std::endl;
+  std::cout << "./mode_III_slip_weakening <output_folder_name> <dom_size>" << std::endl;
 
   std::string output_folder = argv[1];
   // Geometry description
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   Real nu = 0.33;
   Real E = 2 * mu * (1 + nu);
   Real cs = sqrt(mu / rho);
-  Real load_ratio = std::atof(argv[2]);
+  Real dom_ratio = std::atof(argv[2]);
   std::cout << "cs = " << cs << std::endl;
   bool incre = true;
   // Cut of the loaded material kernels
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
   Real max_s_str = 5e6;
   Real res_n_str = 0.00e6;
   Real res_s_str = 0.00e6;
-  Real load = load_ratio * max_n_str;
+  Real load = 0.1 * max_n_str;
 
   Real incr_x;
   Real incr_y;
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
   std::cout << "G_length =" << G_length << std::endl;
 
-  Real dom_sizex = 15 * G_length;
+  Real dom_sizex = dom_ratio * G_length;
 
   Real crack_size = 1 * G_length;
 
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
   // DataRegister::restart_dir = "restart_files/";
   // model->restartModel();
   std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
-  while ((t < nb_time_steps) && (x_tip < 0.6 * n_ele_ind))
+  while ((t < nb_time_steps))
   {
 
     // model->pauseModel();
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
     model->increaseTimeStep();
 
     x_tip = model->getCrackTipPosition(n_ele_ind / 2, n_ele_ind);
-    if (incre && (t < nb_time_steps / 2.))
+    if (incre)
     {
       model->incrementLoad(incr_x, 0);
       model->incrementLoad(incr_y, 1);

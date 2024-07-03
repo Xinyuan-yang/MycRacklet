@@ -162,7 +162,7 @@ inline void Integrator::compute<_frictional_energy>() {
   const std::vector<Real> * fric_strength = DataRegister::readData(_frictional_strength);
   const std::vector<UInt> * id_crack = DataRegister::readData(_id_crack);
   for (UInt i = 0; i < this->index.size(); ++i) {
-    if ((*id_crack)[index[i]]==2){
+    if ((*id_crack)[index[i]]!=2){
       this->I_dot += (*fric_strength)[index[i]] * fabs((*shear_velo_jump)[index[i]]);}
   }
 }

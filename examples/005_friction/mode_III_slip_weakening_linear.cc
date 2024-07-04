@@ -73,15 +73,15 @@ int main(int argc, char *argv[])
   UInt tcut = 100;
 
   // Loading case
-  Real load = 1e5;
+  Real load = 5e5;
   Real psi = 90.0;
   Real phi = 90.0;
 
   // Cohesive parameters
   Real crit_n_open = 50.0e-5;
   Real crit_s_open = 50.0e-5;
-  Real max_n_str = 2.5e6;
-  Real max_s_str = 2.5e6;
+  Real max_n_str = 5e6;
+  Real max_s_str = 5e6;
   Real res_n_str = 0.0e6;
   Real res_s_str = 0.0e6;
 
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
   model->updateLoads();
   model->initInterfaceFields();
   x_tip = model->getCrackTipPosition(nex / 2, nex);
-  x_lap = x_tip+0.01*nex;
+  x_lap = x_tip;
 
   /* -------------------------------------------------------------------------- */
   // Set-up simulation  outputs

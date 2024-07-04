@@ -145,9 +145,9 @@ int main(int argc, char *argv[])
 
   cohesive_law.preventSurfaceOverlapping(NULL);
 
-  // cohesive_law.initRegularFormulation();
+  cohesive_law.initRegularFormulation();
   // cohesive_law.initDualFormulation(nor_op_factor, shr_op_factor, nor_str_factor, shr_str_factor);
-  cohesive_law.initExponentialFormulation();
+  // cohesive_law.initExponentialFormulation();
   // cohesive_law.initMultiFormulation(op_list, str_list);
 
   model->setLoadingCase(load, psi, phi);

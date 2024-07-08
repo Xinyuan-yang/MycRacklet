@@ -123,12 +123,14 @@ int main(int argc, char *argv[])
         F = 0.7;
         break;
     case 8:
+    case 9:
         exp = std::atoi(argv[4]);
         S = std::atof(argv[5]);
         P = std::atof(argv[6]);
         F = std::atof(argv[7]);
         break;
     }
+
     if(argc>8) alpha = std::atof(argv[8]);
     else alpha = 0.058e6;
 

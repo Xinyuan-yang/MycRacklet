@@ -61,7 +61,7 @@ inline std::vector<Real> fluidoverpressure(std::vector<Real> load, UInt nex, Rea
         {
             r = dx;
         }
-        load[i * 3 + 1] += 1 * delta_p_star * std::min(gsl_sf_expint_E1(r * r / 4 / alpha / t), 10.0);
+        load[i * 3 + 1] += 1 * delta_p_star * gsl_sf_expint_E1(r * r / 4 / alpha / t);
     }
 
     return load;
@@ -73,25 +73,68 @@ int main(int argc, char *argv[])
     // Note : Construct the pre-integrated material kernels before running this simulation
     // Use "invert_serial.f" to construct kernel files
 
-    std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps>" << std::endl;
+    std::cout << "./mode_III_slip_weakening <output_folder_name> <nb_ele_x> <nb_time_steps> <bool_exp> <S> <P> <F>" << std::endl;
 
     std::string output_folder = argv[1];
     // Geometry description
 
     UInt nb_time_steps = std::atoi(argv[3]);
     UInt nex = std::atoi(argv[2]);
+    UInt nez = nex;
     Real mu = 11.84e9;
     Real rho = 1200;
-    Real nu = 0.33;
+    Real nu = 0.01;
     Real E = 2 * mu * (1 + nu);
     Real cs = sqrt(mu / rho);
     std::cout << "cs = " << cs << std::endl;
     // Cut of the loaded material kernels
     UInt tcut = 100;
+    UInt nb_dumps = 2000;
+    bool exp;
+    Real S, P, F, alpha;
+    switch (argc)
+    {
+    case 4:
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: linear law, S=0.6, P=0.05, F=0.7\033[0m" << std::endl;
+        exp = false;
+        S = 0.6;
+        P = 0.05;
+        F = 0.7;
+        break;
+    case 5:
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: S=0.6, P=0.05, F=0.7\033[0m" << std::endl;
+        exp = std::atoi(argv[4]);
+        S = 0.6;
+        P = 0.05;
+        F = 0.7;
+        break;
+    case 6:
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: P=0.05, F=0.7\033[0m" << std::endl;
+        exp = std::atoi(argv[4]);
+        S = std::atof(argv[5]);
+        P = 0.05;
+        F = 0.7;
+        break;
+    case 7:
+        std::cerr << "\033[33mNot enough number of arugments entered, using default value: F=0.7\033[0m" << std::endl;
+        exp = std::atoi(argv[4]);
+        S = std::atof(argv[5]);
+        P = std::atof(argv[6]);
+        F = 0.7;
+        break;
+    case 8:
+        exp = std::atoi(argv[4]);
+        S = std::atof(argv[5]);
+        P = std::atof(argv[6]);
+        F = std::atof(argv[7]);
+        break;
+    }
+    if(argc>8) alpha = std::atof(argv[8]);
+    else alpha = 0.058e6;
 
     // Loading case
+    // Loading case
     Real load_nor = 5.08e6;
-    Real load_shr = 1.83e6;
     // Cohesive parameters
     Real crit_n_open = 0.37e-3;
     Real crit_s_open = 0.37e-3;
@@ -99,16 +142,17 @@ int main(int argc, char *argv[])
     Real max_s_str = 5e6;
     Real res_n_str = 0.25e6;
     Real res_s_str = 0.25e6;
-    Real delta_p_star =0.05*load_nor;
-    Real alpha = 0.058e6;
+
+    Real delta_p_star = P * load_nor;
     Real mus = 0.6;
-    Real mud = 0.42;
+    Real mud = F * mus;
+    Real load_shr = mus * load_nor * S;
 
     Real G_length = 2 * mu * crit_n_open * load_nor * (mus - mud) / (load_shr * load_shr * (1 - mud) * (1 - mud) * M_PI);
     Real R_w = mu * crit_n_open / (mus - mud) / load_nor;
     // Real G_length = 4*mu*Gc/(M_PI*std::pow(load-res_s_str, 2));
 
-    Real dom_sizex = 20 * R_w;
+    Real dom_sizex = 50 * R_w;
     Real dx = dom_sizex / (Real)(nex);
     Real crack_size = 0.0 * G_length;
     // Real crack_size = 0.1;
@@ -197,9 +241,22 @@ int main(int argc, char *argv[])
 
     // DataRegister::restart_dir = "restart_files/";
     // model->restartModel();
-    UInt nb_dumps = 2000;
     UInt nb_t = nb_time_steps / nb_dumps;
     std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
+       outputFile << "Key values:" << std::endl;
+    if (exp)
+        outputFile << "Law: Exponential" << std::endl;
+    else
+        outputFile << "Law: linear" << std::endl;
+    outputFile << "Normal load(Pa): " << load_nor << std::endl;
+    outputFile << "Shear load(Pa): " << load_shr << std::endl;
+    outputFile << "Shear Modulus(Pa): " << mu << std::endl;
+    outputFile << "Critical opening length(m): " << crit_n_open << std::endl;
+    outputFile << "Static friction coefficient: " << mus << std::endl;
+    outputFile << "Dynamic friction coefficient: " << mud << std::endl;
+    outputFile << "Caracteristic overpressure(Pa): " << delta_p_star << std::endl;
+    outputFile << "Diffusivity(m^2/s): " << alpha << std::endl;
+
     while ((t < nb_time_steps) && (x_tip < 0.9 * nex))
     {
 

@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
   // model->restartModel();
   std::ofstream outputtip(output_folder + "ST_cra_tip.cra");
   std::ofstream outputload(output_folder + "ST_load.cra");
-  while ((t < nb_time_steps) && (x_tip < 0.6 * nex))
+  while ((t < nb_time_steps) && (x_tip < 0.7 * nex))
   {
 
     // model->pauseModel();
@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
     model->increaseTimeStep();
 
     x_tip = model->getCrackTipPosition(nex / 2, nex);
-    if (incre)
+    if (incre && t<nb_time_steps/2.)
     {
       model->incrementLoad(incr_x, 0);
       model->incrementLoad(incr_y, 1);
@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
 
       if (x_tip > x_lap)
         {x_lap += 0.05 * nex;
-        break;
+        //break;
       }
     }
 

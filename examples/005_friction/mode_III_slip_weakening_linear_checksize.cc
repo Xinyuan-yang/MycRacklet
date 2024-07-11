@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   // Note : Construct the pre-integrated material kernels before running this simulation
   // Use "invert_serial.f" to construct kernel files
 
-  std::cout << "./mode_III_slip_weakening <output_folder_name> <dom_size>" << std::endl;
+  std::cout << "./mode_III_slip_weakening <output_folder_name> <load_ratio>" << std::endl;
 
   std::string output_folder = argv[1];
   // Geometry description
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   Real nu = 0.33;
   Real E = 2 * mu * (1 + nu);
   Real cs = sqrt(mu / rho);
-  Real dom_ratio = std::atof(argv[2]);
+  Real load_ratio = std::atof(argv[2]);
   std::cout << "cs = " << cs << std::endl;
   bool incre = true;
   // Cut of the loaded material kernels
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
   Real max_s_str = 5e6;
   Real res_n_str = 0.00e6;
   Real res_s_str = 0.00e6;
-  Real load = 0.1 * max_n_str;
+  Real load = load_ratio * max_n_str;
 
   Real incr_x;
   Real incr_y;
@@ -94,9 +94,9 @@ int main(int argc, char *argv[])
 
   std::cout << "G_length =" << G_length << std::endl;
 
-  Real dom_sizex = dom_ratio * G_length;
+  Real dom_sizex = 15 * G_length;
 
-  Real crack_size = 1 * G_length;
+  Real crack_size = 0.98 * G_length;
 
   Real lpz = mu * crit_n_open * (max_n_str - res_n_str) / (max_n_str * max_n_str);
   UInt n_ele_ind = std::round(dom_sizex / lpz) * 20;

@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
   // DataRegister::restart_dir = "restart_files/";
   // model->restartModel();
   std::ofstream outputFile(output_folder + "ST_cra_tip.cra");
-  while ((t < nb_time_steps))
+  while ((t < nb_time_steps) && (x_tip < 0.7 * n_ele_ind) )
   {
 
     // model->pauseModel();
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
     model->increaseTimeStep();
 
     x_tip = model->getCrackTipPosition(n_ele_ind / 2, n_ele_ind);
-    if (incre)
+    if (incre && t<nb_time_steps/2.)
     {
       model->incrementLoad(incr_x, 0);
       model->incrementLoad(incr_y, 1);
@@ -222,8 +222,7 @@ int main(int argc, char *argv[])
         std::cout << "Process at " << (Real)t / (Real)nb_time_steps * 100 << "% " << std::endl;
         std::cout << "Crack at " << 100 * x_tip / (Real)(n_ele_ind) << "% " << std::endl;
         std::cout << std::endl;
-        x_lap += 0.01 * n_ele_ind;
-        break;
+        x_lap += 0.05 * n_ele_ind;
       }
     }
 

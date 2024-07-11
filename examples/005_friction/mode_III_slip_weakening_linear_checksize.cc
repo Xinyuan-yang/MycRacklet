@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 
   Real dom_sizex = 15 * G_length;
 
-  Real crack_size = 0.98 * G_length;
+  Real crack_size = 0.95 * G_length;
 
   Real lpz = mu * crit_n_open * (max_n_str - res_n_str) / (max_n_str * max_n_str);
   UInt n_ele_ind = std::round(dom_sizex / lpz) * 20;

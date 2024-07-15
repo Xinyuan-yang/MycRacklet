@@ -163,6 +163,40 @@ inline void Interfacer<_cohesive_coulomb>::createUniformInterface() {
   cohesive_law->initStandardFormulation();
 }
 
+template<>
+inline void Interfacer<_cohesive_coulomb>::insertPatternfromFile(std::string filename, UInt origin) {
+
+  std::vector<Real> * crit_n_open = datas[_critical_normal_opening];
+  std::vector<Real> * crit_s_open = datas[_critical_shear_opening];
+  std::vector<Real> * cf_s = datas[_static_friction_coefficient];
+  std::vector<Real> * cf_d = datas[_dynamic_friction_coefficient];
+  std::vector<Real> * cf = datas[_friction_coefficient];
+  std::vector<Real> * fric_strength = datas[_frictional_strength];
+  
+  std::ifstream file;
+  std::string line;
+  file.open(filename);
+  Real ratio;
+  
+  for (UInt x = origin; x < n_ele[0]; ++x) {
+    if(file.eof())
+      break;
+    std::getline(file,line);
+    std::stringstream sstr(line);
+    for (UInt z = 0; z < n_ele[1]; ++z ) {
+      sstr >> ratio;
+      (*cf_s)[x+z*n_ele[0]]*= ratio;
+      (*cf_d)[x+z*n_ele[0]]*= ratio;
+      (*fric_strength)[x+z*n_ele[0]]*=ratio;
+    }
+  }
+  out_summary << "/* -------------------------------------------------------------------------- */ "
+	      << std::endl
+	      << " TOUGHNESS PATTERN INSERTED FROM FILE " << std::endl
+	      << "* Filename: " << filename << std::endl
+	      << std::endl;	
+}
+
 /* -------------------------------------------------------------------------- */
 template<>
 inline void Interfacer<_dual_cohesive_coulomb>::createUniformInterface() {

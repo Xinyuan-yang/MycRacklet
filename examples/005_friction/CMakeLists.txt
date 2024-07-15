@@ -105,4 +105,7 @@ add_cracklet_simulation(mode_II_III_3d mode_II_III_3d.cc)
 
 add_cracklet_simulation(mode_II_III_CFL mode_II_III_CFL.cc)
 
+add_cracklet_simulation(mode_II_III_heterogenity mode_II_III_heterogenity.cc)
+
 copy_input_file(input_pulse_PMMA.dat)
+copy_input_file(hetero.txt)

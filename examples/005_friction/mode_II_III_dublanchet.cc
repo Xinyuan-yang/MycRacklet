@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
         S = std::atof(argv[5]);
         P = std::atof(argv[6]);
         F = std::atof(argv[7]);
-        use_current = std::atoi(argv[5]);
+        use_current = true;
         break;
     }
     if(!use_current){

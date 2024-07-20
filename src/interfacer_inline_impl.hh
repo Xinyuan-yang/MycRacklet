@@ -185,8 +185,8 @@ inline void Interfacer<_cohesive_coulomb>::insertPatternfromFile(std::string fil
     std::stringstream sstr(line);
     for (UInt z = 0; z < n_ele[1]; ++z ) {
       sstr >> ratio;
-      (*cf_s)[x+z*n_ele[0]]*= ratio;
-      (*cf_d)[x+z*n_ele[0]]*= ratio;
+      (*crit_n_open)[x+z*n_ele[0]]*= ratio;
+      (*crit_s_open)[x+z*n_ele[0]]*= ratio;
       (*fric_strength)[x+z*n_ele[0]]*=ratio;
     }
   }

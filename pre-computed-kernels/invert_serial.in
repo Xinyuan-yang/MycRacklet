@@ -11,6 +11,6 @@ Cutoff T value (not greater then 110): h22cut
 Time spacing interval for which the h22 kernel is evaluated: dth12
 .05
 Poisson's ratio
-0.37
+0.10
 
 

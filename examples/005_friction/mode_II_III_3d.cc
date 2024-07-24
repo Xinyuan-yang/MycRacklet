@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     UInt nez = nex;
     Real mu = 11.84e9;
     Real rho = 1200;
-    Real nu = 0.01;
+    Real nu = 0.10;
     Real E = 2 * mu * (1 + nu);
     Real cs = sqrt(mu / rho);
     std::cout << "cs = " << cs << std::endl;
